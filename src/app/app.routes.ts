@@ -16,7 +16,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
-      // Autres routes protégées à ajouter ici : membres, seances, cotisations, etc.
+      {
+        path: 'membres',
+        loadComponent: () =>
+          import('./features/membres/membres.component').then(m => m.MembresComponent),
+      },
+      // Autres routes protégées à ajouter ici : seances, cotisations, etc.
     ],
   },
   { path: '**', redirectTo: 'login' },

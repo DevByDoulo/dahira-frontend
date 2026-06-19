@@ -38,7 +38,7 @@ export interface DashboardStatsData {
 
 export interface DashboardChartsData {
   evolution_cotisations: Array<{ mois: string; nombre: number; montant: number }>;
-  evolution_tresorerie: Array<{ mois: string; solde: number; entrees: number; sorties: number }>;
+  evolution_tresorerie: Array<{ periode: string; solde: number; entrees: number; sorties: number }>;
 }
 
 @Injectable({ providedIn: 'root' })
