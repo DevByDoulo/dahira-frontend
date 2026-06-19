@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CotisationsService, Cotisation } from '../../core/services/cotisations.service';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 
@@ -9,7 +10,7 @@ type ActiveTab = 'toutes' | 'en_attente';
 @Component({
   selector: 'app-cotisations',
   standalone: true,
-  imports: [CommonModule, FormsModule, SkeletonTableComponent],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonTableComponent],
   templateUrl: './cotisations.component.html',
 })
 export class CotisationsComponent implements OnInit {

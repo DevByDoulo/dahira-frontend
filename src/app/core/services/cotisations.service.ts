@@ -3,6 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface EncaisserCotisationPayload {
+  membre_id: number;
+  seance_id: number;
+  montant: number;
+  mode_paiement: 'especes' | 'wave' | 'orange_money';
+  note?: string;
+}
+
 export interface Cotisation {
   id: number;
   dahira_id: number;
@@ -32,6 +40,20 @@ export interface CotisationResponse {
   data: Cotisation;
 }
 
+export interface CotisationStats {
+  total_especes: number;
+  total_wave: number;
+  total_orange_money: number;
+  total_general: number;
+  membres_a_jour: number;
+  membres_en_retard: { id: number; nom: string; prenom: string }[];
+}
+
+export interface CotisationStatsResponse {
+  success: boolean;
+  data: CotisationStats;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CotisationsService {
   private readonly apiUrl = environment.apiUrl;
@@ -52,6 +74,14 @@ export class CotisationsService {
       `${this.apiUrl}/cotisations/${id}/rejeter`,
       note ? { note } : {},
     );
+  }
+
+  encaisserCotisation(payload: EncaisserCotisationPayload): Observable<CotisationResponse> {
+    return this.http.post<CotisationResponse>(`${this.apiUrl}/cotisations/encaisser`, payload);
+  }
+
+  getStats(): Observable<CotisationStatsResponse> {
+    return this.http.get<CotisationStatsResponse>(`${this.apiUrl}/cotisations/dashboard`);
   }
 
   genererRecu(cotisationId: number): Observable<{ success: boolean; data: unknown }> {

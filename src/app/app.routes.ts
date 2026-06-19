@@ -57,6 +57,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/cotisations/cotisations.component').then(m => m.CotisationsComponent),
       },
+      {
+        path: 'cotisations/encaisser',
+        loadComponent: () =>
+          import('./features/cotisations/encaisser/encaisser-cotisation.component').then(
+            m => m.EncaisserCotisationComponent,
+          ),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },

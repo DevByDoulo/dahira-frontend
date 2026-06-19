@@ -27,18 +27,56 @@
         <h2 class="text-3xl font-bold text-primary">Cotisations</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">Gérez et validez les paiements des membres du Dahira</p>
       </div>
-      <button
-        class="flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
+      <a
+        routerLink="/cotisations/encaisser"
+        class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-sm flex-shrink-0"
       >
-        <span class="material-symbols-outlined text-xl">add</span>
+        <span class="material-symbols-outlined text-xl">add_card</span>
         Enregistrer un paiement
-      </button>
+      </a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Total collecté</p>
+          <p class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalCollecte) }}</p>
+        </div>
+      </div>
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-yellow-700" style="font-variation-settings: 'FILL' 1;">pending</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">En attente</p>
+          <p class="text-xl font-bold text-on-surface mt-0.5">
+            {{ nombreEnAttente }}
+            <span class="text-sm font-medium text-on-surface-muted">cotisation{{ nombreEnAttente > 1 ? 's' : '' }}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Ce mois</p>
+          <p class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalMois) }}</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- Barre de filtres -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
-      <!-- Tabs + filtre statut -->
       <div class="flex items-center gap-3 flex-wrap">
 
         <!-- Toggle Toutes / En attente -->
@@ -71,7 +109,7 @@
           <select
             [(ngModel)]="statutFilter"
             (ngModelChange)="onFilterChange()"
-            class="appearance-none bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-on-surface-variant focus:ring-2 focus:ring-secondary/20 outline-none cursor-pointer shadow-sm"
+            class="appearance-none bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-on-surface-variant outline-none cursor-pointer shadow-sm"
           >
             <option value="">Tous les statuts</option>
             <option value="approved">Validé</option>
@@ -84,14 +122,14 @@
 
       <!-- Recherche -->
       <div class="relative">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-muted text-lg pointer-events-none">search</span>
         <input
           type="text"
           [(ngModel)]="searchQuery"
           (ngModelChange)="onFilterChange()"
           placeholder="Rechercher un membre..."
-          class="bg-surface-container-low border-none rounded-full pl-5 pr-11 py-2.5 text-sm w-64 focus:ring-2 focus:ring-secondary/20 transition-all outline-none"
+          class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl pl-11 pr-5 py-2.5 text-sm w-64 outline-none shadow-sm"
         />
-        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-muted text-lg">search</span>
       </div>
     </div>
 
@@ -100,7 +138,7 @@
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
+            <tr class="bg-surface-container-low/60 border-b border-outline-variant/20">
               <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Membre</th>
               <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
               <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Méthode</th>
@@ -113,49 +151,71 @@
 
             @if (paginated.length === 0) {
               <tr>
-                <td colspan="6" class="px-6 py-14 text-center">
-                  <span class="material-symbols-outlined text-4xl block mb-2 text-outline">payments</span>
-                  <p class="text-sm text-on-surface-muted">Aucune cotisation trouvée</p>
+                <td colspan="6" class="px-6 py-20 text-center">
+                  <div class="flex flex-col items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center">
+                      <span class="material-symbols-outlined text-3xl text-outline">payments</span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-on-surface">Aucune cotisation trouvée</p>
+                      <p class="text-sm text-on-surface-muted mt-1">
+                        @if (searchQuery || statutFilter) {
+                          Modifiez vos filtres pour voir plus de résultats.
+                        } @else {
+                          Commencez par enregistrer le premier paiement.
+                        }
+                      </p>
+                    </div>
+                    @if (!searchQuery && !statutFilter) {
+                      <a
+                        routerLink="/cotisations/encaisser"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+                      >
+                        <span class="material-symbols-outlined text-lg">add_card</span>
+                        Enregistrer un paiement
+                      </a>
+                    }
+                  </div>
                 </td>
               </tr>
             }
 
             @for (cotisation of paginated; track cotisation.id) {
-              <tr class="hover:bg-surface-container-low/30 transition-colors group">
+              <tr class="hover:bg-surface-container-low/40 transition-colors group">
 
                 <!-- Membre -->
-                <td class="px-6 py-5">
+                <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold flex-shrink-0">
                       {{ initiales(cotisation) }}
                     </div>
                     <div>
                       <p class="font-semibold text-sm text-on-surface">{{ cotisation.prenom }} {{ cotisation.nom }}</p>
-                      <p class="text-xs text-on-surface-muted capitalize">{{ cotisation.type ?? '—' }}</p>
+                      <p class="text-xs text-on-surface-muted">{{ formatDate(cotisation.created_at) }}</p>
                     </div>
                   </div>
                 </td>
 
                 <!-- Montant -->
-                <td class="px-6 py-5">
+                <td class="px-6 py-4">
                   <span class="font-extrabold text-sm text-primary">{{ formatMontant(cotisation.montant) }}</span>
                 </td>
 
                 <!-- Méthode -->
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-2 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-lg">{{ modeIcon(cotisation.mode_paiement) }}</span>
-                    <span class="text-sm font-medium">{{ modeLabel(cotisation.mode_paiement) }}</span>
+                <td class="px-6 py-4">
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-lg text-on-surface-variant">
+                    <span class="material-symbols-outlined text-base">{{ modeIcon(cotisation.mode_paiement) }}</span>
+                    <span class="text-xs font-medium">{{ modeLabel(cotisation.mode_paiement) }}</span>
                   </div>
                 </td>
 
-                <!-- Date -->
-                <td class="px-6 py-5 text-sm text-on-surface-muted font-medium">
+                <!-- Date séance -->
+                <td class="px-6 py-4 text-sm text-on-surface-muted font-medium whitespace-nowrap">
                   {{ formatDate(cotisation.date_seance) }}
                 </td>
 
                 <!-- Statut -->
-                <td class="px-6 py-5">
+                <td class="px-6 py-4">
                   @if (cotisation.statut === 'approved') {
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">
                       <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
@@ -163,7 +223,7 @@
                     </span>
                   } @else if (cotisation.statut === 'pending') {
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                      <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
                       En attente
                     </span>
                   } @else {
@@ -175,7 +235,7 @@
                 </td>
 
                 <!-- Actions -->
-                <td class="px-6 py-5 text-right">
+                <td class="px-6 py-4 text-right">
                   @if (cotisation.statut === 'pending') {
                     <div class="flex items-center justify-end gap-2">
                       <button
@@ -186,7 +246,7 @@
                       </button>
                       <button
                         (click)="openModal(cotisation)"
-                        class="bg-primary/5 text-primary px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-primary hover:text-on-primary transition-all active:scale-95"
+                        class="bg-primary text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold hover:opacity-90 transition-all active:scale-95"
                       >
                         Valider
                       </button>
@@ -279,41 +339,6 @@
           </div>
         }
       </div>
-    </div>
-
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Total collecté</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalCollecte) }}</h3>
-        </div>
-      </div>
-
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-yellow-700" style="font-variation-settings: 'FILL' 1;">pending</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">En attente</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ nombreEnAttente }} cotisation{{ nombreEnAttente > 1 ? 's' : '' }}</h3>
-        </div>
-      </div>
-
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Ce mois</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalMois) }}</h3>
-        </div>
-      </div>
-
     </div>
 
   </div>

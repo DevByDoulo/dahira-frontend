@@ -1,0 +1,416 @@
+<!-- Toast succès / erreur -->
+@if (toast) {
+  <div
+    class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-xl text-sm font-semibold transition-all"
+    [class]="toast.type === 'success'
+      ? 'bg-secondary-container text-on-secondary-container'
+      : 'bg-error-container text-on-error-container'"
+  >
+    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">
+      {{ toast.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    {{ toast.message }}
+  </div>
+}
+
+<div class="px-16 py-10 max-w-screen-xl mx-auto">
+
+  <!-- Breadcrumb + titre -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 text-sm text-on-surface-muted mb-2">
+      <a routerLink="/cotisations" class="hover:text-primary transition-colors">Cotisations</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <span class="text-primary font-bold">Encaisser</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <a
+        routerLink="/cotisations"
+        class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
+        title="Retour aux cotisations"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2 class="text-3xl font-bold text-primary">Encaisser une cotisation</h2>
+    </div>
+  </div>
+
+  <!-- Erreur globale -->
+  @if (errorMessage) {
+    <div class="flex items-center gap-3 px-4 py-3 mb-6 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+      <span class="material-symbols-outlined text-xl flex-shrink-0">error</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Grille bento -->
+  <div class="grid grid-cols-12 gap-6">
+
+    <!-- ── Formulaire principal ── -->
+    <section class="col-span-12 lg:col-span-8">
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        novalidate
+        class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-10 space-y-8"
+      >
+
+        <!-- Recherche membre -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="memberSearch">
+            Membre <span class="text-error">*</span>
+          </label>
+
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">person_search</span>
+            <input
+              id="memberSearch"
+              type="text"
+              [(ngModel)]="searchQuery"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="onSearchInput()"
+              (focus)="showDropdown = true"
+              (blur)="onSearchBlur()"
+              placeholder="Rechercher un membre par nom..."
+              [class]="membre_id.invalid && membre_id.touched
+                ? 'w-full pl-12 pr-10 py-4 bg-surface rounded-xl border border-error outline-none transition-all'
+                : 'w-full pl-12 pr-10 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all'"
+            />
+            @if (membreSelectionne) {
+              <button
+                type="button"
+                (click)="effacerMembre()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl">close</span>
+              </button>
+            }
+
+            <!-- Dropdown suggestions -->
+            @if (showDropdown && membresFiltres.length > 0) {
+              <div class="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-outline-variant/30 z-10 overflow-hidden">
+                @for (m of membresFiltres; track m.id) {
+                  <div
+                    (mousedown)="selectionnerMembre(m)"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer border-b border-outline-variant/10 last:border-0"
+                  >
+                    @if (m.photo_url) {
+                      <img
+                        [src]="m.photo_url"
+                        [alt]="m.prenom + ' ' + m.nom"
+                        class="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                      />
+                    } @else {
+                      <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
+                        {{ m.prenom[0] }}{{ m.nom[0] }}
+                      </div>
+                    }
+                    <div>
+                      <p class="font-semibold text-sm text-on-surface">{{ m.prenom }} {{ m.nom }}</p>
+                      <p class="text-xs text-on-surface-variant">
+                        {{ m.telephone ?? 'Pas de téléphone' }}
+                        &bull;
+                        <span [class]="m.statut_cotisation === 'a_jour' ? 'text-secondary font-medium' : 'text-error font-medium'">
+                          {{ m.statut_cotisation === 'a_jour' ? 'À jour' : 'En retard' }}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (showDropdown && !chargementMembres && membresFiltres.length === 0 && searchQuery.trim()) {
+              <div class="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-outline-variant/30 z-10 p-4 text-sm text-on-surface-muted text-center">
+                Aucun membre trouvé pour "{{ searchQuery }}"
+              </div>
+            }
+          </div>
+
+          @if (membre_id.invalid && membre_id.touched) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-base">error</span>
+              Veuillez sélectionner un membre.
+            </p>
+          }
+
+          @if (membreSelectionne) {
+            <div class="flex items-center gap-3 mt-1 px-4 py-3 bg-surface-container rounded-xl border border-outline-variant/30">
+              @if (membreSelectionne.photo_url) {
+                <img
+                  [src]="membreSelectionne.photo_url"
+                  [alt]="membreSelectionne.prenom + ' ' + membreSelectionne.nom"
+                  class="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                />
+              } @else {
+                <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  {{ membreSelectionne.prenom[0] }}{{ membreSelectionne.nom[0] }}
+                </div>
+              }
+              <div class="flex-1">
+                <p class="font-semibold text-sm text-on-surface">{{ membreSelectionne.prenom }} {{ membreSelectionne.nom }}</p>
+                <p class="text-xs text-on-surface-variant">{{ membreSelectionne.telephone ?? '—' }}</p>
+              </div>
+              <span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            </div>
+          }
+        </div>
+
+        <!-- Montant + Séance -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Montant -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="montant">
+              Montant (FCFA) <span class="text-error">*</span>
+            </label>
+            <div class="relative">
+              <input
+                id="montant"
+                type="number"
+                formControlName="montant"
+                placeholder="0"
+                min="1"
+                [class]="montant.invalid && montant.touched
+                  ? 'w-full pl-4 pr-14 py-4 bg-surface rounded-xl border border-error outline-none transition-all'
+                  : 'w-full pl-4 pr-14 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all'"
+              />
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">XOF</span>
+            </div>
+            <!-- Aperçu formaté en temps réel -->
+            @if (montantFormatePreview) {
+              <p class="text-xs text-secondary font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                {{ montantFormatePreview }}
+              </p>
+            }
+            @if (montant.invalid && montant.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                Montant invalide (minimum 1 FCFA).
+              </p>
+            }
+          </div>
+
+          <!-- Séance -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="seance_id">
+              Séance concernée <span class="text-error">*</span>
+            </label>
+
+            @if (!chargementSeances && seances.length === 0) {
+              <!-- État vide : aucune séance disponible -->
+              <div class="flex items-start gap-3 px-4 py-4 bg-error-container/40 rounded-xl border border-error/20">
+                <span class="material-symbols-outlined text-error flex-shrink-0">calendar_today</span>
+                <div>
+                  <p class="text-sm font-medium text-on-surface">Aucune séance disponible</p>
+                  <a
+                    routerLink="/seances/creer"
+                    class="text-xs text-primary font-semibold hover:underline inline-flex items-center gap-1 mt-0.5"
+                  >
+                    Créer une séance
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            } @else {
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">calendar_month</span>
+                <select
+                  id="seance_id"
+                  formControlName="seance_id"
+                  [class]="seance_id.invalid && seance_id.touched
+                    ? 'w-full pl-12 pr-4 py-4 bg-surface rounded-xl border border-error outline-none appearance-none transition-all'
+                    : 'w-full pl-12 pr-4 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none appearance-none transition-all'"
+                >
+                  <option [ngValue]="null" disabled>
+                    {{ chargementSeances ? 'Chargement…' : 'Choisir une séance…' }}
+                  </option>
+                  @for (s of seances; track s.id) {
+                    <option [value]="s.id">
+                      {{ formatDateSeance(s) }} — {{ typeSeanceLabel(s.type) }}
+                    </option>
+                  }
+                </select>
+              </div>
+              @if (seance_id.invalid && seance_id.touched) {
+                <p class="text-xs text-error flex items-center gap-1">
+                  <span class="material-symbols-outlined text-base">error</span>
+                  Veuillez choisir une séance.
+                </p>
+              }
+            }
+          </div>
+
+        </div>
+
+        <!-- Mode de paiement -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-on-surface-variant">Mode de paiement <span class="text-error">*</span></label>
+          <div class="grid grid-cols-3 gap-3">
+            @for (mode of modes; track mode.value) {
+              <button
+                type="button"
+                (click)="setMode(mode.value)"
+                [class]="form.get('mode_paiement')!.value === mode.value
+                  ? 'flex flex-col items-center gap-2 p-4 border-2 border-primary bg-surface-container-high rounded-xl transition-all text-primary'
+                  : 'flex flex-col items-center gap-2 p-4 border border-outline-variant rounded-xl bg-surface hover:border-primary/40 hover:bg-surface-container-low transition-all text-on-surface-variant'"
+              >
+                <span class="material-symbols-outlined text-2xl">{{ mode.icon }}</span>
+                <span class="text-sm font-medium">{{ mode.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="note">
+            Notes / Remarques
+            <span class="text-on-surface-muted text-xs font-normal">(optionnel)</span>
+          </label>
+          <textarea
+            id="note"
+            formControlName="note"
+            rows="4"
+            placeholder="Détails supplémentaires sur le versement…"
+            class="w-full px-4 py-3 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all resize-none text-sm"
+          ></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 border-t border-outline-variant/30">
+          <button
+            type="button"
+            (click)="annuler()"
+            [disabled]="isSubmitting"
+            class="order-2 sm:order-1 px-8 py-3 text-secondary font-bold hover:bg-secondary/5 rounded-xl transition-colors active:scale-95 disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting"
+            class="order-1 sm:order-2 w-full sm:w-auto px-12 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-3 text-base"
+          >
+            @if (isSubmitting) {
+              <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
+              Traitement…
+            } @else {
+              <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+              Enregistrer le paiement
+            }
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- ── Barre latérale ── -->
+    <aside class="col-span-12 lg:col-span-4 space-y-6">
+
+      <!-- Aperçu du Dahira -->
+      <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-sm">
+        <h3 class="text-base font-bold text-on-surface mb-4">Aperçu du Dahira</h3>
+        <div class="space-y-3">
+
+          <!-- Total collecté -->
+          <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container flex-shrink-0">
+                <span class="material-symbols-outlined text-base">trending_up</span>
+              </div>
+              <span class="text-sm text-on-surface-variant">Total collecté</span>
+            </div>
+            @if (chargementStats) {
+              <div class="h-4 w-24 bg-surface-container rounded animate-pulse"></div>
+            } @else {
+              <span class="font-bold text-sm text-on-surface">{{ totalMensuelFormate }}</span>
+            }
+          </div>
+
+          <!-- Membres actifs -->
+          <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                <span class="material-symbols-outlined text-base">group</span>
+              </div>
+              <span class="text-sm text-on-surface-variant">Membres actifs</span>
+            </div>
+            @if (chargementMembres) {
+              <div class="h-4 w-8 bg-surface-container rounded animate-pulse"></div>
+            } @else {
+              <span class="font-bold text-sm text-on-surface">{{ membresActifs }}</span>
+            }
+          </div>
+
+          <!-- Membres à jour -->
+          @if (!chargementStats && stats) {
+            <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-secondary-container/50 flex items-center justify-center text-secondary flex-shrink-0">
+                  <span class="material-symbols-outlined text-base">check_circle</span>
+                </div>
+                <span class="text-sm text-on-surface-variant">À jour</span>
+              </div>
+              <span class="font-bold text-sm text-secondary">{{ stats.membres_a_jour }}</span>
+            </div>
+          }
+
+        </div>
+      </div>
+
+      <!-- Guide de sécurité -->
+      <div class="bg-primary-container text-on-primary-container rounded-xl p-6 shadow-sm relative overflow-hidden">
+        <div class="relative z-10">
+          <h3 class="text-base font-bold mb-3">Guide de sécurité</h3>
+          <p class="text-sm leading-relaxed opacity-80">
+            Vérifiez l'identité du membre avant d'enregistrer tout paiement en espèces. Un reçu numérique sera disponible après validation.
+          </p>
+        </div>
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+      </div>
+
+      <!-- Horloge / Date d'opération -->
+      <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1">Date d'opération</p>
+          <p class="font-bold text-sm">{{ currentDate || '—' }}</p>
+        </div>
+        <p class="text-2xl font-black tabular-nums">{{ currentTime || '00:00' }}</p>
+      </div>
+
+      <!-- Récapitulatif dynamique -->
+      @if (membreSelectionne || montant.value || seance_id.value) {
+        <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-sm space-y-3">
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Récapitulatif</p>
+
+          @if (membreSelectionne) {
+            <div class="flex items-center gap-2 text-sm">
+              <span class="material-symbols-outlined text-base text-secondary">person</span>
+              <span class="font-medium text-on-surface">{{ membreSelectionne.prenom }} {{ membreSelectionne.nom }}</span>
+            </div>
+          }
+          @if (montantFormatePreview) {
+            <div class="flex items-center gap-2 text-sm">
+              <span class="material-symbols-outlined text-base text-secondary">payments</span>
+              <span class="font-medium text-on-surface">{{ montantFormatePreview }}</span>
+            </div>
+          }
+          @if (form.get('mode_paiement')!.value) {
+            <div class="flex items-center gap-2 text-sm">
+              <span class="material-symbols-outlined text-base text-secondary">credit_card</span>
+              <span class="text-on-surface-variant">
+                @switch (form.get('mode_paiement')!.value) {
+                  @case ('especes') { Espèces }
+                  @case ('wave') { Wave }
+                  @case ('orange_money') { Orange Money }
+                }
+              </span>
+            </div>
+          }
+        </div>
+      }
+
+    </aside>
+  </div>
+</div>
