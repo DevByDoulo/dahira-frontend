@@ -55,10 +55,13 @@
         </div>
 
         <!-- Bouton Ajouter -->
-        <button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-semibold text-sm hover:shadow-md active:scale-95 transition-all">
+        <a
+          routerLink="/membres/ajouter"
+          class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-semibold text-sm hover:shadow-md active:scale-95 transition-all"
+        >
           <span class="material-symbols-outlined text-xl">person_add</span>
           <span>Ajouter un membre</span>
-        </button>
+        </a>
       </div>
 
       <!-- Tableau -->
@@ -92,7 +95,7 @@
                   <div class="flex items-center gap-3">
                     @if (membre.photo_url) {
                       <img
-                        [src]="membre.photo_url"
+                        [src]="'http://localhost:3000' + membre.photo_url"
                         [alt]="membre.prenom + ' ' + membre.nom"
                         class="w-10 h-10 rounded-full object-cover flex-shrink-0"
                       />

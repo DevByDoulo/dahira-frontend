@@ -1,0 +1,267 @@
+<div class="p-10 max-w-4xl mx-auto space-y-6">
+
+  <!-- En-tête -->
+  <div class="flex items-center gap-4">
+    <a
+      routerLink="/membres"
+      class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
+      title="Retour à la liste"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+      <h2 class="text-3xl font-bold text-primary">Ajouter un membre</h2>
+      <p class="text-sm text-on-surface-muted mt-0.5">Créez une nouvelle fiche pour un membre de votre Dahira.</p>
+    </div>
+  </div>
+
+  <!-- Message d'erreur global -->
+  @if (errorMessage) {
+    <div class="flex items-center gap-3 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+      <span class="material-symbols-outlined text-xl flex-shrink-0">error</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Carte formulaire -->
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/30">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="p-10">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- ── Colonne gauche : infos personnelles ── -->
+        <div class="space-y-6">
+
+          <!-- Nom -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="nom">
+              Nom <span class="text-error">*</span>
+            </label>
+            <input
+              id="nom"
+              type="text"
+              formControlName="nom"
+              placeholder="Ex : Diop"
+              [class]="nom.invalid && nom.touched
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+            />
+            @if (nom.invalid && nom.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                {{ nom.hasError('required') ? 'Le nom est obligatoire.' : 'Minimum 2 caractères.' }}
+              </p>
+            }
+          </div>
+
+          <!-- Prénom -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="prenom">
+              Prénom <span class="text-error">*</span>
+            </label>
+            <input
+              id="prenom"
+              type="text"
+              formControlName="prenom"
+              placeholder="Ex : Moussa"
+              [class]="prenom.invalid && prenom.touched
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+            />
+            @if (prenom.invalid && prenom.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                {{ prenom.hasError('required') ? 'Le prénom est obligatoire.' : 'Minimum 2 caractères.' }}
+              </p>
+            }
+          </div>
+
+          <!-- Date d'adhésion -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="date_adhesion">
+              Date d'adhésion
+            </label>
+            <input
+              id="date_adhesion"
+              type="date"
+              formControlName="date_adhesion"
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+          <!-- Responsabilités -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="responsabilites">
+              Responsabilités
+            </label>
+            <input
+              id="responsabilites"
+              type="text"
+              formControlName="responsabilites"
+              placeholder="Ex : Trésorier, Secrétaire..."
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+        </div>
+
+        <!-- ── Colonne droite : contact & photo ── -->
+        <div class="space-y-6">
+
+          <!-- Téléphone principal -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="telephone">
+              Téléphone
+            </label>
+            <input
+              id="telephone"
+              type="tel"
+              formControlName="telephone"
+              placeholder="77 123 45 67"
+              (input)="onPhoneInput($event, 'telephone')"
+              [class]="phoneErrorMessage
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+            />
+            @if (phoneErrorMessage) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                {{ phoneErrorMessage }}
+              </p>
+            }
+          </div>
+
+          <!-- Téléphone secours -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="telephone_secours">
+              Téléphone secours
+            </label>
+            <input
+              id="telephone_secours"
+              type="tel"
+              formControlName="telephone_secours"
+              placeholder="76 987 65 43"
+              (input)="onPhoneInput($event, 'telephone_secours')"
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+          <!-- Zone upload photo -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant">Photo du membre</label>
+
+            <!-- Input caché, référencé par #fileInput -->
+            <input
+              #fileInput
+              type="file"
+              accept="image/jpeg,image/jpg,image/png"
+              class="hidden"
+              (change)="onFileChange($event)"
+            />
+
+            <!-- Aperçu si une photo est sélectionnée -->
+            @if (photoPreviewUrl) {
+              <div class="relative rounded-xl overflow-hidden border border-outline-variant/50 group">
+                <img
+                  [src]="photoPreviewUrl"
+                  alt="Aperçu de la photo"
+                  class="w-full h-48 object-cover"
+                />
+                <!-- Overlay au survol -->
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    (click)="fileInput.click()"
+                    class="px-3 py-2 bg-white text-on-surface rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:bg-surface-container-low transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-base">edit</span>
+                    Changer
+                  </button>
+                  <button
+                    type="button"
+                    (click)="removePhoto(fileInput)"
+                    class="px-3 py-2 bg-error text-on-error rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 transition-opacity"
+                  >
+                    <span class="material-symbols-outlined text-base">delete</span>
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <!-- Nom du fichier -->
+              <p class="text-xs text-on-surface-muted flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-secondary">check_circle</span>
+                {{ photoFile?.name }}
+              </p>
+            } @else {
+              <!-- Zone de dépôt vide -->
+              <button
+                type="button"
+                (click)="fileInput.click()"
+                class="border-2 border-dashed border-outline-soft rounded-xl p-8 flex flex-col items-center justify-center gap-2 hover:border-secondary hover:bg-secondary/5 transition-all w-full group"
+              >
+                <span class="material-symbols-outlined text-outline group-hover:text-secondary text-4xl">
+                  add_a_photo
+                </span>
+                <div class="text-center">
+                  <p class="text-sm font-medium text-on-surface">Cliquez pour téléverser</p>
+                  <p class="text-xs text-on-surface-muted mt-0.5">JPG ou PNG · Max 5 Mo</p>
+                </div>
+              </button>
+            }
+
+            <!-- Erreur photo -->
+            @if (photoErrorMessage) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                {{ photoErrorMessage }}
+              </p>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="mt-10 flex items-center justify-end gap-4 pt-8 border-t border-outline-variant/30">
+        <button
+          type="button"
+          (click)="annuler()"
+          [disabled]="isSubmitting"
+          class="px-6 py-3 text-sm font-semibold text-secondary hover:bg-secondary/5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="px-8 py-3 bg-primary text-on-primary text-sm font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all disabled:opacity-60 flex items-center gap-2"
+        >
+          @if (isSubmitting) {
+            <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
+            Enregistrement…
+          } @else {
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">save</span>
+            Enregistrer
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Conseil -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-secondary-container p-5 rounded-xl flex items-center gap-4">
+      <div class="w-10 h-10 rounded-full bg-on-secondary-container/10 flex items-center justify-center text-on-secondary-container flex-shrink-0">
+        <span class="material-symbols-outlined">info</span>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Conseil</p>
+        <p class="text-xs text-on-secondary-container mt-0.5">
+          Les champs Nom et Prénom sont obligatoires. La photo est uploadée après la création du membre.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -21,6 +21,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/membres/membres.component').then(m => m.MembresComponent),
       },
+      {
+        path: 'membres/ajouter',
+        loadComponent: () =>
+          import('./features/membres/ajouter-membre/ajouter-membre.component').then(
+            m => m.AjouterMembreComponent,
+          ),
+      },
       // Autres routes protégées à ajouter ici : seances, cotisations, etc.
     ],
   },

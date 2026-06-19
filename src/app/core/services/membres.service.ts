@@ -16,6 +16,21 @@ export interface Membre {
   statut_cotisation: 'a_jour' | 'en_retard';
 }
 
+export interface CreateMembrePayload {
+  nom: string;
+  prenom: string;
+  telephone?: string;
+  telephone_secours?: string;
+  photo_url?: string;
+  date_adhesion?: string;
+  responsabilites?: string;
+}
+
+export interface MembreResponse {
+  success: boolean;
+  data: Membre;
+}
+
 export interface MembresResponse {
   success: boolean;
   data: Membre[];
@@ -29,5 +44,18 @@ export class MembresService {
 
   getMembres(): Observable<MembresResponse> {
     return this.http.get<MembresResponse>(`${this.apiUrl}/membres`);
+  }
+
+  createMembre(payload: CreateMembrePayload): Observable<MembreResponse> {
+    return this.http.post<MembreResponse>(`${this.apiUrl}/membres`, payload);
+  }
+
+  uploadPhoto(membreId: number, file: File): Observable<{ success: boolean; data: { photo_url: string; thumbnail_url: string } }> {
+    const fd = new FormData();
+    fd.append('photo', file);
+    return this.http.post<{ success: boolean; data: { photo_url: string; thumbnail_url: string } }>(
+      `${this.apiUrl}/photos/membres/${membreId}`,
+      fd,
+    );
   }
 }
