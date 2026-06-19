@@ -1,0 +1,161 @@
+<div class="p-10 max-w-3xl mx-auto space-y-6">
+
+  <!-- En-tête -->
+  <div class="flex items-center gap-4">
+    <a
+      routerLink="/seances"
+      class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
+      title="Retour à la liste"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+      <h2 class="text-3xl font-bold text-primary">Créer une séance</h2>
+      <p class="text-sm text-on-surface-variant mt-0.5">Planifiez une nouvelle rencontre pour votre Dahira.</p>
+    </div>
+  </div>
+
+  <!-- Erreur globale -->
+  @if (errorMessage) {
+    <div class="flex items-center gap-3 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+      <span class="material-symbols-outlined text-xl flex-shrink-0">error</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Formulaire -->
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="p-10 space-y-8">
+
+      <!-- ── Informations principales ── -->
+      <div>
+        <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-5">Informations principales</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Date -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="date_seance">
+              Date <span class="text-error">*</span>
+            </label>
+            <input
+              id="date_seance"
+              type="date"
+              formControlName="date_seance"
+              [class]="date_seance.invalid && date_seance.touched
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+            />
+            @if (date_seance.invalid && date_seance.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                La date est obligatoire.
+              </p>
+            }
+          </div>
+
+          <!-- Type -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="type">
+              Type <span class="text-error">*</span>
+            </label>
+            <div class="relative">
+              <select
+                id="type"
+                formControlName="type"
+                [class]="type.invalid && type.touched
+                  ? 'w-full h-12 px-4 pr-10 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm appearance-none bg-surface-container-lowest'
+                  : 'w-full h-12 px-4 pr-10 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm appearance-none bg-surface-container-lowest'"
+              >
+                <option value="" disabled>Sélectionner un type</option>
+                @for (t of types; track t.value) {
+                  <option [value]="t.value">{{ t.label }}</option>
+                }
+              </select>
+              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+            </div>
+            @if (type.invalid && type.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                Le type est obligatoire.
+              </p>
+            }
+          </div>
+
+
+          <!-- Thème -->
+          <div class="flex flex-col gap-1.5 md:col-span-2">
+            <label class="text-sm font-medium text-on-surface-variant" for="theme">Thème</label>
+            <input
+              id="theme"
+              type="text"
+              formControlName="theme"
+              placeholder="Ex : Lecture du Saint Coran, Réunion de coordination..."
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <div class="border-t border-outline-variant/30"></div>
+
+      <!-- ── Lieu & horaires ── -->
+      <div>
+        <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-5">Lieu & horaires</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Lieu -->
+          <div class="flex flex-col gap-1.5 md:col-span-3">
+            <label class="text-sm font-medium text-on-surface-variant" for="lieu">Lieu</label>
+            <input
+              id="lieu"
+              type="text"
+              formControlName="lieu"
+              placeholder="Ex : Grande Mosquée, Siège Dahira..."
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+          <!-- Heure -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="heure">Heure</label>
+            <input
+              id="heure"
+              type="time"
+              formControlName="heure"
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant/30">
+        <button
+          type="button"
+          (click)="annuler()"
+          [disabled]="isSubmitting"
+          class="px-6 py-3 text-sm font-semibold text-secondary hover:bg-secondary/5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="px-8 py-3 bg-primary text-on-primary text-sm font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all disabled:opacity-60 flex items-center gap-2"
+        >
+          @if (isSubmitting) {
+            <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
+            Enregistrement…
+          } @else {
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">event_available</span>
+            Créer la séance
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

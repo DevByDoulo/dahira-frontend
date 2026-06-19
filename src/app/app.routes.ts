@@ -28,7 +28,17 @@ export const routes: Routes = [
             m => m.AjouterMembreComponent,
           ),
       },
-      // Autres routes protégées à ajouter ici : seances, cotisations, etc.
+      {
+        path: 'seances',
+        loadComponent: () =>
+          import('./features/seances/seances.component').then(m => m.SeancesComponent),
+      },
+      {
+        path: 'seances/creer',
+        loadComponent: () =>
+          import('./features/seances/creer-seance/creer-seance.component').then(m => m.CreerSeanceComponent),
+      },
+      // Autres routes protégées à ajouter ici : cotisations, etc.
     ],
   },
   { path: '**', redirectTo: 'login' },
