@@ -1,19 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { SeancesService, Seance } from '../../core/services/seances.service';
+import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 
 type StatutFilter = '' | 'a_venir' | 'en_cours' | 'termine';
 
 @Component({
   selector: 'app-seances',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonTableComponent],
   templateUrl: './seances.component.html',
 })
 export class SeancesComponent implements OnInit {
   isLoading = true;
+  errorMessage = '';
   seances: Seance[] = [];
 
   dateDebut = '';
@@ -26,16 +29,47 @@ export class SeancesComponent implements OnInit {
   private readonly today = new Date();
   private readonly todayStr = this.today.toISOString().split('T')[0];
 
-  constructor(private seancesService: SeancesService) {}
+  constructor(
+    private seancesService: SeancesService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
+    // Restaurer les filtres depuis l'URL, puis charger
+    this.route.queryParams.pipe(take(1)).subscribe((params) => {
+      this.dateDebut    = params['debut']  ?? '';
+      this.dateFin      = params['fin']    ?? '';
+      this.statutFilter = (params['statut'] ?? '') as StatutFilter;
+      this.page         = parseInt(params['page'] ?? '1', 10) || 1;
+      this.chargerSeances();
+    });
+  }
+
+  chargerSeances(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
     this.seancesService.getSeances().subscribe({
       next: (res) => {
         if (res.success) this.seances = res.data;
         this.isLoading = false;
       },
       error: () => {
+        this.errorMessage = 'Impossible de charger les séances. Vérifiez votre connexion.';
         this.isLoading = false;
+      },
+    });
+  }
+
+  cloturerSeance(seance: Seance): void {
+    if (!confirm(`Clôturer la séance "${this.getTitre(seance)}" ? Cette action est irréversible.`)) return;
+
+    this.seancesService.cloturerSeance(seance.id).subscribe({
+      next: (res) => {
+        seance.cloturee = res.data.cloturee;
+      },
+      error: () => {
+        alert('Une erreur est survenue. Veuillez réessayer.');
       },
     });
   }
@@ -63,6 +97,7 @@ export class SeancesComponent implements OnInit {
 
   onFilterChange(): void {
     this.page = 1;
+    this.syncUrl();
   }
 
   resetFiltres(): void {
@@ -70,6 +105,21 @@ export class SeancesComponent implements OnInit {
     this.dateFin = '';
     this.statutFilter = '';
     this.page = 1;
+    this.syncUrl();
+  }
+
+  private syncUrl(): void {
+    const queryParams: Record<string, string | number | null> = {};
+    if (this.dateDebut)    queryParams['debut']  = this.dateDebut;
+    if (this.dateFin)      queryParams['fin']    = this.dateFin;
+    if (this.statutFilter) queryParams['statut'] = this.statutFilter;
+    if (this.page > 1)     queryParams['page']   = this.page;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true,
+    });
   }
 
   // ── Pagination ──────────────────────────────────────────────────────────────
@@ -88,7 +138,10 @@ export class SeancesComponent implements OnInit {
   }
 
   setPage(p: number): void {
-    if (p >= 1 && p <= this.totalPages) this.page = p;
+    if (p >= 1 && p <= this.totalPages) {
+      this.page = p;
+      this.syncUrl();
+    }
   }
 
   get rangeLabel(): string {
@@ -121,7 +174,7 @@ export class SeancesComponent implements OnInit {
 
   typeLabel(type: Seance['type']): string {
     const labels: Record<Seance['type'], string> = {
-      hebdomadaire: 'Séance hebdomadaire',
+      hebdomadaire: 'Dahira',
       mensuelle:    'Séance mensuelle',
       autre:        'Autre séance',
     };

@@ -34,9 +34,23 @@ export const routes: Routes = [
           import('./features/seances/seances.component').then(m => m.SeancesComponent),
       },
       {
+        path: 'membres/:id/modifier',
+        loadComponent: () =>
+          import('./features/membres/modifier-membre/modifier-membre.component').then(
+            m => m.ModifierMembreComponent,
+          ),
+      },
+      {
         path: 'seances/creer',
         loadComponent: () =>
           import('./features/seances/creer-seance/creer-seance.component').then(m => m.CreerSeanceComponent),
+      },
+      {
+        path: 'seances/:id/modifier',
+        loadComponent: () =>
+          import('./features/seances/modifier-seance/modifier-seance.component').then(
+            m => m.ModifierSeanceComponent,
+          ),
       },
       // Autres routes protégées à ajouter ici : cotisations, etc.
     ],

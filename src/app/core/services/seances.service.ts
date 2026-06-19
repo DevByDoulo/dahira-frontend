@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Seance {
   id: number;
@@ -34,7 +35,7 @@ export interface SeancesResponse {
 
 @Injectable({ providedIn: 'root' })
 export class SeancesService {
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -46,5 +47,17 @@ export class SeancesService {
 
   createSeance(payload: CreateSeancePayload): Observable<SeanceResponse> {
     return this.http.post<SeanceResponse>(`${this.apiUrl}/seances`, payload);
+  }
+
+  getSeance(id: number): Observable<SeanceResponse> {
+    return this.http.get<SeanceResponse>(`${this.apiUrl}/seances/${id}`);
+  }
+
+  updateSeance(id: number, payload: CreateSeancePayload): Observable<SeanceResponse> {
+    return this.http.patch<SeanceResponse>(`${this.apiUrl}/seances/${id}`, payload);
+  }
+
+  cloturerSeance(id: number): Observable<SeanceResponse> {
+    return this.http.patch<SeanceResponse>(`${this.apiUrl}/seances/${id}/cloturer`, {});
   }
 }

@@ -95,8 +95,13 @@ export class AjouterMembreComponent implements OnDestroy {
     this.errorMessage = '';
     this.phoneErrorMessage = '';
 
+    const raw = this.form.value as Record<string, string>;
+    // Stocker les téléphones sans espaces
+    if (raw['telephone'])         raw['telephone']         = raw['telephone'].replace(/\s/g, '');
+    if (raw['telephone_secours']) raw['telephone_secours'] = raw['telephone_secours'].replace(/\s/g, '');
+
     const body = Object.fromEntries(
-      Object.entries(this.form.value as Record<string, string>).filter(([, v]) => v !== ''),
+      Object.entries(raw).filter(([, v]) => v !== ''),
     ) as unknown as Parameters<MembresService['createMembre']>[0];
 
     const photoFile = this.photoFile;

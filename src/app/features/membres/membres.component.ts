@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { take } from 'rxjs/operators';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MembresService, Membre } from '../../core/services/membres.service';
+import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 
 @Component({
   selector: 'app-membres',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SkeletonTableComponent],
   templateUrl: './membres.component.html',
 })
 export class MembresComponent implements OnInit {
   isLoading = true;
+  errorMessage = '';
   membres: Membre[] = [];
 
   searchQuery = '';
@@ -20,16 +23,46 @@ export class MembresComponent implements OnInit {
   page = 1;
   readonly pageSize = 10;
 
-  constructor(private membresService: MembresService) {}
+  constructor(
+    private membresService: MembresService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.pipe(take(1)).subscribe((params) => {
+      this.searchQuery  = params['q']      ?? '';
+      this.statutFilter = params['statut'] ?? '';
+      this.page         = parseInt(params['page'] ?? '1', 10) || 1;
+      this.chargerMembres();
+    });
+  }
+
+  chargerMembres(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
     this.membresService.getMembres().subscribe({
       next: (res) => {
         if (res.success) this.membres = res.data;
         this.isLoading = false;
       },
       error: () => {
+        this.errorMessage = 'Impossible de charger les membres. Vérifiez votre connexion.';
         this.isLoading = false;
+      },
+    });
+  }
+
+  desactiverMembre(membre: Membre): void {
+    const action = membre.actif ? 'désactiver' : 'réactiver';
+    if (!confirm(`Voulez-vous ${action} ${membre.prenom} ${membre.nom} ?`)) return;
+
+    this.membresService.desactiverMembre(membre.id).subscribe({
+      next: (res) => {
+        membre.actif = res.data.actif;
+      },
+      error: () => {
+        alert('Une erreur est survenue. Veuillez réessayer.');
       },
     });
   }
@@ -52,10 +85,25 @@ export class MembresComponent implements OnInit {
 
   onSearch(): void {
     this.page = 1;
+    this.syncUrl();
   }
 
   onFilterChange(): void {
     this.page = 1;
+    this.syncUrl();
+  }
+
+  private syncUrl(): void {
+    const queryParams: Record<string, string | number | null> = {};
+    if (this.searchQuery)  queryParams['q']      = this.searchQuery;
+    if (this.statutFilter) queryParams['statut'] = this.statutFilter;
+    if (this.page > 1)     queryParams['page']   = this.page;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true,
+    });
   }
 
   // ── Pagination ──────────────────────────────────────────────────────────────
@@ -74,7 +122,10 @@ export class MembresComponent implements OnInit {
   }
 
   setPage(p: number): void {
-    if (p >= 1 && p <= this.totalPages) this.page = p;
+    if (p >= 1 && p <= this.totalPages) {
+      this.page = p;
+      this.syncUrl();
+    }
   }
 
   // ── KPIs ────────────────────────────────────────────────────────────────────
@@ -96,6 +147,13 @@ export class MembresComponent implements OnInit {
 
   getInitiales(m: Membre): string {
     return `${(m.prenom[0] ?? '').toUpperCase()}${(m.nom[0] ?? '').toUpperCase()}`;
+  }
+
+  formatTelephone(tel: string | null): string {
+    if (!tel) return '—';
+    const d = tel.replace(/\D/g, '');
+    if (d.length !== 9) return tel;
+    return `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 7)} ${d.slice(7, 9)}`;
   }
 
   formatDate(dateStr: string | null): string {

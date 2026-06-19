@@ -15,10 +15,10 @@ export class CreerSeanceComponent {
   isSubmitting = false;
   errorMessage = '';
 
-  readonly types: { value: string; label: string }[] = [
-    { value: 'hebdomadaire', label: 'Hebdomadaire' },
-    { value: 'mensuelle',    label: 'Mensuelle'    },
-    { value: 'autre',        label: 'Autre'        },
+  readonly types = [
+    { value: 'hebdomadaire', label: 'Dahira',        icon: 'menu_book' },
+    { value: 'mensuelle',    label: 'Mensuelle',    icon: 'calendar_month' },
+    { value: 'autre',        label: 'Autre',        icon: 'groups_3' },
   ];
 
   constructor(
@@ -27,16 +27,20 @@ export class CreerSeanceComponent {
     private router: Router,
   ) {
     this.form = this.fb.group({
+      theme:       ['', Validators.required],
+      type:        ['hebdomadaire', Validators.required],
+      precision:   [''],
       date_seance: ['', Validators.required],
-      type:        ['', Validators.required],
-      theme:       [''],
       heure:       [''],
       lieu:        [''],
     });
   }
 
-  get date_seance() { return this.form.get('date_seance')!; }
-  get type()        { return this.form.get('type')!; }
+  get theme()        { return this.form.get('theme')!; }
+  get type()         { return this.form.get('type')!; }
+  get date_seance()  { return this.form.get('date_seance')!; }
+  get precision()    { return this.form.get('precision')!; }
+  get isAutre(): boolean { return this.type.value === 'autre'; }
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -48,6 +52,13 @@ export class CreerSeanceComponent {
     this.errorMessage = '';
 
     const raw = this.form.value as Record<string, string>;
+
+    // Si type = autre et précision renseignée, on l'intègre dans le thème
+    if (raw['type'] === 'autre' && raw['precision']) {
+      raw['theme'] = `${raw['theme']} — ${raw['precision']}`;
+    }
+    delete raw['precision'];
+
     const payload = Object.fromEntries(
       Object.entries(raw).filter(([, v]) => v !== ''),
     ) as unknown as Parameters<SeancesService['createSeance']>[0];

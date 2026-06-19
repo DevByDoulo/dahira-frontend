@@ -1,16 +1,26 @@
-<!-- Skeleton chargement -->
 @if (isLoading) {
-  <div class="p-10 space-y-4 max-w-7xl mx-auto">
-    <div class="h-8 w-64 bg-surface-container rounded-xl animate-pulse"></div>
-    <div class="bg-surface-container-lowest rounded-xl h-16 animate-pulse"></div>
-    @for (_ of [1, 2, 3, 4, 5]; track $index) {
-      <div class="bg-surface-container-lowest rounded-xl h-16 animate-pulse"></div>
-    }
+  <app-skeleton-table [count]="5" />
+}
+
+<!-- État d'erreur -->
+@if (!isLoading && errorMessage) {
+  <div class="p-10 max-w-7xl mx-auto">
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
+      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+      <button
+        (click)="chargerMembres()"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+      >
+        <span class="material-symbols-outlined text-xl">refresh</span>
+        Réessayer
+      </button>
+    </div>
   </div>
 }
 
 <!-- Contenu principal -->
-@if (!isLoading) {
+@if (!isLoading && !errorMessage) {
   <div class="p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- Titre -->
@@ -115,7 +125,7 @@
 
                 <!-- Téléphone -->
                 <td class="px-6 py-4 text-sm text-on-surface-variant">
-                  {{ membre.telephone ?? '—' }}
+                  {{ formatTelephone(membre.telephone) }}
                 </td>
 
                 <!-- Statut -->
@@ -143,21 +153,29 @@
                   <div class="flex items-center justify-end gap-1">
                     <button
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
-                      title="Voir le profil"
+                      title="Voir le profil (bientôt disponible)"
+                      disabled
                     >
-                      <span class="material-symbols-outlined text-xl">visibility</span>
+                      <span class="material-symbols-outlined text-xl opacity-40">visibility</span>
                     </button>
                     <button
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
-                      title="Modifier"
+                      title="Modifier (bientôt disponible)"
+                      disabled
                     >
-                      <span class="material-symbols-outlined text-xl">edit</span>
+                      <span class="material-symbols-outlined text-xl opacity-40">edit</span>
                     </button>
                     <button
-                      class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-lg transition-all"
-                      title="Supprimer"
+                      (click)="desactiverMembre(membre)"
+                      [title]="membre.actif ? 'Désactiver le membre' : 'Réactiver le membre'"
+                      class="p-2 rounded-lg transition-all"
+                      [class]="membre.actif
+                        ? 'text-on-surface-variant hover:text-error hover:bg-error-container'
+                        : 'text-secondary hover:bg-secondary/10'"
                     >
-                      <span class="material-symbols-outlined text-xl">delete</span>
+                      <span class="material-symbols-outlined text-xl">
+                        {{ membre.actif ? 'person_off' : 'person' }}
+                      </span>
                     </button>
                   </div>
                 </td>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Membre {
   id: number;
@@ -38,7 +39,7 @@ export interface MembresResponse {
 
 @Injectable({ providedIn: 'root' })
 export class MembresService {
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -46,14 +47,26 @@ export class MembresService {
     return this.http.get<MembresResponse>(`${this.apiUrl}/membres`);
   }
 
+  getMembre(id: number): Observable<MembreResponse> {
+    return this.http.get<MembreResponse>(`${this.apiUrl}/membres/${id}`);
+  }
+
+  updateMembre(id: number, payload: CreateMembrePayload): Observable<MembreResponse> {
+    return this.http.put<MembreResponse>(`${this.apiUrl}/membres/${id}`, payload);
+  }
+
   createMembre(payload: CreateMembrePayload): Observable<MembreResponse> {
     return this.http.post<MembreResponse>(`${this.apiUrl}/membres`, payload);
   }
 
-  uploadPhoto(membreId: number, file: File): Observable<{ success: boolean; data: { photo_url: string; thumbnail_url: string } }> {
+  desactiverMembre(id: number): Observable<MembreResponse> {
+    return this.http.patch<MembreResponse>(`${this.apiUrl}/membres/${id}/desactiver`, {});
+  }
+
+  uploadPhoto(membreId: number, file: File): Observable<{ success: boolean; data: { photo_url: string } }> {
     const fd = new FormData();
     fd.append('photo', file);
-    return this.http.post<{ success: boolean; data: { photo_url: string; thumbnail_url: string } }>(
+    return this.http.post<{ success: boolean; data: { photo_url: string } }>(
       `${this.apiUrl}/photos/membres/${membreId}`,
       fd,
     );

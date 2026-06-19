@@ -1,15 +1,24 @@
-<!-- Skeleton chargement -->
 @if (isLoading) {
-  <div class="p-10 space-y-4 max-w-7xl mx-auto">
-    <div class="h-8 w-64 bg-surface-container rounded-xl animate-pulse"></div>
-    <div class="bg-surface-container-lowest rounded-xl h-16 animate-pulse"></div>
-    @for (_ of [1, 2, 3, 4, 5]; track $index) {
-      <div class="bg-surface-container-lowest rounded-xl h-16 animate-pulse"></div>
-    }
+  <app-skeleton-table [count]="5" />
+}
+
+@if (!isLoading && errorMessage) {
+  <div class="p-10 max-w-7xl mx-auto">
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
+      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+      <button
+        (click)="chargerSeances()"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+      >
+        <span class="material-symbols-outlined text-xl">refresh</span>
+        Réessayer
+      </button>
+    </div>
   </div>
 }
 
-@if (!isLoading) {
+@if (!isLoading && !errorMessage) {
   <div class="p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
@@ -101,15 +110,16 @@
             }
 
             @for (seance of paginated; track seance.id) {
+              @let statut = getStatut(seance);
               <tr class="hover:bg-surface-container-low/30 transition-colors group">
 
                 <!-- Titre / Thème -->
                 <td class="px-6 py-5">
                   <div class="flex items-center gap-3">
                     <div
-                      [class]="getStatut(seance) === 'termine'
+                      [class]="statut === 'termine'
                         ? 'h-10 w-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0'
-                        : getStatut(seance) === 'en_cours'
+                        : statut === 'en_cours'
                         ? 'h-10 w-10 rounded-lg bg-primary text-on-primary flex items-center justify-center flex-shrink-0'
                         : 'h-10 w-10 rounded-lg bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0'"
                     >
@@ -140,12 +150,12 @@
 
                 <!-- Statut -->
                 <td class="px-6 py-5">
-                  @if (getStatut(seance) === 'termine') {
+                  @if (statut === 'termine') {
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold">
                       <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
                       Terminé
                     </span>
-                  } @else if (getStatut(seance) === 'en_cours') {
+                  } @else if (statut === 'en_cours') {
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
                       <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                       En cours
@@ -163,22 +173,34 @@
                   <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
-                      title="Voir la séance"
+                      title="Voir (bientôt disponible)"
+                      disabled
                     >
-                      <span class="material-symbols-outlined text-xl">visibility</span>
+                      <span class="material-symbols-outlined text-xl opacity-40">visibility</span>
                     </button>
-                    <button
+                    <a
+                      [routerLink]="['/seances', seance.id, 'modifier']"
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
-                      title="Modifier"
+                      title="Modifier la séance"
                     >
                       <span class="material-symbols-outlined text-xl">edit</span>
-                    </button>
-                    <button
-                      class="p-2 text-error hover:bg-error-container/20 rounded-full transition-all"
-                      title="Supprimer"
-                    >
-                      <span class="material-symbols-outlined text-xl">delete</span>
-                    </button>
+                    </a>
+                    @if (!seance.cloturee) {
+                      <button
+                        (click)="cloturerSeance(seance)"
+                        title="Clôturer la séance"
+                        class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
+                      >
+                        <span class="material-symbols-outlined text-xl">lock</span>
+                      </button>
+                    } @else {
+                      <span
+                        class="p-2 text-outline"
+                        title="Séance déjà clôturée"
+                      >
+                        <span class="material-symbols-outlined text-xl">lock</span>
+                      </span>
+                    }
                   </div>
                 </td>
 

@@ -1,161 +1,237 @@
-<div class="p-10 max-w-3xl mx-auto space-y-6">
+<div class="px-16 py-10 max-w-screen-xl mx-auto">
 
-  <!-- En-tête -->
-  <div class="flex items-center gap-4">
-    <a
-      routerLink="/seances"
-      class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
-      title="Retour à la liste"
-    >
-      <span class="material-symbols-outlined">arrow_back</span>
-    </a>
-    <div>
-      <h2 class="text-3xl font-bold text-primary">Créer une séance</h2>
-      <p class="text-sm text-on-surface-variant mt-0.5">Planifiez une nouvelle rencontre pour votre Dahira.</p>
+  <!-- Breadcrumb + titre -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 text-sm text-on-surface-muted mb-2">
+      <a routerLink="/seances" class="hover:text-primary transition-colors">Séances</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <span class="text-primary font-bold">Nouvelle séance</span>
     </div>
+    <div class="flex items-center gap-4">
+      <a
+        routerLink="/seances"
+        class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
+        title="Retour aux séances"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h2 class="text-3xl font-bold text-primary">Créer une séance</h2>
+    </div>
+    <p class="text-base text-on-surface-variant mt-2 max-w-2xl">
+      Organisez une nouvelle rencontre communautaire. Remplissez les détails ci-dessous pour informer les membres du Dahira.
+    </p>
   </div>
 
   <!-- Erreur globale -->
   @if (errorMessage) {
-    <div class="flex items-center gap-3 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+    <div class="flex items-center gap-3 px-4 py-3 mb-6 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
       <span class="material-symbols-outlined text-xl flex-shrink-0">error</span>
       {{ errorMessage }}
     </div>
   }
 
-  <!-- Formulaire -->
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="p-10 space-y-8">
+  <!-- Carte formulaire -->
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-10">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- ── Informations principales ── -->
-      <div>
-        <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-5">Informations principales</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6">
 
-          <!-- Date -->
+        <!-- ── Colonne gauche ── -->
+        <div class="space-y-6">
+
+          <!-- Titre / Thème -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="date_seance">
-              Date <span class="text-error">*</span>
+            <label class="text-sm font-medium text-on-surface" for="theme">
+              Titre ou Thème de la séance <span class="text-error">*</span>
             </label>
             <input
-              id="date_seance"
-              type="date"
-              formControlName="date_seance"
-              [class]="date_seance.invalid && date_seance.touched
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+              id="theme"
+              type="text"
+              formControlName="theme"
+              placeholder="Ex : Étude du Coran — Chapitre 2"
+              [class]="theme.invalid && theme.touched
+                ? 'w-full px-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'
+                : 'w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'"
             />
-            @if (date_seance.invalid && date_seance.touched) {
+            @if (theme.invalid && theme.touched) {
               <p class="text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-base">error</span>
-                La date est obligatoire.
+                Le thème est obligatoire.
               </p>
             }
           </div>
 
           <!-- Type -->
           <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="type">
-              Type <span class="text-error">*</span>
-            </label>
-            <div class="relative">
-              <select
-                id="type"
-                formControlName="type"
-                [class]="type.invalid && type.touched
-                  ? 'w-full h-12 px-4 pr-10 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm appearance-none bg-surface-container-lowest'
-                  : 'w-full h-12 px-4 pr-10 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm appearance-none bg-surface-container-lowest'"
-              >
-                <option value="" disabled>Sélectionner un type</option>
-                @for (t of types; track t.value) {
-                  <option [value]="t.value">{{ t.label }}</option>
-                }
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+            <label class="text-sm font-medium text-on-surface">Type de séance <span class="text-error">*</span></label>
+            <div class="flex gap-3">
+              @for (t of types; track t.value) {
+                <button
+                  type="button"
+                  (click)="form.get('type')!.setValue(t.value)"
+                  [class]="type.value === t.value
+                    ? 'flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 border-primary bg-primary text-on-primary transition-all text-sm font-semibold'
+                    : 'flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 border-outline-variant hover:border-primary/40 hover:bg-surface-container-low transition-all text-sm font-medium text-on-surface-variant'"
+                >
+                  <span class="material-symbols-outlined text-xl">{{ t.icon }}</span>
+                  {{ t.label }}
+                </button>
+              }
             </div>
-            @if (type.invalid && type.touched) {
-              <p class="text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">error</span>
-                Le type est obligatoire.
-              </p>
-            }
           </div>
 
+          <!-- Précision (uniquement si type = Autre) -->
+          @if (isAutre) {
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface" for="precision">
+                Précision <span class="text-on-surface-muted text-xs font-normal">(optionnel)</span>
+              </label>
+              <textarea
+                id="precision"
+                formControlName="precision"
+                rows="3"
+                placeholder="Ex : Assemblée extraordinaire, Visite du Cheikh, Collecte spéciale..."
+                class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-sm bg-surface-bright resize-none"
+              ></textarea>
+            </div>
+          }
 
-          <!-- Thème -->
-          <div class="flex flex-col gap-1.5 md:col-span-2">
-            <label class="text-sm font-medium text-on-surface-variant" for="theme">Thème</label>
-            <input
-              id="theme"
-              type="text"
-              formControlName="theme"
-              placeholder="Ex : Lecture du Saint Coran, Réunion de coordination..."
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
-            />
+          <!-- Date + Heure -->
+          <div class="grid grid-cols-2 gap-4">
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface" for="date_seance">
+                Date <span class="text-error">*</span>
+              </label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl pointer-events-none">calendar_today</span>
+                <input
+                  id="date_seance"
+                  type="date"
+                  formControlName="date_seance"
+                  [class]="date_seance.invalid && date_seance.touched
+                    ? 'w-full pl-10 pr-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'
+                    : 'w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'"
+                />
+              </div>
+              @if (date_seance.invalid && date_seance.touched) {
+                <p class="text-xs text-error flex items-center gap-1">
+                  <span class="material-symbols-outlined text-base">error</span>
+                  La date est obligatoire.
+                </p>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface" for="heure">Heure</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl pointer-events-none">schedule</span>
+                <input
+                  id="heure"
+                  type="time"
+                  formControlName="heure"
+                  class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright"
+                />
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Lieu -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface" for="lieu">Lieu de rencontre</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl pointer-events-none">location_on</span>
+              <input
+                id="lieu"
+                type="text"
+                formControlName="lieu"
+                placeholder="Ex : Siège Dahira, Grande Mosquée..."
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright"
+              />
+            </div>
           </div>
 
         </div>
-      </div>
 
-      <div class="border-t border-outline-variant/30"></div>
+        <!-- ── Colonne droite ── -->
+        <div class="flex flex-col gap-6 h-full">
 
-      <!-- ── Lieu & horaires ── -->
-      <div>
-        <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-5">Lieu & horaires</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          <!-- Lieu -->
-          <div class="flex flex-col gap-1.5 md:col-span-3">
-            <label class="text-sm font-medium text-on-surface-variant" for="lieu">Lieu</label>
-            <input
-              id="lieu"
-              type="text"
-              formControlName="lieu"
-              placeholder="Ex : Grande Mosquée, Siège Dahira..."
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
-            />
+          <!-- Illustration / Résumé -->
+          <div class="flex-1 rounded-xl bg-surface-container-low border border-outline-variant/30 p-8 flex flex-col items-center justify-center text-center gap-4 min-h-64">
+            <span class="material-symbols-outlined text-6xl text-outline/40">diversity_3</span>
+            <div>
+              <p class="font-semibold text-on-surface-variant">Harmonie &amp; Communauté</p>
+              <p class="text-sm text-on-surface-muted mt-1 max-w-xs">
+                Une fois enregistrée, la séance sera visible par tous les membres du Dahira.
+              </p>
+            </div>
           </div>
 
-          <!-- Heure -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="heure">Heure</label>
-            <input
-              id="heure"
-              type="time"
-              formControlName="heure"
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
-            />
-          </div>
+          <!-- Récapitulatif dynamique -->
+          @if (form.get('theme')!.value || form.get('date_seance')!.value) {
+            <div class="rounded-xl bg-surface-container border border-outline-variant/20 p-5 space-y-3">
+              <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Récapitulatif</p>
+              @if (form.get('theme')!.value) {
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="material-symbols-outlined text-base text-secondary">title</span>
+                  <span class="font-medium text-on-surface">{{ form.get('theme')!.value }}</span>
+                </div>
+              }
+              @if (form.get('date_seance')!.value) {
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="material-symbols-outlined text-base text-secondary">calendar_today</span>
+                  <span class="text-on-surface-variant">{{ form.get('date_seance')!.value | date:'dd MMM yyyy':'':'fr' }}</span>
+                  @if (form.get('heure')!.value) {
+                    <span class="text-on-surface-muted">à {{ form.get('heure')!.value }}</span>
+                  }
+                </div>
+              }
+              @if (form.get('lieu')!.value) {
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="material-symbols-outlined text-base text-secondary">location_on</span>
+                  <span class="text-on-surface-variant">{{ form.get('lieu')!.value }}</span>
+                </div>
+              }
+            </div>
+          }
 
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant/30">
+      <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-10 mt-10 border-t border-outline-variant/30">
         <button
           type="button"
           (click)="annuler()"
           [disabled]="isSubmitting"
-          class="px-6 py-3 text-sm font-semibold text-secondary hover:bg-secondary/5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+          class="order-2 sm:order-1 px-8 py-3 text-secondary font-bold hover:bg-secondary/5 rounded-xl transition-colors active:scale-95 disabled:opacity-50"
         >
           Annuler
         </button>
         <button
           type="submit"
           [disabled]="isSubmitting"
-          class="px-8 py-3 bg-primary text-on-primary text-sm font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all disabled:opacity-60 flex items-center gap-2"
+          class="order-1 sm:order-2 w-full sm:w-auto px-12 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
         >
           @if (isSubmitting) {
-            <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
+            <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
             Enregistrement…
           } @else {
-            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">event_available</span>
-            Créer la séance
+            Enregistrer la séance
           }
         </button>
       </div>
 
     </form>
+  </div>
+
+  <!-- Footer info -->
+  <div class="mt-6 flex items-start gap-3 p-6 bg-surface-container-high/50 rounded-xl border border-outline-variant/20">
+    <span class="material-symbols-outlined text-secondary flex-shrink-0">info</span>
+    <p class="text-sm text-on-surface-variant">
+      Une fois enregistrée, la séance sera visible par tous les membres dans leur calendrier.
+    </p>
   </div>
 
 </div>
