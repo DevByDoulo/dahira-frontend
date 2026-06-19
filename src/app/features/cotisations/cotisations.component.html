@@ -1,0 +1,605 @@
+@if (isLoading) {
+  <app-skeleton-table [count]="6" />
+}
+
+@if (!isLoading && errorMessage) {
+  <div class="p-10 max-w-7xl mx-auto">
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
+      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+      <button
+        (click)="charger()"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+      >
+        <span class="material-symbols-outlined text-xl">refresh</span>
+        Réessayer
+      </button>
+    </div>
+  </div>
+}
+
+@if (!isLoading && !errorMessage) {
+  <div class="p-10 max-w-7xl mx-auto space-y-6">
+
+    <!-- En-tête -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-3xl font-bold text-primary">Cotisations</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Gérez et validez les paiements des membres du Dahira</p>
+      </div>
+      <button
+        class="flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
+      >
+        <span class="material-symbols-outlined text-xl">add</span>
+        Enregistrer un paiement
+      </button>
+    </div>
+
+    <!-- Barre de filtres -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+      <!-- Tabs + filtre statut -->
+      <div class="flex items-center gap-3 flex-wrap">
+
+        <!-- Toggle Toutes / En attente -->
+        <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-1 flex shadow-sm">
+          <button
+            (click)="setTab('toutes')"
+            [class]="activeTab === 'toutes'
+              ? 'px-5 py-2 rounded-lg bg-primary text-on-primary text-sm font-bold transition-all'
+              : 'px-5 py-2 rounded-lg text-on-surface-variant text-sm font-medium hover:bg-surface-container-low transition-all'"
+          >
+            Toutes
+          </button>
+          <button
+            (click)="setTab('en_attente')"
+            [class]="activeTab === 'en_attente'
+              ? 'px-5 py-2 rounded-lg bg-primary text-on-primary text-sm font-bold transition-all flex items-center gap-2'
+              : 'px-5 py-2 rounded-lg text-on-surface-variant text-sm font-medium hover:bg-surface-container-low transition-all flex items-center gap-2'"
+          >
+            En attente
+            @if (nombreEnAttente > 0) {
+              <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-500 text-white text-xs font-bold leading-none">
+                {{ nombreEnAttente }}
+              </span>
+            }
+          </button>
+        </div>
+
+        <!-- Filtre statut -->
+        <div class="relative">
+          <select
+            [(ngModel)]="statutFilter"
+            (ngModelChange)="onFilterChange()"
+            class="appearance-none bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-on-surface-variant focus:ring-2 focus:ring-secondary/20 outline-none cursor-pointer shadow-sm"
+          >
+            <option value="">Tous les statuts</option>
+            <option value="approved">Validé</option>
+            <option value="pending">En attente</option>
+            <option value="rejected">Refusé</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-muted pointer-events-none text-lg">expand_more</span>
+        </div>
+      </div>
+
+      <!-- Recherche -->
+      <div class="relative">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Rechercher un membre..."
+          class="bg-surface-container-low border-none rounded-full pl-5 pr-11 py-2.5 text-sm w-64 focus:ring-2 focus:ring-secondary/20 transition-all outline-none"
+        />
+        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-muted text-lg">search</span>
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Membre</th>
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Méthode</th>
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date séance</th>
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
+              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-outline-variant/10">
+
+            @if (paginated.length === 0) {
+              <tr>
+                <td colspan="6" class="px-6 py-14 text-center">
+                  <span class="material-symbols-outlined text-4xl block mb-2 text-outline">payments</span>
+                  <p class="text-sm text-on-surface-muted">Aucune cotisation trouvée</p>
+                </td>
+              </tr>
+            }
+
+            @for (cotisation of paginated; track cotisation.id) {
+              <tr class="hover:bg-surface-container-low/30 transition-colors group">
+
+                <!-- Membre -->
+                <td class="px-6 py-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {{ initiales(cotisation) }}
+                    </div>
+                    <div>
+                      <p class="font-semibold text-sm text-on-surface">{{ cotisation.prenom }} {{ cotisation.nom }}</p>
+                      <p class="text-xs text-on-surface-muted capitalize">{{ cotisation.type ?? '—' }}</p>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Montant -->
+                <td class="px-6 py-5">
+                  <span class="font-extrabold text-sm text-primary">{{ formatMontant(cotisation.montant) }}</span>
+                </td>
+
+                <!-- Méthode -->
+                <td class="px-6 py-5">
+                  <div class="flex items-center gap-2 text-on-surface-variant">
+                    <span class="material-symbols-outlined text-lg">{{ modeIcon(cotisation.mode_paiement) }}</span>
+                    <span class="text-sm font-medium">{{ modeLabel(cotisation.mode_paiement) }}</span>
+                  </div>
+                </td>
+
+                <!-- Date -->
+                <td class="px-6 py-5 text-sm text-on-surface-muted font-medium">
+                  {{ formatDate(cotisation.date_seance) }}
+                </td>
+
+                <!-- Statut -->
+                <td class="px-6 py-5">
+                  @if (cotisation.statut === 'approved') {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                      Validé
+                    </span>
+                  } @else if (cotisation.statut === 'pending') {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold">
+                      <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                      En attente
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold">
+                      <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                      Refusé
+                    </span>
+                  }
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-5 text-right">
+                  @if (cotisation.statut === 'pending') {
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        (click)="openRejet(cotisation)"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold text-error hover:bg-error-container transition-all active:scale-95"
+                      >
+                        Rejeter
+                      </button>
+                      <button
+                        (click)="openModal(cotisation)"
+                        class="bg-primary/5 text-primary px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-primary hover:text-on-primary transition-all active:scale-95"
+                      >
+                        Valider
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="relative inline-block">
+                      <button
+                        (click)="toggleMenu($event, cotisation.id)"
+                        class="p-2 rounded-lg hover:bg-surface-container-low text-on-surface-variant transition-all opacity-0 group-hover:opacity-100"
+                        [class.opacity-100]="menuOpenId === cotisation.id"
+                      >
+                        @if (generatingRecuId === cotisation.id) {
+                          <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+                        } @else {
+                          <span class="material-symbols-outlined text-lg">more_vert</span>
+                        }
+                      </button>
+
+                      @if (menuOpenId === cotisation.id) {
+                        <div class="absolute right-0 top-full mt-1 w-48 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/30 z-50 overflow-hidden">
+                          <button
+                            (click)="openDetail(cotisation)"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors text-left"
+                          >
+                            <span class="material-symbols-outlined text-lg text-secondary">info</span>
+                            Voir le détail
+                          </button>
+                          @if (cotisation.statut === 'approved') {
+                            <button
+                              (click)="genererRecu(cotisation)"
+                              class="w-full flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors text-left"
+                            >
+                              <span class="material-symbols-outlined text-lg text-secondary">receipt_long</span>
+                              Générer un reçu
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </td>
+
+              </tr>
+            }
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant/10 flex items-center justify-between flex-wrap gap-3">
+        <p class="text-xs text-on-surface-muted font-medium">{{ rangeLabel }}</p>
+
+        @if (totalPages > 1) {
+          <div class="flex items-center gap-1">
+            <button
+              (click)="setPage(page - 1)"
+              [disabled]="page === 1"
+              class="w-8 h-8 rounded-lg border border-outline-variant/30 flex items-center justify-center hover:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span class="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+
+            @for (p of pageNumbers; track p) {
+              @if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
+                <button
+                  (click)="setPage(p)"
+                  [class]="p === page
+                    ? 'w-8 h-8 rounded-lg bg-primary text-on-primary text-xs font-bold'
+                    : 'w-8 h-8 rounded-lg border border-outline-variant/30 text-xs font-medium hover:bg-white transition-all'"
+                >
+                  {{ p }}
+                </button>
+              }
+              @if (p === page - 2 && p > 2) {
+                <span class="px-1 text-outline text-sm">…</span>
+              }
+              @if (p === page + 2 && p < totalPages - 1) {
+                <span class="px-1 text-outline text-sm">…</span>
+              }
+            }
+
+            <button
+              (click)="setPage(page + 1)"
+              [disabled]="page === totalPages"
+              class="w-8 h-8 rounded-lg border border-outline-variant/30 flex items-center justify-center hover:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span class="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Total collecté</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalCollecte) }}</h3>
+        </div>
+      </div>
+
+      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-yellow-700" style="font-variation-settings: 'FILL' 1;">pending</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">En attente</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ nombreEnAttente }} cotisation{{ nombreEnAttente > 1 ? 's' : '' }}</h3>
+        </div>
+      </div>
+
+      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Ce mois</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ formatMontant(totalMois) }}</h3>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+}
+
+<!-- Toast notification -->
+@if (toast) {
+  <div
+    class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-sm font-semibold transition-all"
+    [class]="toast.type === 'success'
+      ? 'bg-secondary-container text-on-secondary-container'
+      : 'bg-error-container text-on-error-container'"
+  >
+    <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">
+      {{ toast.type === 'success' ? 'check_circle' : 'error' }}
+    </span>
+    {{ toast.message }}
+  </div>
+}
+
+<!-- Modal détail -->
+@if (detailVisible && detailCotisation) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm"
+    (click)="closeDetail()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- En-tête -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/20">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-sm font-bold">
+            {{ initiales(detailCotisation) }}
+          </div>
+          <div>
+            <p class="font-bold text-on-surface">{{ detailCotisation.prenom }} {{ detailCotisation.nom }}</p>
+            <p class="text-xs text-on-surface-muted capitalize">{{ detailCotisation.type ?? '—' }}</p>
+          </div>
+        </div>
+        <button (click)="closeDetail()" class="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+
+      <!-- Corps -->
+      <div class="px-6 py-6 space-y-4">
+
+        <!-- Statut -->
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-on-surface-muted">Statut</span>
+          @if (detailCotisation.statut === 'approved') {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Validé
+            </span>
+          } @else if (detailCotisation.statut === 'pending') {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>En attente
+            </span>
+          } @else {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-error"></span>Refusé
+            </span>
+          }
+        </div>
+
+        <div class="border-t border-outline-variant/20"></div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-on-surface-muted">Montant</span>
+          <span class="text-sm font-extrabold text-primary">{{ formatMontant(detailCotisation.montant) }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-on-surface-muted">Méthode de paiement</span>
+          <div class="flex items-center gap-1.5 text-sm font-semibold text-on-surface">
+            <span class="material-symbols-outlined text-base text-secondary">{{ modeIcon(detailCotisation.mode_paiement) }}</span>
+            {{ modeLabel(detailCotisation.mode_paiement) }}
+          </div>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-on-surface-muted">Date de la séance</span>
+          <span class="text-sm font-semibold text-on-surface">{{ formatDate(detailCotisation.date_seance) }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-on-surface-muted">Enregistré le</span>
+          <span class="text-sm font-semibold text-on-surface">{{ formatDatetime(detailCotisation.created_at) }}</span>
+        </div>
+        @if (detailCotisation.valide_at) {
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-on-surface-muted">Validé le</span>
+            <span class="text-sm font-semibold text-on-surface">{{ formatDatetime(detailCotisation.valide_at) }}</span>
+          </div>
+        }
+        @if (detailCotisation.note) {
+          <div class="border-t border-outline-variant/20 pt-4">
+            <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider mb-1.5">Note</p>
+            <p class="text-sm text-on-surface">{{ detailCotisation.note }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Pied -->
+      <div class="px-6 pb-6 flex flex-col gap-2">
+        @if (detailCotisation.statut === 'approved') {
+          <button
+            (click)="genererRecu(detailCotisation)"
+            [disabled]="generatingRecuId === detailCotisation.id"
+            class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-surface-container-low text-on-surface rounded-xl text-sm font-semibold hover:bg-surface-container-high transition-all disabled:opacity-60"
+          >
+            @if (generatingRecuId === detailCotisation.id) {
+              <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+              Génération…
+            } @else {
+              <span class="material-symbols-outlined text-lg">receipt_long</span>
+              Générer un reçu
+            }
+          </button>
+        }
+        @if (detailCotisation.statut === 'pending') {
+          <div class="flex gap-3">
+            <button
+              (click)="openRejet(detailCotisation)"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-error/30 text-error rounded-xl text-sm font-semibold hover:bg-error-container transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">cancel</span>
+              Rejeter
+            </button>
+            <button
+              (click)="openModal(detailCotisation)"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+            >
+              <span class="material-symbols-outlined text-lg">check_circle</span>
+              Valider
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de rejet -->
+@if (rejetVisible && rejetCotisation) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm"
+    (click)="closeRejet()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="px-8 py-8">
+
+        <div class="w-16 h-16 bg-error-container text-on-error-container rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">cancel</span>
+        </div>
+
+        <h3 class="text-center text-xl font-bold text-primary mb-2">Rejeter la cotisation</h3>
+        <p class="text-center text-on-surface-muted text-sm px-4 mb-6">
+          La cotisation de <span class="font-semibold text-on-surface">{{ rejetCotisation.prenom }} {{ rejetCotisation.nom }}</span>
+          ({{ formatMontant(rejetCotisation.montant) }}) sera marquée comme refusée.
+        </p>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-on-surface-variant mb-2">
+            Motif du rejet <span class="text-on-surface-muted font-normal">(optionnel)</span>
+          </label>
+          <textarea
+            [(ngModel)]="rejetNote"
+            rows="3"
+            placeholder="Ex : Preuve de paiement invalide, montant incorrect..."
+            class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-error focus:ring-4 focus:ring-error/10 outline-none transition-all text-sm bg-surface-bright resize-none"
+          ></textarea>
+        </div>
+
+        @if (rejetError) {
+          <div class="flex items-center gap-2 px-4 py-3 mb-4 bg-error-container text-on-error-container rounded-xl text-sm">
+            <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
+            {{ rejetError }}
+          </div>
+        }
+
+        <div class="flex gap-4">
+          <button
+            (click)="closeRejet()"
+            [disabled]="isRejecting"
+            class="flex-1 px-6 py-3 rounded-xl border border-outline-variant/50 text-sm font-bold text-on-surface-muted hover:bg-surface-container-low transition-all disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            (click)="confirmerRejet()"
+            [disabled]="isRejecting"
+            class="flex-1 px-6 py-3 rounded-xl bg-error text-on-error text-sm font-bold hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            @if (isRejecting) {
+              <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+              Rejet…
+            } @else {
+              Confirmer le rejet
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de confirmation -->
+@if (modalVisible && modalCotisation) {
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm"
+    (click)="closeModal()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="px-8 py-8">
+
+        <!-- Icône -->
+        <div class="w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        </div>
+
+        <h3 class="text-center text-xl font-bold text-primary mb-2">Valider le paiement</h3>
+        <p class="text-center text-on-surface-muted text-sm px-4 mb-8">
+          Confirmez que vous avez bien reçu les fonds pour cette cotisation.
+        </p>
+
+        <!-- Récapitulatif -->
+        <div class="bg-surface-container-low rounded-xl p-6 mb-6 flex flex-col gap-4">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-on-surface-muted">Membre</span>
+            <span class="text-sm font-bold text-primary">{{ modalCotisation.prenom }} {{ modalCotisation.nom }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-on-surface-muted">Montant</span>
+            <span class="text-sm font-bold text-primary">{{ formatMontant(modalCotisation.montant) }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-on-surface-muted">Méthode</span>
+            <span class="text-sm font-bold text-primary">{{ modeLabel(modalCotisation.mode_paiement) }}</span>
+          </div>
+          @if (modalCotisation.date_seance) {
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-on-surface-muted">Séance</span>
+              <span class="text-sm font-bold text-primary">{{ formatDate(modalCotisation.date_seance) }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Erreur -->
+        @if (modalError) {
+          <div class="flex items-center gap-2 px-4 py-3 mb-4 bg-error-container text-on-error-container rounded-xl text-sm">
+            <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
+            {{ modalError }}
+          </div>
+        }
+
+        <!-- Boutons -->
+        <div class="flex gap-4">
+          <button
+            (click)="closeModal()"
+            [disabled]="isSubmitting"
+            class="flex-1 px-6 py-3 rounded-xl border border-outline-variant/50 text-sm font-bold text-on-surface-muted hover:bg-surface-container-low transition-all disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            (click)="confirmerValidation()"
+            [disabled]="isSubmitting"
+            class="flex-1 px-6 py-3 rounded-xl bg-primary text-on-primary text-sm font-bold hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            @if (isSubmitting) {
+              <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+              Validation…
+            } @else {
+              Confirmer
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

@@ -52,7 +52,12 @@ export const routes: Routes = [
             m => m.ModifierSeanceComponent,
           ),
       },
-      // Autres routes protégées à ajouter ici : cotisations, etc.
+      {
+        path: 'cotisations',
+        loadComponent: () =>
+          import('./features/cotisations/cotisations.component').then(m => m.CotisationsComponent),
+      },
+      // Autres routes protégées à ajouter ici
     ],
   },
   { path: '**', redirectTo: 'login' },

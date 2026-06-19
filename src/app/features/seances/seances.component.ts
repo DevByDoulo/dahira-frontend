@@ -174,7 +174,7 @@ export class SeancesComponent implements OnInit {
 
   typeLabel(type: Seance['type']): string {
     const labels: Record<Seance['type'], string> = {
-      hebdomadaire: 'Dahira',
+      dahira: 'Dahira',
       mensuelle:    'Séance mensuelle',
       autre:        'Autre séance',
     };
@@ -183,7 +183,7 @@ export class SeancesComponent implements OnInit {
 
   typeIcon(type: Seance['type']): string {
     const icons: Record<Seance['type'], string> = {
-      hebdomadaire: 'menu_book',
+      dahira: 'menu_book',
       mensuelle:    'calendar_month',
       autre:        'groups_3',
     };

@@ -7,7 +7,7 @@ export interface Seance {
   id: number;
   dahira_id: number;
   date_seance: string;
-  type: 'hebdomadaire' | 'mensuelle' | 'autre';
+  type: 'dahira' | 'mensuelle' | 'autre';
   theme: string | null;
   heure: string | null;
   lieu: string | null;

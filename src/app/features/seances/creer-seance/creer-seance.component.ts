@@ -16,7 +16,7 @@ export class CreerSeanceComponent {
   errorMessage = '';
 
   readonly types = [
-    { value: 'hebdomadaire', label: 'Dahira',        icon: 'menu_book' },
+    { value: 'dahira', label: 'Dahira',        icon: 'menu_book' },
     { value: 'mensuelle',    label: 'Mensuelle',    icon: 'calendar_month' },
     { value: 'autre',        label: 'Autre',        icon: 'groups_3' },
   ];
@@ -28,7 +28,7 @@ export class CreerSeanceComponent {
   ) {
     this.form = this.fb.group({
       theme:       ['', Validators.required],
-      type:        ['hebdomadaire', Validators.required],
+      type:        ['dahira', Validators.required],
       precision:   [''],
       date_seance: ['', Validators.required],
       heure:       [''],
