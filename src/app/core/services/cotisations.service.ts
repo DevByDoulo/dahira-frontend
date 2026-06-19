@@ -11,6 +11,13 @@ export interface EncaisserCotisationPayload {
   note?: string;
 }
 
+export interface DeclarerCotisationPayload {
+  seance_id: number;
+  montant: number;
+  mode_paiement: 'wave' | 'orange_money';
+  note?: string;
+}
+
 export interface Cotisation {
   id: number;
   dahira_id: number;
@@ -74,6 +81,10 @@ export class CotisationsService {
       `${this.apiUrl}/cotisations/${id}/rejeter`,
       note ? { note } : {},
     );
+  }
+
+  declarerCotisation(payload: DeclarerCotisationPayload): Observable<CotisationResponse> {
+    return this.http.post<CotisationResponse>(`${this.apiUrl}/cotisations/declarer`, payload);
   }
 
   encaisserCotisation(payload: EncaisserCotisationPayload): Observable<CotisationResponse> {

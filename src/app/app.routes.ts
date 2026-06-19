@@ -64,6 +64,32 @@ export const routes: Routes = [
             m => m.EncaisserCotisationComponent,
           ),
       },
+      {
+        path: 'cotisations/declarer',
+        loadComponent: () =>
+          import('./features/cotisations/declarer/declarer-cotisation.component').then(
+            m => m.DeclarerCotisationComponent,
+          ),
+      },
+      {
+        path: 'depenses',
+        loadComponent: () =>
+          import('./features/depenses/depenses.component').then(m => m.DepensesComponent),
+      },
+      {
+        path: 'depenses/ajouter',
+        loadComponent: () =>
+          import('./features/depenses/ajouter/ajouter-depense.component').then(
+            m => m.AjouterDepenseComponent,
+          ),
+      },
+      {
+        path: 'depenses/:id/modifier',
+        loadComponent: () =>
+          import('./features/depenses/modifier/modifier-depense.component').then(
+            m => m.ModifierDepenseComponent,
+          ),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },

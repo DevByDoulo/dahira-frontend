@@ -1,0 +1,204 @@
+<div class="flex-1 px-6 py-10 max-w-[900px] w-full mx-auto">
+
+  <!-- Toast -->
+  @if (toast) {
+    <div
+      class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all"
+      [class.bg-green-600]="toast.type === 'success'"
+      [class.bg-red-600]="toast.type === 'error'"
+    >
+      <span class="material-symbols-outlined text-base">
+        {{ toast.type === 'success' ? 'check_circle' : 'error' }}
+      </span>
+      {{ toast.message }}
+    </div>
+  }
+
+  <!-- Bandeau info -->
+  <div class="mb-10 p-4 bg-[var(--surface-container-high,#dce9ff)] rounded-xl border border-[var(--outline-variant,#c6c6cd)]/20 flex items-start gap-3">
+    <span class="material-symbols-outlined text-[var(--primary,#000)] mt-0.5">info</span>
+    <p class="text-sm text-[var(--on-surface,#0b1c30)]">
+      Votre déclaration sera examinée par le trésorier pour validation.
+    </p>
+  </div>
+
+  <!-- Carte formulaire -->
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="bg-white rounded-xl p-10 space-y-6"
+    style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05)"
+  >
+
+    <!-- Grille 2 colonnes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Montant -->
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="montant">
+          Montant (FCFA)
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
+            payments
+          </span>
+          <input
+            id="montant"
+            type="number"
+            formControlName="montant"
+            placeholder="Ex : 5000"
+            class="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none transition-all duration-200 text-sm"
+            [class.border-red-400]="montant.invalid && montant.touched"
+          />
+        </div>
+        @if (montant.invalid && montant.touched) {
+          <p class="text-xs text-red-500 mt-1">
+            {{ montant.hasError('required') ? 'Le montant est obligatoire.' : 'Le montant doit être supérieur à 0.' }}
+          </p>
+        }
+      </div>
+
+      <!-- Méthode de paiement -->
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="mode_paiement">
+          Méthode de paiement
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
+            account_balance_wallet
+          </span>
+          <select
+            id="mode_paiement"
+            formControlName="mode_paiement"
+            class="w-full pl-12 pr-10 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none appearance-none transition-all duration-200 text-sm bg-transparent"
+          >
+            @for (mode of modes; track mode.value) {
+              <option [value]="mode.value">{{ mode.label }}</option>
+            }
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] pointer-events-none text-xl">
+            expand_more
+          </span>
+        </div>
+      </div>
+
+      <!-- Numéro de transaction -->
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="note">
+          Numéro de transaction
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
+            confirmation_number
+          </span>
+          <input
+            id="note"
+            type="text"
+            formControlName="note"
+            placeholder="ID de la transaction"
+            class="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none transition-all duration-200 text-sm"
+          />
+        </div>
+      </div>
+
+      <!-- Séance associée -->
+      <div class="space-y-1">
+        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="seance_id">
+          Séance associée
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
+            calendar_today
+          </span>
+          <select
+            id="seance_id"
+            formControlName="seance_id"
+            class="w-full pl-12 pr-10 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none appearance-none transition-all duration-200 text-sm bg-transparent"
+            [class.border-red-400]="seance_id.invalid && seance_id.touched"
+          >
+            <option [value]="null" disabled selected>Choisir une séance…</option>
+            @if (chargementSeances) {
+              <option disabled>Chargement…</option>
+            } @else {
+              @for (s of seances; track s.id) {
+                <option [value]="s.id">{{ formatDateSeance(s) }} — {{ typeLabel(s.type) }}</option>
+              }
+            }
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] pointer-events-none text-xl">
+            expand_more
+          </span>
+        </div>
+        @if (seance_id.invalid && seance_id.touched) {
+          <p class="text-xs text-red-500 mt-1">Veuillez sélectionner une séance.</p>
+        }
+      </div>
+
+    </div>
+
+    <!-- Zone upload preuve -->
+    <div class="pt-2">
+      <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)] mb-1">
+        Capture d'écran de preuve
+      </label>
+      <div
+        class="relative border-2 border-dashed border-[var(--outline-soft,#c6c6cd)] rounded-xl p-16 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group bg-[var(--surface-container-low,#eff4ff)]/30"
+        [class.border-black]="selectedFileName"
+        [class.bg-black]="selectedFileName"
+        style=""
+      >
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          (change)="onFileChange($event)"
+        />
+        <div class="w-12 h-12 rounded-full bg-[var(--surface-container-high,#dce9ff)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-[var(--primary,#000)]">upload_file</span>
+        </div>
+        @if (selectedFileName) {
+          <p class="text-sm font-semibold text-[var(--on-surface,#0b1c30)]">Fichier prêt : {{ selectedFileName }}</p>
+        } @else {
+          <p class="text-sm font-semibold text-[var(--on-surface,#0b1c30)]">Cliquez pour téléverser</p>
+          <p class="text-xs text-[var(--on-surface-variant,#45464d)] mt-2">Format PNG, JPG ou PDF (max. 5 Mo)</p>
+        }
+      </div>
+    </div>
+
+    <!-- Image décorative -->
+    <div class="relative h-48 rounded-xl overflow-hidden mt-10">
+      <div class="w-full h-full bg-gradient-to-br from-[var(--primary-container,#131b2e)] to-[var(--surface-container-high,#dce9ff)] flex items-end p-6">
+        <p class="text-white text-sm">Soutenez votre communauté, construisons ensemble l'avenir de notre Dahira.</p>
+      </div>
+    </div>
+
+    <!-- Erreur globale -->
+    @if (errorMessage) {
+      <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <span class="material-symbols-outlined text-base">error</span>
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Bouton soumettre -->
+    <div class="pt-10">
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+        class="w-full bg-[var(--primary,#000)] text-white py-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[var(--primary-container,#131b2e)] transition-colors shadow-lg disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]"
+      >
+        @if (isSubmitting) {
+          <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
+          Envoi en cours…
+        } @else {
+          <span>Soumettre</span>
+          <span class="material-symbols-outlined text-base">send</span>
+        }
+      </button>
+      <p class="text-center text-xs text-[var(--on-surface-variant,#45464d)] mt-4">
+        En soumettant ce formulaire, vous certifiez l'exactitude des informations fournies.
+      </p>
+    </div>
+
+  </form>
+</div>

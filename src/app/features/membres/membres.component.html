@@ -23,8 +23,46 @@
 @if (!isLoading && !errorMessage) {
   <div class="p-10 max-w-7xl mx-auto space-y-6">
 
-    <!-- Titre -->
-    <h2 class="text-2xl font-bold text-on-surface">Gestion des Membres</h2>
+    <!-- En-tête -->
+    <div>
+      <h2 class="text-3xl font-bold text-primary">Membres</h2>
+      <p class="text-sm text-on-surface-variant mt-0.5">Gérez les membres et leur statut au sein du Dahira</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">groups</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total membres</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ totalMembres }}</h3>
+        </div>
+      </div>
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-sky-500" style="font-variation-settings: 'FILL' 1;">person_add</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Nouveaux (mois)</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">+{{ nouveauxCeMois }}</h3>
+        </div>
+      </div>
+
+      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">assignment_late</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cotisations en retard</p>
+          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ cotisationsEnRetard }}</h3>
+        </div>
+      </div>
+
+    </div>
 
     <!-- Table container -->
     <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/30">
@@ -234,42 +272,5 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      <!-- Total membres -->
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">groups</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Total Membres</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ totalMembres }}</h3>
-        </div>
-      </div>
-
-      <!-- Nouveaux ce mois -->
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person_add</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Nouveaux (Mois)</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">+{{ nouveauxCeMois }}</h3>
-        </div>
-      </div>
-
-      <!-- Cotisations en retard -->
-      <div class="p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-error-container" style="font-variation-settings: 'FILL' 1;">assignment_late</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-muted uppercase tracking-wider">Cotisations en retard</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ cotisationsEnRetard }}</h3>
-        </div>
-      </div>
-
-    </div>
   </div>
 }
