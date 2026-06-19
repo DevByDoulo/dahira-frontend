@@ -1,0 +1,225 @@
+<!-- Skeleton de chargement -->
+@if (isLoading) {
+  <div class="p-16 max-w-7xl mx-auto">
+    <div class="h-10 w-64 bg-surface-container rounded-xl mb-6 animate-pulse"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="bg-surface-container-lowest rounded-xl h-40 animate-pulse"></div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Contenu principal -->
+@if (!isLoading) {
+  <div class="p-16 max-w-7xl mx-auto space-y-6">
+
+    <!-- ── Titre + KPIs ── -->
+    <section>
+      <h2 class="text-3xl font-bold text-on-surface mb-6">Tableau de bord</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- KPI : Membres -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl custom-shadow flex flex-col justify-between h-40">
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-surface-container rounded-lg">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">group</span>
+            </div>
+            <span class="flex items-center text-secondary font-bold text-xs">
+              +12% <span class="material-symbols-outlined text-sm ml-1">trending_up</span>
+            </span>
+          </div>
+          <div>
+            <p class="text-on-surface-muted text-sm font-medium">Total membres</p>
+            <h3 class="text-2xl font-bold text-on-surface">{{ formatFCFA(totalMembres) }}</h3>
+            <p class="text-xs text-on-surface-muted mt-0.5">{{ membresActifs }} actifs</p>
+          </div>
+        </div>
+
+        <!-- KPI : Cotisations du mois -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl custom-shadow flex flex-col justify-between h-40">
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-surface-container rounded-lg">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">payments</span>
+            </div>
+            <span class="flex items-center text-secondary font-bold text-xs">
+              +5% <span class="material-symbols-outlined text-sm ml-1">trending_up</span>
+            </span>
+          </div>
+          <div>
+            <p class="text-on-surface-muted text-sm font-medium">Cotisations du mois</p>
+            <h3 class="text-2xl font-bold text-on-surface">
+              {{ formatFCFA(cotisationsMois) }} <span class="text-sm font-normal">FCFA</span>
+            </h3>
+            <p class="text-xs text-on-surface-muted mt-0.5">{{ tauxAJour }}% à jour</p>
+          </div>
+        </div>
+
+        <!-- KPI : Trésorerie -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl custom-shadow flex flex-col justify-between h-40">
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-surface-container rounded-lg">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+            </div>
+            <span class="flex items-center text-error font-bold text-xs">
+              -2% <span class="material-symbols-outlined text-sm ml-1">trending_down</span>
+            </span>
+          </div>
+          <div>
+            <p class="text-on-surface-muted text-sm font-medium">Solde trésorerie</p>
+            <h3 class="text-2xl font-bold text-on-surface">
+              {{ formatFCFA(soldeTresorerie) }} <span class="text-sm font-normal">FCFA</span>
+            </h3>
+          </div>
+        </div>
+
+        <!-- KPI : Événements -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl custom-shadow flex flex-col justify-between h-40">
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-surface-container rounded-lg">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">event</span>
+            </div>
+            <span class="text-on-surface-muted font-bold text-xs">Cette semaine</span>
+          </div>
+          <div>
+            <p class="text-on-surface-muted text-sm font-medium">Événements à venir</p>
+            <h3 class="text-2xl font-bold text-on-surface">{{ evenementsCount }}</h3>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Graphiques ── -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Graphique en barres : Cotisations mensuelles -->
+      <div class="bg-surface-container-lowest p-10 rounded-xl custom-shadow h-[400px] flex flex-col">
+        <div class="flex justify-between items-center mb-6">
+          <h4 class="text-xl font-semibold text-on-surface">Cotisations mensuelles</h4>
+          <div class="flex gap-2">
+            <button class="px-3 py-1 text-xs font-medium border border-outline-soft rounded-lg hover:bg-surface-container transition-colors text-on-surface-muted">
+              6 mois
+            </button>
+            <button class="px-3 py-1 text-xs font-medium bg-secondary text-white rounded-lg">
+              12 mois
+            </button>
+          </div>
+        </div>
+        <div class="flex-1 flex items-end justify-between gap-2 pt-6">
+          @for (bar of bars; track bar.label) {
+            <div class="flex flex-col items-center gap-2 w-full">
+              <div
+                [class]="bar.active
+                  ? 'bg-secondary w-full rounded-t-lg transition-all cursor-pointer hover:opacity-90'
+                  : 'bg-surface-container-high w-full rounded-t-lg transition-all hover:bg-secondary-fixed cursor-pointer'"
+                [style.height]="bar.heightPct + '%'"
+              ></div>
+              <span [class]="bar.active ? 'text-[10px] text-outline font-bold' : 'text-[10px] text-outline'">
+                {{ bar.label }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Graphique linéaire : Évolution du solde -->
+      <div class="bg-surface-container-lowest p-10 rounded-xl custom-shadow h-[400px] flex flex-col relative overflow-hidden">
+        <div class="flex justify-between items-center mb-6 z-10">
+          <h4 class="text-xl font-semibold text-on-surface">Évolution du solde</h4>
+          <span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span>
+        </div>
+        <div class="flex-1 relative mt-6">
+          <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#016a61" stop-opacity="0.2" />
+                <stop offset="100%" stop-color="#016a61" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M0,80 Q20,75 40,60 T80,30 T100,20 L100,100 L0,100 Z" fill="url(#lineGrad)" />
+            <path d="M0,80 Q20,75 40,60 T80,30 T100,20" fill="none" stroke="#016a61" stroke-width="2" />
+            <circle cx="0" cy="80" r="2" fill="#016a61" />
+            <circle cx="40" cy="60" r="2" fill="#016a61" />
+            <circle cx="100" cy="20" r="2" fill="#016a61" />
+          </svg>
+          <div class="absolute inset-0 flex justify-between items-end pointer-events-none pb-1">
+            <span class="text-[10px] text-outline">Jan</span>
+            <span class="text-[10px] text-outline">Juin</span>
+          </div>
+        </div>
+        <div class="mt-6 flex items-center gap-4">
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded-full bg-secondary"></div>
+            <span class="text-xs text-on-surface-muted">Revenus</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded-full bg-outline-soft"></div>
+            <span class="text-xs text-on-surface-muted">Prévu</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── Prochains événements ── -->
+    <section class="bg-surface-container-lowest p-10 rounded-xl custom-shadow">
+      <div class="flex justify-between items-center mb-16">
+        <h4 class="text-xl font-semibold text-on-surface">Prochains événements</h4>
+        <button
+          (click)="navigateToEvents()"
+          class="bg-primary text-white px-6 py-2 rounded-xl text-sm font-medium flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+        >
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Créer un événement
+        </button>
+      </div>
+
+      @if (events.length === 0) {
+        <p class="text-center text-on-surface-muted py-8">Aucun événement à venir.</p>
+      }
+
+      <div class="space-y-4">
+        @for (event of events; track event.title) {
+          <div class="flex items-center p-6 border border-outline-soft/30 rounded-xl hover:bg-surface-container-low transition-colors group cursor-pointer">
+            <!-- Date -->
+            <div class="flex flex-col items-center justify-center min-w-[64px] h-16 bg-surface-container rounded-lg mr-6 group-hover:bg-secondary-fixed transition-colors">
+              <span class="text-xs font-bold text-on-surface-muted group-hover:text-secondary uppercase">{{ event.month }}</span>
+              <span class="text-xl font-bold text-on-surface group-hover:text-secondary">{{ event.day }}</span>
+            </div>
+
+            <!-- Infos -->
+            <div class="flex-1">
+              <h5 class="text-lg font-bold text-on-surface">{{ event.title }}</h5>
+              <div class="flex items-center gap-4 mt-1">
+                <span class="flex items-center gap-1 text-xs text-on-surface-muted">
+                  <span class="material-symbols-outlined text-sm">schedule</span> {{ event.time }}
+                </span>
+                <span class="flex items-center gap-1 text-xs text-on-surface-muted">
+                  <span class="material-symbols-outlined text-sm">location_on</span> {{ event.place }}
+                </span>
+              </div>
+            </div>
+
+            <span class="material-symbols-outlined text-outline group-hover:text-secondary translate-x-0 group-hover:translate-x-1 transition-all">
+              chevron_right
+            </span>
+          </div>
+        }
+      </div>
+
+      <div class="mt-16 text-center">
+        <button class="text-secondary font-bold text-sm hover:underline decoration-2 underline-offset-4 transition-all">
+          Voir tout le calendrier
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bouton d'action flottant -->
+  <button class="fixed bottom-10 right-10 w-16 h-16 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+    <span class="material-symbols-outlined text-3xl">add</span>
+  </button>
+}
