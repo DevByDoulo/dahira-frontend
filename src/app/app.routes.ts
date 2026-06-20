@@ -90,6 +90,11 @@ export const routes: Routes = [
             m => m.ModifierDepenseComponent,
           ),
       },
+      {
+        path: 'tresorerie',
+        loadComponent: () =>
+          import('./features/tresorerie/tresorerie.component').then(m => m.TresorerieComponent),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },
