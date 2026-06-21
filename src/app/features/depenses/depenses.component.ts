@@ -56,7 +56,7 @@ export class DepensesComponent implements OnInit, OnDestroy {
     const nav = this.router.getCurrentNavigation();
     const toastMsg = nav?.extras?.state?.['toast'] as string | undefined;
     if (toastMsg) this.showToast(toastMsg, 'success');
-    this.isBureau = this.authService.getUser()?.role === 'Bureau';
+    this.isBureau = this.authService.getUser()?.role === 'bureau';
     this.charger();
   }
 

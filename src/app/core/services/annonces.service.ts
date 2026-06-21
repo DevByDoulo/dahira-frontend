@@ -1,0 +1,54 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+export interface Annonce {
+  id: number;
+  dahira_id: number;
+  titre: string;
+  contenu: string;
+  image_url: string | null;
+  cible_groupe: string | null;
+  epinglee: boolean;
+  publie_par: number;
+  publie_par_nom?: string;
+  created_at: string;
+}
+
+export interface AnnonceResponse {
+  success: boolean;
+  data: Annonce;
+}
+
+export interface AnnoncesResponse {
+  success: boolean;
+  data: Annonce[];
+}
+
+export interface CreateAnnoncePayload {
+  titre: string;
+  contenu: string;
+  image_url?: string;
+  cible_groupe?: string;
+  categorie?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AnnoncesService {
+  private readonly apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  getAnnonces(): Observable<AnnoncesResponse> {
+    return this.http.get<AnnoncesResponse>(`${this.apiUrl}/annonces`);
+  }
+
+  createAnnonce(payload: CreateAnnoncePayload): Observable<AnnonceResponse> {
+    return this.http.post<AnnonceResponse>(`${this.apiUrl}/annonces`, payload);
+  }
+
+  deleteAnnonce(id: number): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(`${this.apiUrl}/annonces/${id}`);
+  }
+}

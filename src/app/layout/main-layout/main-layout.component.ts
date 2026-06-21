@@ -58,4 +58,8 @@ export class MainLayoutComponent implements OnInit {
   get userRole(): string {
     return (this.user?.role as string) ?? '';
   }
+
+  get isBureau(): boolean {
+    return this.user?.role === 'bureau';
+  }
 }

@@ -12,6 +12,7 @@ interface BarData {
 }
 
 interface EventItem {
+  id: number;
   day: string;
   month: string;
   title: string;
@@ -79,6 +80,7 @@ export class DashboardComponent implements OnInit {
           this.soldeTresorerie = Number(d.tresorerie.solde_global ?? 0);
           this.evenementsCount = d.evenements_a_venir?.length ?? 0;
           this.events = (d.evenements_a_venir ?? []).map(e => ({
+            id: e.id,
             ...this.parseEventDate(e.date_evenement),
             title: e.titre,
             time: this.parseEventTime(e.date_evenement),

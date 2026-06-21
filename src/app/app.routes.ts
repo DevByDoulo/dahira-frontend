@@ -95,6 +95,30 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/tresorerie/tresorerie.component').then(m => m.TresorerieComponent),
       },
+      {
+        path: 'annonces',
+        loadComponent: () =>
+          import('./features/annonces/annonces.component').then(m => m.AnnoncesComponent),
+      },
+      {
+        path: 'annonces/creer',
+        loadComponent: () =>
+          import('./features/annonces/creer-annonce/creer-annonce.component').then(
+            m => m.CreerAnnonceComponent,
+          ),
+      },
+      {
+        path: 'evenements',
+        loadComponent: () =>
+          import('./features/evenements/evenements.component').then(m => m.EvenementsComponent),
+      },
+      {
+        path: 'evenements/creer',
+        loadComponent: () =>
+          import('./features/evenements/creer-evenement/creer-evenement.component').then(
+            m => m.CreerEvenementComponent,
+          ),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },
