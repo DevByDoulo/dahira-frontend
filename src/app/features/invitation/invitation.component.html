@@ -1,0 +1,199 @@
+<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6 relative overflow-hidden"
+  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)">
+
+  <!-- Décoration atmosphérique -->
+  <div class="absolute inset-0 pointer-events-none opacity-20">
+    <div class="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-surface-container-highest rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[30vw] h-[30vw] bg-secondary-container rounded-full blur-[100px]"></div>
+  </div>
+
+  <main class="w-full max-w-lg z-10">
+
+    <!-- Logo -->
+    <div class="flex justify-center mb-10">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-4xl">account_balance_wallet</span>
+        <h1 class="text-2xl font-bold text-primary tracking-tight">Dahira App</h1>
+      </div>
+    </div>
+
+    <!-- Carte confirmation envoi -->
+    @if (sent) {
+      <div class="bg-white rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+        <div class="p-10 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary-container mb-6">
+            <span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1">check_circle</span>
+          </div>
+          <h2 class="text-2xl font-bold text-on-surface mb-2">Invitation envoyée !</h2>
+          <p class="text-on-surface-variant text-sm mb-1">
+            Un email d'invitation a été envoyé à
+          </p>
+          <p class="font-bold text-on-surface mb-1">{{ sentEmail }}</p>
+          <p class="text-on-surface-variant text-sm mb-8">
+            Le membre recevra un lien valable <span class="font-semibold text-on-surface">7 jours</span> pour créer son compte.
+          </p>
+          <button (click)="nouvelleInvitation()"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl text-sm font-bold hover:shadow-md active:scale-[0.98] transition-all">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Nouvelle invitation
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Carte formulaire -->
+    @if (!sent) {
+      <div class="bg-white rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
+
+        <!-- Bande décorative -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+
+        <div class="p-10">
+
+          <!-- En-tête -->
+          <header class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-low mb-5">
+              <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1">mail</span>
+            </div>
+            <h2 class="text-3xl font-bold text-on-surface mb-2">Inviter un membre</h2>
+            <p class="text-on-surface-variant text-sm max-w-xs mx-auto">
+              Envoyez un lien d'invitation par email pour permettre au membre de créer son compte.
+            </p>
+          </header>
+
+          <!-- Erreur -->
+          @if (formError) {
+            <div class="p-3 mb-6 bg-error-container text-on-error-container rounded-xl text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px]">error</span>
+              {{ formError }}
+            </div>
+          }
+
+          <form (ngSubmit)="envoyerInvitation()" class="space-y-6">
+
+            <!-- Sélection membre -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface-variant">Membre <span class="text-error">*</span></label>
+              <div class="relative group">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">person_search</span>
+                <input
+                  type="text"
+                  [(ngModel)]="recherche"
+                  name="recherche"
+                  (input)="filtrerMembres()"
+                  (focus)="showDropdown = true"
+                  (blur)="fermerDropdown()"
+                  [placeholder]="isLoadingMembres ? 'Chargement...' : 'Rechercher un membre...'"
+                  [disabled]="isLoadingMembres"
+                  class="w-full pl-11 pr-4 py-3 bg-transparent border border-outline-variant rounded-xl text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 focus:translate-x-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                @if (selectedMembre) {
+                  <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary text-[18px]">check_circle</span>
+                }
+
+                <!-- Dropdown membres -->
+                @if (showDropdown && membresFiltes.length > 0) {
+                  <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-outline-variant/40 shadow-lg z-20 max-h-52 overflow-y-auto">
+                    @for (m of membresFiltes; track m.id) {
+                      <button type="button" (mousedown)="selectionnerMembre(m)"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container text-left transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container text-xs font-bold shrink-0">
+                          {{ m.prenom[0] }}{{ m.nom[0] }}
+                        </div>
+                        <div>
+                          <p class="text-sm font-semibold text-on-surface">{{ m.prenom }} {{ m.nom }}</p>
+                          @if (m.telephone) {
+                            <p class="text-xs text-on-surface-variant">{{ m.telephone }}</p>
+                          }
+                        </div>
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (showDropdown && recherche && membresFiltes.length === 0) {
+                  <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-outline-variant/40 shadow-lg z-20 px-4 py-4 text-center">
+                    <p class="text-sm text-on-surface-variant">Aucun membre trouvé.</p>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface-variant" for="email">
+                Adresse email <span class="text-error">*</span>
+              </label>
+              <div class="relative group">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">mail</span>
+                <input
+                  id="email"
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  placeholder="Ex: membre@example.com"
+                  class="w-full pl-11 pr-4 py-3 bg-transparent border border-outline-variant rounded-xl text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 focus:translate-x-1 transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Rôle -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-on-surface-variant">Rôle attribué <span class="text-error">*</span></label>
+              <div class="grid grid-cols-3 gap-3">
+                <label
+                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'membre' ? 'border-primary bg-primary/5' : 'border-outline-variant hover:border-outline'"
+                >
+                  <input type="radio" name="role" value="membre" [(ngModel)]="role" class="sr-only" />
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'membre' ? 'text-primary' : 'text-outline'">person</span>
+                  <span class="text-xs font-semibold" [class]="role === 'membre' ? 'text-primary' : 'text-on-surface-variant'">Membre</span>
+                </label>
+                <label
+                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'tresorier' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
+                >
+                  <input type="radio" name="role" value="tresorier" [(ngModel)]="role" class="sr-only" />
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'tresorier' ? 'text-secondary' : 'text-outline'">account_balance_wallet</span>
+                  <span class="text-xs font-semibold" [class]="role === 'tresorier' ? 'text-secondary' : 'text-on-surface-variant'">Trésorier</span>
+                </label>
+                <label
+                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'bureau' ? 'border-primary bg-primary/5' : 'border-outline-variant hover:border-outline'"
+                >
+                  <input type="radio" name="role" value="bureau" [(ngModel)]="role" class="sr-only" />
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'bureau' ? 'text-primary' : 'text-outline'">admin_panel_settings</span>
+                  <span class="text-xs font-semibold" [class]="role === 'bureau' ? 'text-primary' : 'text-on-surface-variant'">Administrateur</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Bouton envoyer -->
+            <div class="pt-2">
+              <button type="submit" [disabled]="isSending"
+                class="w-full bg-primary text-on-primary py-4 rounded-xl text-sm font-bold tracking-wide hover:shadow-lg active:scale-[0.98] transition-all duration-200 disabled:opacity-60 flex items-center justify-center gap-2">
+                @if (isSending) {
+                  <span class="w-5 h-5 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                  Envoi en cours...
+                } @else {
+                  <span class="material-symbols-outlined text-[20px]">send</span>
+                  Envoyer l'invitation
+                }
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center">
+      <p class="text-xs text-on-surface-muted">
+        L'invitation expirera automatiquement après 7 jours.
+      </p>
+    </footer>
+
+  </main>
+</div>

@@ -1,0 +1,378 @@
+@if (isLoading) {
+  <div class="p-8 max-w-5xl mx-auto">
+    <div class="flex gap-8">
+      <div class="w-56 shrink-0 space-y-2">
+        @for (i of [1,2,3]; track i) {
+          <div class="h-11 bg-surface-container rounded-xl animate-pulse"></div>
+        }
+      </div>
+      <div class="flex-1 space-y-4">
+        <div class="h-6 w-48 bg-surface-container rounded-xl animate-pulse"></div>
+        <div class="h-48 bg-surface-container rounded-2xl animate-pulse"></div>
+        <div class="h-32 bg-surface-container rounded-2xl animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (!isLoading) {
+<div class="p-8 max-w-5xl mx-auto">
+
+  <!-- En-tête page -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-on-surface">Paramètres</h2>
+    <p class="text-sm text-on-surface-variant mt-1">Gérez votre compte, la sécurité et vos préférences.</p>
+  </div>
+
+  <div class="flex gap-8 items-start">
+
+    <!-- Sidebar navigation -->
+    <aside class="w-56 shrink-0 sticky top-8">
+      <nav class="space-y-1">
+        <button
+          (click)="setSection('profil')"
+          [class]="activeSection === 'profil'
+            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
+            : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
+        >
+          <span class="material-symbols-outlined text-[20px]">person</span>
+          Profil
+        </button>
+        <button
+          (click)="setSection('securite')"
+          [class]="activeSection === 'securite'
+            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
+            : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
+        >
+          <span class="material-symbols-outlined text-[20px]">lock</span>
+          Sécurité
+        </button>
+        <button
+          (click)="setSection('notifications')"
+          [class]="activeSection === 'notifications'
+            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
+            : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
+        >
+          <span class="material-symbols-outlined text-[20px]">notifications</span>
+          Notifications
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <div class="flex-1 min-w-0">
+
+      <!-- ── Section Profil ── -->
+      @if (activeSection === 'profil') {
+        <div class="space-y-6">
+
+          <!-- Card avatar + identité -->
+          <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-on-surface mb-5">Informations personnelles</h3>
+
+            <div class="flex gap-6 items-start mb-6">
+              <!-- Avatar -->
+              <div class="relative shrink-0">
+                <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center overflow-hidden">
+                  @if (avatarSrc) {
+                    <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
+                  } @else {
+                    <span class="text-on-primary text-2xl font-bold select-none">{{ initiales }}</span>
+                  }
+                </div>
+                <button
+                  (click)="ouvrirSelecteurPhoto()"
+                  [disabled]="isUploadingPhoto"
+                  class="absolute -bottom-1 -right-1 w-7 h-7 bg-surface-container-high border-2 border-surface-container-lowest rounded-full flex items-center justify-center cursor-pointer hover:bg-primary hover:text-on-primary transition-colors group disabled:opacity-50"
+                  title="Changer la photo"
+                >
+                  @if (isUploadingPhoto) {
+                    <span class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></span>
+                  } @else {
+                    <span class="material-symbols-outlined text-[15px] text-on-surface-variant group-hover:text-on-primary">photo_camera</span>
+                  }
+                </button>
+                <input id="photo-input" type="file" accept="image/*" class="hidden" (change)="onPhotoSelected($event)" />
+              </div>
+              @if (photoError) {
+                <p class="text-xs text-error mt-2 text-center max-w-[120px]">{{ photoError }}</p>
+              }
+              <!-- Nom + rôle -->
+              <div class="pt-1">
+                <p class="font-bold text-on-surface text-lg leading-tight">
+                  {{ prenom }} {{ nomFamille }}
+                </p>
+                <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider" [class]="roleBadgeClass">
+                  {{ roleLabel }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Champs formulaire -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Prénom</label>
+                <input
+                  [(ngModel)]="prenom"
+                  type="text"
+                  placeholder="Prénom"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Nom</label>
+                <input
+                  [(ngModel)]="nomFamille"
+                  type="text"
+                  placeholder="Nom de famille"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Adresse e-mail</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">mail</span>
+                  <input
+                    [(ngModel)]="email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Téléphone</label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">call</span>
+                  <input
+                    [(ngModel)]="telephone"
+                    type="tel"
+                    placeholder="+221 77 000 00 00"
+                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            @if (profileSuccess) {
+              <div class="mt-4 p-3 bg-secondary-container/50 text-on-secondary-container rounded-xl text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                {{ profileSuccess }}
+              </div>
+            }
+            @if (profileError) {
+              <div class="mt-4 p-3 bg-error-container text-on-error-container rounded-xl text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">error</span>
+                {{ profileError }}
+              </div>
+            }
+
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-outline-variant/20">
+              <button
+                (click)="annuler()"
+                class="px-5 py-2.5 rounded-xl border border-outline-variant/40 text-sm font-semibold text-on-surface hover:bg-surface-container transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                (click)="sauvegarder()"
+                [disabled]="isSavingProfile"
+                class="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold hover:-translate-y-px active:scale-[0.98] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                @if (isSavingProfile) {
+                  <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                }
+                Enregistrer
+              </button>
+            </div>
+          </div>
+
+          <!-- Infos compte (lecture seule) -->
+          <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+            <h3 class="text-base font-bold text-on-surface mb-4">Informations du compte</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 bg-surface-container rounded-xl">
+                <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mb-1">Rôle</p>
+                <p class="text-sm font-bold text-on-surface">{{ roleLabel }}</p>
+              </div>
+              <div class="p-4 bg-surface-container rounded-xl">
+                <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mb-1">Statut</p>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-secondary inline-block"></span>
+                  <p class="text-sm font-bold text-on-surface">{{ user?.actif ? 'Actif' : 'Inactif' }}</p>
+                </div>
+              </div>
+              <div class="col-span-2 p-4 bg-surface-container rounded-xl">
+                <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wide mb-1">Membre depuis</p>
+                <p class="text-sm font-bold text-on-surface">
+                  {{ user?.created_at ? (user!.created_at | date:'d MMMM yyyy':'':'fr') : '—' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+
+      <!-- ── Section Sécurité ── -->
+      @if (activeSection === 'securite') {
+        <div class="space-y-6">
+
+          <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:'FILL' 1">lock</span>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-on-surface">Changer le mot de passe</h3>
+                <p class="text-xs text-on-surface-variant">Utilisez un mot de passe fort d'au moins 6 caractères.</p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Mot de passe actuel</label>
+                <input
+                  [(ngModel)]="ancienMotDePasse"
+                  type="password"
+                  placeholder="••••••••"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Nouveau mot de passe</label>
+                <input
+                  [(ngModel)]="nouveauMotDePasse"
+                  type="password"
+                  placeholder="Minimum 6 caractères"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 uppercase tracking-wide">Confirmer le nouveau mot de passe</label>
+                <input
+                  [(ngModel)]="confirmerMotDePasse"
+                  type="password"
+                  placeholder="Répéter le mot de passe"
+                  class="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+
+              <div class="p-3 bg-surface-container rounded-xl flex items-start gap-2">
+                <span class="material-symbols-outlined text-on-surface-variant text-[16px] mt-0.5 shrink-0">info</span>
+                <p class="text-xs text-on-surface-variant">Le mot de passe doit contenir des lettres, des chiffres et des symboles pour être sécurisé.</p>
+              </div>
+
+              @if (passwordSuccess) {
+                <div class="p-3 bg-secondary-container/50 text-on-secondary-container rounded-xl text-sm flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                  {{ passwordSuccess }}
+                </div>
+              }
+              @if (passwordError) {
+                <div class="p-3 bg-error-container text-on-error-container rounded-xl text-sm flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">error</span>
+                  {{ passwordError }}
+                </div>
+              }
+            </div>
+
+            <div class="flex justify-end mt-6 pt-5 border-t border-outline-variant/20">
+              <button
+                (click)="changerMotDePasse()"
+                [disabled]="isSavingPassword"
+                class="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-sm font-bold hover:-translate-y-px active:scale-[0.98] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                @if (isSavingPassword) {
+                  <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                }
+                Mettre à jour le mot de passe
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+
+      <!-- ── Section Notifications ── -->
+      @if (activeSection === 'notifications') {
+        <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+          <h3 class="text-base font-bold text-on-surface mb-1">Préférences de notifications</h3>
+          <p class="text-xs text-on-surface-variant mb-6">Choisissez les notifications que vous souhaitez recevoir.</p>
+
+          <div class="space-y-3">
+
+            <!-- Toggle row -->
+            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-secondary-container rounded-lg flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-secondary-container text-[18px]">payments</span>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-on-surface">E-mails de contribution</p>
+                  <p class="text-xs text-on-surface-variant">Recevez un reçu pour chaque paiement.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                <input [(ngModel)]="notifContributions" type="checkbox" class="sr-only peer" />
+                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-secondary-container rounded-lg flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-secondary-container text-[18px]">event</span>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-on-surface">Rappels d'événements</p>
+                  <p class="text-xs text-on-surface-variant">Notifications 24h avant une réunion.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                <input [(ngModel)]="notifEvenements" type="checkbox" class="sr-only peer" />
+                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-error-container rounded-lg flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-error-container text-[18px]">security</span>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-on-surface">Alertes de sécurité</p>
+                  <p class="text-xs text-on-surface-variant">Connexions depuis de nouveaux appareils.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                <input [(ngModel)]="notifSecurite" type="checkbox" class="sr-only peer" />
+                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-surface-container-high rounded-lg flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-on-surface-variant text-[18px]">campaign</span>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-on-surface">Annonces dahira</p>
+                  <p class="text-xs text-on-surface-variant">Soyez informé des nouvelles annonces.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                <input [(ngModel)]="notifAnnonces" type="checkbox" class="sr-only peer" />
+                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+              </label>
+            </div>
+
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+
+</div>
+}

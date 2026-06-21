@@ -27,7 +27,7 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
 
   readonly categories = [
     { value: '', label: 'Tout' },
-    { value: 'bureau', label: 'Bureau' },
+    { value: 'bureau', label: 'Administrateur' },
     { value: 'tresorier', label: 'Trésoriers' },
   ];
 

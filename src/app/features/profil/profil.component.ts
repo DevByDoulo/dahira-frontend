@@ -19,6 +19,7 @@ export class ProfilComponent implements OnInit {
   errorMessage = '';
 
   ongletActif: Onglet = 'informations';
+  readonly backendUrl = 'http://localhost:3000';
 
   // Formulaire changement de mot de passe
   ancienPassword = '';
@@ -59,6 +60,12 @@ export class ProfilComponent implements OnInit {
     this.passwordError = '';
   }
 
+  get avatarSrc(): string | null {
+    const url = this.user?.photo_url;
+    if (!url) return null;
+    return url.startsWith('http') ? url : `${this.backendUrl}${url}`;
+  }
+
   get initiales(): string {
     if (!this.user?.nom) return '?';
     return this.user.nom
@@ -71,7 +78,7 @@ export class ProfilComponent implements OnInit {
 
   get roleLabel(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'Bureau';
+      case 'bureau': return 'Administrateur';
       case 'tresorier': return 'Trésorier';
       default: return 'Membre';
     }

@@ -106,7 +106,7 @@ export class AjouterPhotoComponent implements OnInit {
           if (err.status === 0) {
             this.errorMessage = 'Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 3000.';
           } else if (err.status === 403) {
-            this.errorMessage = 'Accès refusé. Rôle Bureau requis.';
+            this.errorMessage = 'Accès refusé. Rôle Administrateur requis.';
           } else if (err.status === 413) {
             this.errorMessage = 'Fichiers trop volumineux. Limitez à 5 Mo par photo.';
           } else {

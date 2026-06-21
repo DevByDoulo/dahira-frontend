@@ -150,6 +150,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/photos/photos.component').then(m => m.PhotosComponent),
       },
+      {
+        path: 'parametres',
+        loadComponent: () =>
+          import('./features/parametres/parametres.component').then(m => m.ParametresComponent),
+      },
+      {
+        path: 'invitation',
+        loadComponent: () =>
+          import('./features/invitation/invitation.component').then(m => m.InvitationComponent),
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./features/users/users.component').then(m => m.UsersComponent),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },

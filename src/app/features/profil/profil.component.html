@@ -28,13 +28,17 @@
     <!-- Carte en-tête profil -->
     <section class="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant/20 custom-shadow flex flex-col md:flex-row items-center gap-8">
 
-      <!-- Avatar initiales -->
+      <!-- Avatar -->
       <div class="relative shrink-0">
-        <div class="w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none">
-          {{ initiales }}
+        <div class="w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none overflow-hidden">
+          @if (avatarSrc) {
+            <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
+          } @else {
+            {{ initiales }}
+          }
         </div>
         @if (user.actif) {
-          <div class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-green-500 border-3 border-white border-[3px]"></div>
+          <div class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-green-500 border-[3px] border-white"></div>
         }
       </div>
 

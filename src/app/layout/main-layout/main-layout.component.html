@@ -1,12 +1,12 @@
 <aside class="w-64 h-full fixed left-0 top-0 bg-surface-container-lowest shadow-sm flex flex-col gap-2 p-6 z-50">
   <!-- Logo -->
-  <div class="flex items-center gap-3 px-2 mb-16">
-    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-      <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+  <div class="flex items-center gap-2 px-2 mb-4">
+    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+      <span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">account_balance</span>
     </div>
     <div>
-      <h1 class="text-xl font-bold text-primary leading-tight">Dahira</h1>
-      <p class="text-xs text-on-surface-muted">Modernist</p>
+      <h1 class="text-base font-bold text-primary leading-tight">Dahira</h1>
+      <p class="text-[10px] text-on-surface-muted">Modernist</p>
     </div>
   </div>
 
@@ -19,28 +19,28 @@
         #rla="routerLinkActive"
         [routerLinkActiveOptions]="{ exact: false }"
         [class]="rla.isActive
-          ? 'flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
-          : 'flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
+          ? 'flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
+          : 'flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
       >
-        <span class="material-symbols-outlined">{{ item.icon }}</span>
-        <span class="text-base">{{ item.label }}</span>
+        <span class="material-symbols-outlined text-[22px]">{{ item.icon }}</span>
+        <span class="text-sm">{{ item.label }}</span>
       </a>
     }
 
   </nav>
 
   <!-- Paramètres collé en bas -->
-  <div class="border-t border-outline-soft/30 pt-4">
+  <div class="border-t border-outline-soft/30 pt-3">
     <a
       routerLink="/parametres"
       routerLinkActive=""
       #rlaSettings="routerLinkActive"
       [class]="rlaSettings.isActive
-        ? 'flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
-        : 'flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
+        ? 'flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
+        : 'flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
     >
-      <span class="material-symbols-outlined">settings</span>
-      <span class="text-base">Paramètres</span>
+      <span class="material-symbols-outlined text-[22px]">settings</span>
+      <span class="text-sm">Paramètres</span>
     </a>
   </div>
 </aside>
@@ -67,13 +67,19 @@
       </a>
 
       <div class="flex items-center gap-3 pl-4 border-l border-outline-soft/30">
-        <div class="text-right hidden sm:block">
-          <p class="text-sm font-bold text-on-surface">{{ userFullName }}</p>
-          <p class="text-xs text-on-surface-muted">{{ userRole }}</p>
-        </div>
-        <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-sm text-on-secondary-container border-2 border-surface-container-highest">
-          {{ userInitials }}
-        </div>
+        <a routerLink="/profil" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+          <div class="text-right hidden sm:block">
+            <p class="text-sm font-bold text-on-surface">{{ userFullName }}</p>
+            <p class="text-xs text-on-surface-muted">{{ userRole }}</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-sm text-on-secondary-container border-2 border-surface-container-highest overflow-hidden">
+            @if (avatarSrc) {
+              <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
+            } @else {
+              {{ userInitials }}
+            }
+          </div>
+        </a>
         <button
           (click)="logout()"
           class="p-1 text-on-surface-variant hover:text-error transition-colors"
