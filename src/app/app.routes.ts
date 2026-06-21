@@ -126,6 +126,30 @@ export const routes: Routes = [
             m => m.DetailEvenementComponent,
           ),
       },
+      {
+        path: 'profil',
+        loadComponent: () =>
+          import('./features/profil/profil.component').then(m => m.ProfilComponent),
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/notifications/notifications.component').then(
+            m => m.NotificationsComponent,
+          ),
+      },
+      {
+        path: 'photos/ajouter',
+        loadComponent: () =>
+          import('./features/photos/ajouter-photo/ajouter-photo.component').then(
+            m => m.AjouterPhotoComponent,
+          ),
+      },
+      {
+        path: 'photos',
+        loadComponent: () =>
+          import('./features/photos/photos.component').then(m => m.PhotosComponent),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },

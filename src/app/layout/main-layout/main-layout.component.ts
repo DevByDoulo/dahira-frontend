@@ -26,6 +26,7 @@ export class MainLayoutComponent implements OnInit {
     { label: 'Trésorerie', icon: 'account_balance', route: '/tresorerie' },
     { label: 'Dépenses', icon: 'receipt_long', route: '/depenses' },
     { label: 'Événements', icon: 'event', route: '/evenements' },
+    { label: 'Photos', icon: 'photo_library', route: '/photos' },
     { label: 'Annonces', icon: 'campaign', route: '/annonces' },
   ];
 

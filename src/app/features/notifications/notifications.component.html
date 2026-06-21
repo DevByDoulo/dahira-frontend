@@ -1,0 +1,158 @@
+<!-- Skeleton -->
+@if (isLoading) {
+  <div class="px-10 py-8 max-w-4xl mx-auto space-y-4">
+    <div class="h-10 w-72 bg-surface-container rounded-xl animate-pulse"></div>
+    <div class="h-12 bg-surface-container rounded-2xl animate-pulse"></div>
+    @for (i of [1,2,3,4]; track i) {
+      <div class="h-20 bg-surface-container-lowest rounded-2xl animate-pulse border border-outline-variant/20"></div>
+    }
+  </div>
+}
+
+@if (!isLoading && errorMessage) {
+  <div class="px-10 py-8 max-w-4xl mx-auto">
+    <div class="p-5 bg-error-container text-on-error-container rounded-2xl flex items-center gap-3">
+      <span class="material-symbols-outlined">error</span>
+      {{ errorMessage }}
+    </div>
+  </div>
+}
+
+@if (!isLoading && !errorMessage) {
+  <div class="px-10 py-8 max-w-4xl mx-auto space-y-6 pb-12">
+
+    <!-- En-tête -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-on-surface">Notifications</h1>
+        @if (unread > 0) {
+          <p class="text-sm text-on-surface-variant mt-0.5">
+            <span class="font-bold text-secondary">{{ unread }}</span> non lue{{ unread > 1 ? 's' : '' }}
+          </p>
+        }
+      </div>
+      @if (unread > 0) {
+        <button
+          (click)="toutMarquerLu()"
+          class="text-sm font-semibold text-secondary hover:underline flex items-center gap-1.5"
+        >
+          <span class="material-symbols-outlined text-[16px]">done_all</span>
+          Tout marquer comme lu
+        </button>
+      }
+    </div>
+
+    <!-- Onglets -->
+    <div class="flex gap-1 bg-surface-container-highest p-1 rounded-2xl">
+      @for (tab of [
+        { val: 'toutes', label: 'Toutes' },
+        { val: 'paiements', label: 'Paiements' },
+        { val: 'evenements', label: 'Événements' },
+        { val: 'annonces', label: 'Annonces' }
+      ]; track tab.val) {
+        <button
+          (click)="setOnglet($any(tab.val))"
+          class="flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-1.5"
+          [class]="ongletActif === tab.val
+            ? 'bg-surface-container-lowest text-on-surface font-bold custom-shadow'
+            : 'text-on-surface-variant hover:text-on-surface'"
+        >
+          {{ tab.label }}
+          @if (compteOnglet($any(tab.val)) > 0) {
+            <span class="text-xs px-1.5 py-0.5 rounded-full"
+              [class]="ongletActif === tab.val ? 'bg-secondary-container text-on-secondary-container' : 'bg-outline-variant/30 text-on-surface-variant'">
+              {{ compteOnglet($any(tab.val)) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Liste des notifications -->
+    <div class="space-y-3">
+      @if (filtrees.length === 0) {
+        <div class="flex flex-col items-center py-16 text-center">
+          <span class="material-symbols-outlined text-5xl text-outline-variant mb-3">notifications_off</span>
+          <p class="text-on-surface-variant text-sm">Aucune notification dans cette catégorie.</p>
+        </div>
+      }
+
+      @for (n of filtrees; track n.id) {
+        <div
+          (click)="marquerLu(n)"
+          class="flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer"
+          [class]="n.is_read
+            ? 'bg-surface-container-lowest border-outline-variant/15 hover:border-outline-variant/30'
+            : 'bg-secondary-container/10 border-secondary/20 hover:border-secondary/40'"
+        >
+          <!-- Icône -->
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" [class]="iconeBgClass(n)">
+            <span class="material-symbols-outlined text-[20px]">{{ icone(n.type) }}</span>
+          </div>
+
+          <!-- Contenu -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold text-on-surface leading-tight" [class]="n.is_read ? '' : 'font-bold'">
+                {{ n.title }}
+              </p>
+              <div class="flex items-center gap-2 shrink-0">
+                @if (!n.is_read) {
+                  <span class="w-2 h-2 rounded-full bg-secondary shrink-0"></span>
+                }
+                <span class="text-xs text-on-surface-variant whitespace-nowrap">{{ tempsRelatif(n.created_at) }}</span>
+              </div>
+            </div>
+            <p class="text-sm text-on-surface-variant mt-0.5 leading-snug">{{ n.message }}</p>
+          </div>
+
+          <!-- Ignorer -->
+          <button
+            (click)="supprimer(n, $event)"
+            class="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-surface-container text-on-surface-variant transition-all shrink-0"
+            title="Ignorer"
+          >
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Bento résumé -->
+    @if (notifications.length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
+        <div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/20 custom-shadow">
+          <h3 class="text-sm font-bold text-on-surface mb-4">Résumé</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center">
+              <p class="text-2xl font-bold text-secondary">{{ unread }}</p>
+              <p class="text-xs text-on-surface-variant mt-0.5">Non lues</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl font-bold text-on-surface">{{ notifications.length }}</p>
+              <p class="text-xs text-on-surface-variant mt-0.5">Total</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl font-bold text-on-surface">{{ compteOnglet('paiements') }}</p>
+              <p class="text-xs text-on-surface-variant mt-0.5">Paiements</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl font-bold text-on-surface">{{ compteOnglet('evenements') }}</p>
+              <p class="text-xs text-on-surface-variant mt-0.5">Événements</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-secondary-container/30 rounded-2xl p-6 border border-secondary/10">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="material-symbols-outlined text-secondary">tips_and_updates</span>
+            <h3 class="text-sm font-bold text-on-surface">Optimisez vos alertes</h3>
+          </div>
+          <p class="text-sm text-on-surface-variant leading-relaxed">
+            Marquez vos notifications comme lues régulièrement pour ne manquer aucune information importante sur votre dahira.
+          </p>
+        </div>
+      </div>
+    }
+
+  </div>
+}
