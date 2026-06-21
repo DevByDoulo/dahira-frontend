@@ -119,6 +119,13 @@ export const routes: Routes = [
             m => m.CreerEvenementComponent,
           ),
       },
+      {
+        path: 'evenements/:id',
+        loadComponent: () =>
+          import('./features/evenements/detail-evenement/detail-evenement.component').then(
+            m => m.DetailEvenementComponent,
+          ),
+      },
       // Autres routes protégées à ajouter ici
     ],
   },

@@ -92,7 +92,8 @@
         @for (ev of filtres; track ev.id; let first = $first) {
           <article
             [class]="first ? 'lg:col-span-2' : ''"
-            class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/15 custom-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-200"
+            class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/15 custom-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-200 cursor-pointer"
+            [routerLink]="['/evenements', ev.id]"
           >
 
             <!-- Image / placeholder -->
@@ -134,7 +135,7 @@
               @if (isBureau) {
                 <div class="absolute bottom-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
-                    (click)="ouvrirSupprimer(ev)"
+                    (click)="$event.stopPropagation(); ouvrirSupprimer(ev)"
                     class="p-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-error hover:bg-error hover:text-on-error transition-colors shadow-sm">
                     <span class="material-symbols-outlined text-[16px]">delete</span>
                   </button>
@@ -206,9 +207,12 @@
 
                 <div class="h-px bg-outline-variant/20 mb-3"></div>
 
-                <button class="w-full py-2 text-secondary text-sm font-bold border border-secondary/30 hover:bg-secondary-container/40 rounded-xl transition-colors">
+                <a
+                  [routerLink]="['/evenements', ev.id]"
+                  class="block w-full py-2 text-center text-secondary text-sm font-bold border border-secondary/30 hover:bg-secondary-container/40 rounded-xl transition-colors"
+                >
                   Voir les détails
-                </button>
+                </a>
               }
 
             </div>

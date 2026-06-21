@@ -15,7 +15,21 @@ export interface Evenement {
   photo_url: string | null;
   statut?: 'a_venir' | 'en_cours' | 'passe' | 'annule';
   participants_count?: number;
+  mon_inscription?: boolean;
   created_at: string;
+}
+
+export interface Participant {
+  membre_id: number;
+  nom: string;
+  prenom: string;
+  inscrit: boolean;
+  present: boolean | null;
+}
+
+export interface ParticipantsResponse {
+  success: boolean;
+  data: Participant[];
 }
 
 export interface EvenementResponse {
@@ -62,5 +76,23 @@ export class EvenementsService {
 
   deleteEvenement(id: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(`${this.apiUrl}/evenements/${id}`);
+  }
+
+  getParticipants(id: number): Observable<ParticipantsResponse> {
+    return this.http.get<ParticipantsResponse>(`${this.apiUrl}/evenements/${id}/participants`);
+  }
+
+  toggleInscription(id: number): Observable<{ success: boolean; data: { inscrit: boolean } }> {
+    return this.http.post<{ success: boolean; data: { inscrit: boolean } }>(
+      `${this.apiUrl}/evenements/${id}/inscription`,
+      {},
+    );
+  }
+
+  updatePresence(id: number, membreId: number, present: boolean): Observable<{ success: boolean }> {
+    return this.http.patch<{ success: boolean }>(
+      `${this.apiUrl}/evenements/${id}/presence/${membreId}`,
+      { present },
+    );
   }
 }
