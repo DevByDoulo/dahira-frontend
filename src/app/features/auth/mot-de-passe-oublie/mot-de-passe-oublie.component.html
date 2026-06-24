@@ -1,0 +1,140 @@
+<header class="fixed top-0 left-0 w-full flex justify-center py-8 z-10">
+  <h1 class="text-2xl font-bold text-primary">Dahira App</h1>
+</header>
+
+<main
+  class="min-h-screen flex flex-col items-center justify-center p-6"
+  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)"
+>
+  <div class="w-full max-w-[480px] animate-fade-in">
+    <!-- Carte principale -->
+    <div class="bg-white rounded-xl p-10 ambient-card-shadow border border-outline-variant/20">
+
+      <!-- Icône & En-tête -->
+      <div class="flex flex-col items-center text-center mb-6">
+        <div
+          class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 animate-scale-in"
+        >
+          <span class="material-symbols-outlined text-primary text-[32px]">lock_reset</span>
+        </div>
+        <h2 class="text-2xl font-bold text-on-surface mb-2">Mot de passe oublié ?</h2>
+        <p class="text-base text-on-surface-variant max-w-[320px]">
+          Entrez votre numéro de téléphone pour recevoir un lien de réinitialisation.
+        </p>
+      </div>
+
+      <!-- Message d'erreur -->
+      <div
+        *ngIf="errorMessage"
+        class="mb-5 p-4 bg-error/10 border border-error/30 rounded-lg flex items-center gap-3 animate-slide-down"
+      >
+        <span class="material-symbols-outlined text-error text-xl">error</span>
+        <span class="text-sm text-error font-medium">{{ errorMessage }}</span>
+      </div>
+
+      <!-- Formulaire -->
+      <form (ngSubmit)="onSubmit()" #resetForm="ngForm" class="space-y-6">
+        <div class="space-y-1">
+          <label class="text-sm font-medium text-on-surface-variant block ml-1" for="telephone">
+            Numéro de téléphone
+          </label>
+          <div
+            class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-white"
+          >
+            <span class="material-symbols-outlined absolute left-3 text-outline z-10">phone</span>
+            <input
+              id="telephone"
+              type="tel"
+              name="telephone"
+              [(ngModel)]="telephone"
+              required
+              placeholder="221771234567"
+              class="w-full pl-10 pr-4 py-3 bg-transparent border-none outline-none text-base placeholder:text-outline-variant"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isLoading || !telephone"
+          class="w-full bg-primary text-on-primary font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="isLoading" class="animate-spin">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </span>
+          <span>{{ isLoading ? 'Envoi en cours...' : 'Envoyer le lien' }}</span>
+          <span
+            *ngIf="!isLoading"
+            class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+          >arrow_forward</span>
+        </button>
+      </form>
+
+      <!-- Lien retour -->
+      <div class="mt-10 pt-6 border-t border-outline-variant/30 text-center">
+        <a
+          routerLink="/login"
+          class="inline-flex items-center gap-1 text-sm font-medium text-secondary hover:underline transition-all duration-200"
+        >
+          <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+          Retour à la connexion
+        </a>
+      </div>
+    </div>
+
+    <!-- Texte support -->
+    <p class="mt-6 text-center text-xs text-on-tertiary-container">
+      Besoin d'aide ?
+      <a href="#" class="text-primary font-semibold hover:underline">Contacter le support</a>
+    </p>
+  </div>
+</main>
+
+<!-- État de succès (overlay) -->
+<div
+  *ngIf="showSuccess"
+  class="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+>
+  <div
+    class="bg-white rounded-xl p-10 ambient-card-shadow border border-outline-variant/20 max-w-md w-full text-center animate-scale-in"
+  >
+    <div
+      class="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6"
+    >
+      <span
+        class="material-symbols-outlined text-[40px]"
+        style="font-variation-settings: 'FILL' 1"
+      >check_circle</span>
+    </div>
+    <h2 class="text-2xl font-bold text-on-surface mb-2">Lien envoyé !</h2>
+    <p class="text-base text-on-surface-variant mb-10">
+      Si un compte existe pour le numéro
+      <span class="font-bold text-on-surface">{{ successTelephone }}</span>,
+      vous recevrez un message avec les instructions de réinitialisation sous peu.
+    </p>
+    <button
+      type="button"
+      (click)="dismissSuccess()"
+      class="w-full bg-surface-container-high text-primary font-bold py-4 px-6 rounded-xl hover:bg-surface-variant transition-colors duration-200"
+    >
+      Retour à la connexion
+    </button>
+  </div>
+</div>
+
+<!-- Formes décoratives -->
+<div class="fixed top-0 left-0 -z-10 w-full h-full overflow-hidden pointer-events-none">
+  <div
+    class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-surface-container-high/50 rounded-full blur-[120px]"
+  ></div>
+  <div
+    class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary-container/20 rounded-full blur-[120px]"
+  ></div>
+</div>

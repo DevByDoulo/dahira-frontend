@@ -6,6 +6,13 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   {
+    path: 'mot-de-passe-oublie',
+    loadComponent: () =>
+      import('./features/auth/mot-de-passe-oublie/mot-de-passe-oublie.component').then(
+        m => m.MotDePasseOublieComponent,
+      ),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layout/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
