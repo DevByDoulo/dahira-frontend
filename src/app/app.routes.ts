@@ -13,6 +13,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'nouveau-mot-de-passe',
+    loadComponent: () =>
+      import('./features/auth/nouveau-mot-de-passe/nouveau-mot-de-passe.component').then(
+        m => m.NouveauMotDePasseComponent,
+      ),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layout/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
@@ -63,6 +70,11 @@ export const routes: Routes = [
         path: 'cotisations',
         loadComponent: () =>
           import('./features/cotisations/cotisations.component').then(m => m.CotisationsComponent),
+      },
+      {
+        path: 'recus',
+        loadComponent: () =>
+          import('./features/cotisations/recus/recus.component').then(m => m.RecusComponent),
       },
       {
         path: 'cotisations/encaisser',

@@ -108,6 +108,28 @@
         <!-- ── Colonne droite : contact & photo ── -->
         <div class="space-y-6">
 
+          <!-- Email -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant" for="email">
+              Email <span class="text-error">*</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Ex : moussa.diop@email.com"
+              [class]="email.invalid && email.touched
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+            />
+            @if (email.invalid && email.touched) {
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">error</span>
+                {{ email.hasError('required') ? "L'email est obligatoire." : "L'adresse email n'est pas valide." }}
+              </p>
+            }
+          </div>
+
           <!-- Téléphone principal -->
           <div class="flex flex-col gap-1.5">
             <label class="text-sm font-medium text-on-surface-variant" for="telephone">
@@ -258,7 +280,7 @@
       <div>
         <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Conseil</p>
         <p class="text-xs text-on-secondary-container mt-0.5">
-          Les champs Nom et Prénom sont obligatoires. La photo est uploadée après la création du membre.
+          Les champs Nom, Prénom et Email sont obligatoires. La photo est uploadée après la création du membre.
         </p>
       </div>
     </div>

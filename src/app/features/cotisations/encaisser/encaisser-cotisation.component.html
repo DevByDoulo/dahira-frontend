@@ -15,7 +15,63 @@
 
 <div class="px-16 py-10 max-w-screen-xl mx-auto">
 
+  <!-- ── Panneau de succès post-encaissement ── -->
+  @if (cotisationSuccessId !== null) {
+    <div class="flex flex-col items-center justify-center min-h-[60vh] gap-8">
+
+      <!-- Icône + titre -->
+      <div class="flex flex-col items-center gap-4 text-center">
+        <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center">
+          <span class="material-symbols-outlined text-[48px] text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-on-surface mb-2">Paiement enregistré !</h2>
+          <p class="text-on-surface-variant text-base max-w-md">
+            La cotisation a bien été enregistrée. Voulez-vous générer un reçu PDF pour ce paiement ?
+          </p>
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+
+        <!-- Générer le reçu -->
+        @if (!recuGenere) {
+          <button
+            (click)="genererRecu()"
+            [disabled]="generatingRecu"
+            class="flex items-center gap-3 px-10 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 text-base"
+          >
+            @if (generatingRecu) {
+              <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
+              Génération…
+            } @else {
+              <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+              Générer le reçu
+            }
+          </button>
+        } @else {
+          <div class="flex items-center gap-3 px-6 py-4 bg-secondary-container text-on-secondary-container rounded-xl font-medium text-sm">
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            Reçu {{ recuGenere }} généré — redirection…
+          </div>
+        }
+
+        <!-- Continuer sans reçu -->
+        <button
+          (click)="continuerSansRecu()"
+          [disabled]="generatingRecu"
+          class="px-8 py-4 text-on-surface-variant font-medium hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-colors text-base"
+        >
+          Continuer sans reçu
+        </button>
+
+      </div>
+    </div>
+  }
+
   <!-- Breadcrumb + titre -->
+  @if (cotisationSuccessId === null) {
   <div class="mb-10">
     <div class="flex items-center gap-2 text-sm text-on-surface-muted mb-2">
       <a routerLink="/cotisations" class="hover:text-primary transition-colors">Cotisations</a>
@@ -413,4 +469,5 @@
 
     </aside>
   </div>
+  } <!-- fin @if cotisationSuccessId === null -->
 </div>

@@ -101,4 +101,11 @@ export class CotisationsService {
       {},
     );
   }
+
+  creerRecu(cotisationId: number): Observable<{ success: boolean; data: { numero_recu: string } }> {
+    return this.http.post<{ success: boolean; data: { numero_recu: string } }>(
+      `${this.apiUrl}/recus`,
+      { cotisation_id: cotisationId },
+    );
+  }
 }

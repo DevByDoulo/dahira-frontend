@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-mot-de-passe-oublie',
@@ -18,7 +19,7 @@ export class MotDePasseOublieComponent {
   successTelephone = '';
   showSuccess = false;
 
-  private apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

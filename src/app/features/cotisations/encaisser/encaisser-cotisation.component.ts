@@ -37,6 +37,10 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
   currentTime = '';
   private clockTimer: ReturnType<typeof setInterval> | null = null;
 
+  cotisationSuccessId: number | null = null;
+  generatingRecu = false;
+  recuGenere: string | null = null;
+
   toast: { message: string; type: 'success' | 'error' } | null = null;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -196,15 +200,36 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
     };
 
     this.cotisationsService.encaisserCotisation(payload).subscribe({
-      next: () => {
-        this.showToast('Paiement enregistré avec succès !', 'success');
-        setTimeout(() => this.router.navigate(['/cotisations']), 1500);
+      next: (res) => {
+        this.cotisationSuccessId = res.data?.id ?? null;
+        this.isSubmitting = false;
       },
       error: (err) => {
         this.errorMessage = err?.error?.message ?? 'Erreur serveur. Veuillez réessayer.';
         this.isSubmitting = false;
       },
     });
+  }
+
+  genererRecu(): void {
+    if (!this.cotisationSuccessId) return;
+    this.generatingRecu = true;
+    this.cotisationsService.creerRecu(this.cotisationSuccessId!).subscribe({
+      next: (res) => {
+        this.recuGenere = res.data?.numero_recu ?? null;
+        this.generatingRecu = false;
+        this.showToast(`Reçu ${this.recuGenere} généré avec succès !`, 'success');
+        setTimeout(() => this.router.navigate(['/recus']), 1800);
+      },
+      error: (err) => {
+        this.showToast(err?.error?.message ?? 'Impossible de générer le reçu.', 'error');
+        this.generatingRecu = false;
+      },
+    });
+  }
+
+  continuerSansRecu(): void {
+    this.router.navigate(['/cotisations']);
   }
 
   annuler(): void {

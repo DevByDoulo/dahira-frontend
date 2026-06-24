@@ -29,6 +29,7 @@ export class AjouterMembreComponent implements OnDestroy {
     this.form = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
       telephone: [''],
       telephone_secours: [''],
       date_adhesion: [''],
@@ -38,6 +39,7 @@ export class AjouterMembreComponent implements OnDestroy {
 
   get nom() { return this.form.get('nom')!; }
   get prenom() { return this.form.get('prenom')!; }
+  get email() { return this.form.get('email')!; }
   get telephone() { return this.form.get('telephone')!; }
 
   onPhoneInput(event: Event, controlName: 'telephone' | 'telephone_secours'): void {

@@ -26,6 +26,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     { label: 'Membres', icon: 'group', route: '/membres' },
     { label: 'Séances', icon: 'event_repeat', route: '/seances' },
     { label: 'Cotisations', icon: 'payments', route: '/cotisations' },
+    { label: 'Reçus', icon: 'receipt', route: '/recus' },
     { label: 'Trésorerie', icon: 'account_balance', route: '/tresorerie' },
     { label: 'Dépenses', icon: 'receipt_long', route: '/depenses' },
     { label: 'Événements', icon: 'event', route: '/evenements' },
