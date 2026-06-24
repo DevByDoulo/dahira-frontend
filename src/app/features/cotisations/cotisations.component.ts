@@ -255,7 +255,8 @@ export class CotisationsComponent implements OnInit {
   // ── Helpers d'affichage ─────────────────────────────────────────────────────
 
   formatMontant(montant: number | string): string {
-    return Number(montant).toLocaleString('fr-SN') + ' FCFA';
+    const n = Math.round(Number(montant));
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
   }
 
   formatDate(date: string | undefined): string {

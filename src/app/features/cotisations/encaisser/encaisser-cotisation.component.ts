@@ -75,7 +75,7 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
       error: () => { this.chargementMembres = false; },
     });
 
-    this.seancesService.getSeances().subscribe({
+    this.seancesService.getSeances({ cloturee: false, limit: 10 }).subscribe({
       next: (res) => {
         this.seances = res.success ? res.data : [];
         this.chargementSeances = false;
@@ -118,15 +118,19 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
     return this.membres.filter((m) => m.actif).length;
   }
 
+  private formatFCFA(n: number): string {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
+  }
+
   get montantFormatePreview(): string {
     const v = Number(this.form.get('montant')!.value);
     if (!v || v <= 0) return '';
-    return v.toLocaleString('fr-SN') + ' FCFA';
+    return this.formatFCFA(v);
   }
 
   get totalMensuelFormate(): string {
     if (!this.stats) return '—';
-    return this.stats.total_general.toLocaleString('fr-SN') + ' FCFA';
+    return this.formatFCFA(this.stats.total_general);
   }
 
   onSearchInput(): void {

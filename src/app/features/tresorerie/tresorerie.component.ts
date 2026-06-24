@@ -278,7 +278,8 @@ export class TresorerieComponent implements OnInit {
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   formatMontant(m: number | string): string {
-    return Number(m).toLocaleString('fr-SN') + ' FCFA';
+    const n = Math.round(Number(m));
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
   }
 
   formatMontantCourt(m: number | string): string {

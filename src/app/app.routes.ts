@@ -60,6 +60,11 @@ export const routes: Routes = [
           import('./features/seances/creer-seance/creer-seance.component').then(m => m.CreerSeanceComponent),
       },
       {
+        path: 'seances/:id',
+        loadComponent: () =>
+          import('./features/seances/detail-seance/detail-seance.component').then(m => m.DetailSeanceComponent),
+      },
+      {
         path: 'seances/:id/modifier',
         loadComponent: () =>
           import('./features/seances/modifier-seance/modifier-seance.component').then(

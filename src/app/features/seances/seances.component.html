@@ -146,7 +146,10 @@
 
             @for (seance of paginated; track seance.id) {
               @let statut = getStatut(seance);
-              <tr class="hover:bg-surface-container-low/30 transition-colors group">
+              <tr
+                class="hover:bg-surface-container-low/30 transition-colors group cursor-pointer"
+                [routerLink]="['/seances', seance.id]"
+              >
 
                 <!-- Titre / Thème -->
                 <td class="px-6 py-5">
@@ -204,7 +207,7 @@
                 </td>
 
                 <!-- Actions -->
-                <td class="px-6 py-5 text-right">
+                <td class="px-6 py-5 text-right" (click)="$event.stopPropagation()">
                   <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"

@@ -39,9 +39,11 @@ export class SeancesService {
 
   constructor(private http: HttpClient) {}
 
-  getSeances(type?: string): Observable<SeancesResponse> {
+  getSeances(options?: { type?: string; cloturee?: boolean; limit?: number }): Observable<SeancesResponse> {
     let params = new HttpParams();
-    if (type) params = params.set('type', type);
+    if (options?.type) params = params.set('type', options.type);
+    if (options?.cloturee !== undefined) params = params.set('cloturee', String(options.cloturee));
+    if (options?.limit !== undefined) params = params.set('limit', String(options.limit));
     return this.http.get<SeancesResponse>(`${this.apiUrl}/seances`, { params });
   }
 

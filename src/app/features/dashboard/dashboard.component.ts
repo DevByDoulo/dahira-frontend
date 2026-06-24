@@ -159,7 +159,8 @@ export class DashboardComponent implements OnInit {
   }
 
   formatFCFA(value: number): string {
-    return value.toLocaleString('fr-FR');
+    const n = Math.round(value);
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
   navigateToEvents(): void {

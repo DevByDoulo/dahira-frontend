@@ -178,7 +178,8 @@ export class RecusComponent implements OnInit {
   }
 
   formatMontant(montant: number | string): string {
-    return Number(montant).toLocaleString('fr-SN') + ' FCFA';
+    const n = Math.round(Number(montant));
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
   }
 
   formatDate(date: string): string {

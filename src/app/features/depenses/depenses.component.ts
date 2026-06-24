@@ -181,7 +181,8 @@ export class DepensesComponent implements OnInit, OnDestroy {
   // ── Helpers d'affichage ─────────────────────────────────────────────────────
 
   formatMontant(m: number | string): string {
-    return Number(m).toLocaleString('fr-SN') + ' FCFA';
+    const n = Math.round(Number(m));
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
   }
 
   formatDate(d: string): string {
