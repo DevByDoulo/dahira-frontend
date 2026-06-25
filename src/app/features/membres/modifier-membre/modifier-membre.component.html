@@ -42,44 +42,24 @@
           <!-- Colonne gauche -->
           <div class="space-y-6">
 
-            <!-- Nom -->
+            <!-- Prénom et Nom -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-on-surface-variant" for="nom">
-                Nom <span class="text-error">*</span>
+              <label class="text-sm font-medium text-on-surface-variant" for="nom_complet">
+                Prénom et Nom <span class="text-error">*</span>
               </label>
               <input
-                id="nom"
+                id="nom_complet"
                 type="text"
-                formControlName="nom"
-                [class]="nom.invalid && nom.touched
+                formControlName="nom_complet"
+                placeholder="Ex : Moussa Diop"
+                [class]="nom_complet.invalid && nom_complet.touched
                   ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
                   : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
               />
-              @if (nom.invalid && nom.touched) {
+              @if (nom_complet.invalid && nom_complet.touched) {
                 <p class="text-xs text-error flex items-center gap-1">
                   <span class="material-symbols-outlined text-base">error</span>
-                  {{ nom.hasError('required') ? 'Le nom est obligatoire.' : 'Minimum 2 caractères.' }}
-                </p>
-              }
-            </div>
-
-            <!-- Prénom -->
-            <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-on-surface-variant" for="prenom">
-                Prénom <span class="text-error">*</span>
-              </label>
-              <input
-                id="prenom"
-                type="text"
-                formControlName="prenom"
-                [class]="prenom.invalid && prenom.touched
-                  ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
-                  : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
-              />
-              @if (prenom.invalid && prenom.touched) {
-                <p class="text-xs text-error flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base">error</span>
-                  {{ prenom.hasError('required') ? 'Le prénom est obligatoire.' : 'Minimum 2 caractères.' }}
+                  {{ nom_complet.hasError('required') ? 'Le nom est obligatoire.' : 'Minimum 2 caractères.' }}
                 </p>
               }
             </div>
@@ -116,7 +96,7 @@
           <!-- Colonne droite -->
           <div class="space-y-6">
 
-            <!-- Téléphone principal -->
+            <!-- Téléphone -->
             <div class="flex flex-col gap-1.5">
               <label class="text-sm font-medium text-on-surface-variant" for="telephone">Téléphone</label>
               <input
@@ -124,7 +104,7 @@
                 type="tel"
                 formControlName="telephone"
                 placeholder="77 123 45 67"
-                (input)="onPhoneInput($event, 'telephone')"
+                (input)="onPhoneInput($event)"
                 [class]="phoneErrorMessage
                   ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
                   : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
@@ -137,79 +117,6 @@
               }
             </div>
 
-            <!-- Téléphone secours -->
-            <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-on-surface-variant" for="telephone_secours">Téléphone secours</label>
-              <input
-                id="telephone_secours"
-                type="tel"
-                formControlName="telephone_secours"
-                placeholder="76 987 65 43"
-                (input)="onPhoneInput($event, 'telephone_secours')"
-                class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
-              />
-            </div>
-
-            <!-- Photo -->
-            <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-on-surface-variant">Photo du membre</label>
-
-              <input
-                #fileInput
-                type="file"
-                accept="image/jpeg,image/jpg,image/png"
-                class="hidden"
-                (change)="onFileChange($event)"
-              />
-
-              <!-- Nouvelle photo sélectionnée -->
-              @if (photoPreviewUrl) {
-                <div class="relative rounded-xl overflow-hidden border border-outline-variant/50 group">
-                  <img [src]="photoPreviewUrl" alt="Aperçu" class="w-full h-48 object-cover" />
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                    <button type="button" (click)="fileInput.click()"
-                      class="px-3 py-2 bg-white text-on-surface rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-base">edit</span> Changer
-                    </button>
-                    <button type="button" (click)="removeNewPhoto(fileInput)"
-                      class="px-3 py-2 bg-error text-on-error rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-base">delete</span> Annuler
-                    </button>
-                  </div>
-                </div>
-              <!-- Photo existante -->
-              } @else if (existingPhotoUrl) {
-                <div class="relative rounded-xl overflow-hidden border border-outline-variant/50 group">
-                  <img [src]="apiBase + existingPhotoUrl" alt="Photo actuelle" class="w-full h-48 object-cover" />
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button type="button" (click)="fileInput.click()"
-                      class="px-3 py-2 bg-white text-on-surface rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-base">edit</span> Changer la photo
-                    </button>
-                  </div>
-                </div>
-              <!-- Aucune photo -->
-              } @else {
-                <button
-                  type="button"
-                  (click)="fileInput.click()"
-                  class="border-2 border-dashed border-outline-soft rounded-xl p-8 flex flex-col items-center justify-center gap-2 hover:border-secondary hover:bg-secondary/5 transition-all w-full group"
-                >
-                  <span class="material-symbols-outlined text-outline group-hover:text-secondary text-4xl">add_a_photo</span>
-                  <div class="text-center">
-                    <p class="text-sm font-medium text-on-surface">Cliquez pour téléverser</p>
-                    <p class="text-xs text-on-surface-muted mt-0.5">JPG ou PNG · Max 5 Mo</p>
-                  </div>
-                </button>
-              }
-
-              @if (photoErrorMessage) {
-                <p class="text-xs text-error flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base">error</span>
-                  {{ photoErrorMessage }}
-                </p>
-              }
-            </div>
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { DashboardService } from '../../core/services/dashboard.service';
+import { AnnoncesService, Annonce } from '../../core/services/annonces.service';
 
 interface BarData {
   label: string;
@@ -34,6 +35,21 @@ interface TresPoint {
 export class DashboardComponent implements OnInit {
   isLoading = true;
 
+  // Rôle extrait du localStorage
+  readonly role: string =
+    (JSON.parse(localStorage.getItem('user') ?? 'null') as { role?: string } | null)?.role ?? '';
+
+  get isFinancier(): boolean {
+    return this.role === 'bureau' || this.role === 'tresorier';
+  }
+
+  get userName(): string {
+    return (
+      (JSON.parse(localStorage.getItem('user') ?? 'null') as { nom?: string } | null)?.nom ??
+      'Membre'
+    );
+  }
+
   totalMembres = 0;
   membresActifs = 0;
   cotisationsMois = 0;
@@ -41,7 +57,6 @@ export class DashboardComponent implements OnInit {
   soldeTresorerie = 0;
   evenementsCount = 0;
 
-  // Hauteurs en px (base 180px) pour éviter la dépendance circulaire des % dans flex
   bars: BarData[] = [
     { label: 'Jan', heightPx: 72, active: false },
     { label: 'Fév', heightPx: 99, active: false },
@@ -51,7 +66,6 @@ export class DashboardComponent implements OnInit {
     { label: 'Juin', heightPx: 171, active: true },
   ];
 
-  // SVG évolution solde — chemin décoratif par défaut, remplacé par les vraies données
   tresLineD = 'M0,80 Q20,75 40,60 T80,30 T100,20';
   tresAreaD = 'M0,80 Q20,75 40,60 T80,30 T100,20 L100,100 L0,100 Z';
   tresPts: TresPoint[] = [{ x: 0, y: 80 }, { x: 40, y: 60 }, { x: 100, y: 20 }];
@@ -59,9 +73,11 @@ export class DashboardComponent implements OnInit {
   tresLastLabel = 'Juin';
 
   events: EventItem[] = [];
+  annonces: Annonce[] = [];
 
   constructor(
     private dashboardService: DashboardService,
+    private annoncesService: AnnoncesService,
     private router: Router,
   ) {}
 
@@ -69,8 +85,9 @@ export class DashboardComponent implements OnInit {
     forkJoin({
       stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
       charts: this.dashboardService.getCharts().pipe(catchError(() => of(null))),
+      annonces: this.annoncesService.getAnnonces().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ stats, charts }) => {
+      next: ({ stats, charts, annonces }) => {
         if (stats?.success) {
           const d = stats.data;
           this.totalMembres = d.membres.total ?? 0;
@@ -79,7 +96,7 @@ export class DashboardComponent implements OnInit {
           this.tauxAJour = Number(d.cotisations.taux_a_jour ?? 0);
           this.soldeTresorerie = Number(d.tresorerie.solde_global ?? 0);
           this.evenementsCount = d.evenements_a_venir?.length ?? 0;
-          this.events = (d.evenements_a_venir ?? []).map(e => ({
+          this.events = (d.evenements_a_venir ?? []).map((e: any) => ({
             id: e.id,
             ...this.parseEventDate(e.date_evenement),
             title: e.titre,
@@ -90,14 +107,14 @@ export class DashboardComponent implements OnInit {
 
         if (charts?.success) {
           const evoCot = charts.data.evolution_cotisations;
-          if (evoCot?.length) {
-            this.bars = this.buildBars(evoCot);
-          }
+          if (evoCot?.length) this.bars = this.buildBars(evoCot);
 
           const evoTres = charts.data.evolution_tresorerie;
-          if (evoTres?.length) {
-            this.buildTresChart(evoTres);
-          }
+          if (evoTres?.length) this.buildTresChart(evoTres);
+        }
+
+        if (annonces?.success) {
+          this.annonces = (annonces.data ?? []).slice(0, 5);
         }
 
         this.isLoading = false;
@@ -108,7 +125,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // SUM(DECIMAL) depuis mysql2 revient en string → Number() obligatoire
   private buildBars(data: Array<{ mois: string; nombre: number; montant: number }>): BarData[] {
     const slice = data.slice(-6);
     const max = Math.max(...slice.map(d => Number(d.montant)), 1);
@@ -120,7 +136,6 @@ export class DashboardComponent implements OnInit {
     }));
   }
 
-  // Génère le chemin SVG depuis les vraies données de trésorerie
   private buildTresChart(
     data: Array<{ periode: string; solde: number; entrees: number; sorties: number }>,
   ): void {
@@ -161,6 +176,10 @@ export class DashboardComponent implements OnInit {
   formatFCFA(value: number): string {
     const n = Math.round(value);
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  formatAnnonceDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
   }
 
   navigateToEvents(): void {

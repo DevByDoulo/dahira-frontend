@@ -136,7 +136,10 @@
             }
 
             @for (membre of paginated; track membre.id) {
-              <tr class="hover:bg-surface-container-low/30 transition-colors">
+              <tr
+                class="hover:bg-surface-container-low/30 transition-colors cursor-pointer"
+                (click)="router.navigate(['/membres', membre.id])"
+              >
 
                 <!-- Membre -->
                 <td class="px-6 py-4">
@@ -187,22 +190,22 @@
                 </td>
 
                 <!-- Actions -->
-                <td class="px-6 py-4 text-right">
+                <td class="px-6 py-4 text-right" (click)="$event.stopPropagation()">
                   <div class="flex items-center justify-end gap-1">
-                    <button
+                    <a
+                      [routerLink]="['/membres', membre.id]"
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
-                      title="Voir le profil (bientôt disponible)"
-                      disabled
+                      title="Voir le profil"
                     >
-                      <span class="material-symbols-outlined text-xl opacity-40">visibility</span>
-                    </button>
-                    <button
+                      <span class="material-symbols-outlined text-xl">visibility</span>
+                    </a>
+                    <a
+                      [routerLink]="['/membres', membre.id, 'modifier']"
                       class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
-                      title="Modifier (bientôt disponible)"
-                      disabled
+                      title="Modifier le membre"
                     >
-                      <span class="material-symbols-outlined text-xl opacity-40">edit</span>
-                    </button>
+                      <span class="material-symbols-outlined text-xl">edit</span>
+                    </a>
                     <button
                       (click)="desactiverMembre(membre)"
                       [title]="membre.actif ? 'Désactiver le membre' : 'Réactiver le membre'"

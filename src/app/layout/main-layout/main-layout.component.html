@@ -1,96 +1,119 @@
-<aside class="w-64 h-full fixed left-0 top-0 bg-surface-container-lowest shadow-sm flex flex-col gap-2 p-6 z-50">
+<aside class="w-64 h-full fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant/20 flex flex-col gap-0 z-50" style="box-shadow: 2px 0 12px -4px rgba(0,0,0,0.06)">
+
   <!-- Logo -->
-  <div class="flex items-center gap-2 px-2 mb-4">
-    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-      <span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+  <div class="flex items-center gap-3 px-5 py-6 border-b border-outline-variant/10">
+    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shrink-0" style="box-shadow: 0 4px 12px rgba(0,0,0,0.25)">
+      <span class="material-symbols-outlined text-white text-[22px]" style="font-variation-settings: 'FILL' 1">account_balance</span>
     </div>
     <div>
-      <h1 class="text-base font-bold text-primary leading-tight">Dahira</h1>
-      <p class="text-[10px] text-on-surface-muted">Modernist</p>
+      <h1 class="text-base font-black text-on-surface leading-tight tracking-tight">Dahira App</h1>
+      <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold mt-0.5">Gestion communautaire</p>
     </div>
   </div>
 
   <!-- Navigation principale -->
-  <nav class="flex flex-col gap-1 flex-1">
-    @for (item of navItems; track item.route) {
+  <nav class="flex flex-col gap-0.5 flex-1 px-3 py-4 overflow-y-auto">
+    @for (item of visibleNavItems; track item.route) {
       <a
         [routerLink]="item.route"
         routerLinkActive=""
         #rla="routerLinkActive"
         [routerLinkActiveOptions]="{ exact: false }"
         [class]="rla.isActive
-          ? 'flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
-          : 'flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
+          ? 'flex items-center gap-3 px-3.5 py-3 bg-primary text-on-primary rounded-xl font-bold text-sm'
+          : 'flex items-center gap-3 px-3.5 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-xl text-sm font-medium hover:translate-x-0.5'"
       >
-        <span class="material-symbols-outlined text-[22px]">{{ item.icon }}</span>
-        <span class="text-sm">{{ item.label }}</span>
+        <span class="material-symbols-outlined text-[21px] shrink-0" [class.icon-filled]="rla.isActive">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
       </a>
     }
-
   </nav>
 
-  <!-- Paramètres collé en bas -->
-  <div class="border-t border-outline-soft/30 pt-3">
+  <!-- Paramètres + profil en bas -->
+  <div class="border-t border-outline-variant/20 px-3 py-3 space-y-0.5">
     <a
       routerLink="/parametres"
       routerLinkActive=""
       #rlaSettings="routerLinkActive"
       [class]="rlaSettings.isActive
-        ? 'flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container rounded-xl font-bold transition-all'
-        : 'flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all'"
+        ? 'flex items-center gap-3 px-3.5 py-3 bg-primary text-on-primary rounded-xl font-bold text-sm'
+        : 'flex items-center gap-3 px-3.5 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-xl text-sm font-medium hover:translate-x-0.5'"
     >
-      <span class="material-symbols-outlined text-[22px]">settings</span>
-      <span class="text-sm">Paramètres</span>
+      <span class="material-symbols-outlined text-[21px] shrink-0">settings</span>
+      <span>Paramètres</span>
+    </a>
+
+    <!-- Mini profil -->
+    <a routerLink="/profil" class="flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface">
+      <div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center font-black text-xs text-on-secondary-container shrink-0 overflow-hidden border border-outline-variant/20">
+        @if (avatarSrc) {
+          <img [src]="avatarSrc" alt="Photo" class="w-full h-full object-cover" />
+        } @else {
+          {{ userInitials }}
+        }
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-bold text-on-surface truncate">{{ userFullName }}</p>
+        <p class="text-[10px] text-on-surface-variant capitalize">{{ userRole }}</p>
+      </div>
     </a>
   </div>
 </aside>
 
 <!-- Zone principale -->
-<main class="ml-64 min-h-screen">
+<main class="ml-64 min-h-screen flex flex-col">
+
   <!-- Header sticky -->
-  <header class="w-full h-20 sticky top-0 z-40 bg-surface-bg-start/80 backdrop-blur-md flex justify-between items-center px-16">
+  <header class="w-full h-16 sticky top-0 z-40 bg-surface-bg-start/90 backdrop-blur-md border-b border-outline-variant/10 flex justify-between items-center px-8" style="box-shadow: 0 1px 8px -2px rgba(0,0,0,0.04)">
+
     <!-- Barre de recherche -->
     <div class="relative">
-      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+      <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span>
       <input
-        class="pl-10 pr-4 py-2 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-secondary w-64 transition-all duration-200 outline-none text-sm"
+        class="pl-11 pr-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-2xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary/50 w-72 outline-none text-sm placeholder:text-on-surface-variant/50 text-on-surface"
         placeholder="Rechercher..."
         type="text"
       />
     </div>
 
     <!-- Actions utilisateur -->
-    <div class="flex items-center gap-6">
-      <a routerLink="/notifications" class="relative p-2 text-on-surface-variant hover:text-secondary transition-colors">
-        <span class="material-symbols-outlined">notifications</span>
-        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+    <div class="flex items-center gap-2">
+
+      <!-- Notifications -->
+      <a routerLink="/notifications" class="relative p-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-xl">
+        <span class="material-symbols-outlined text-[22px]">notifications</span>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface-bg-start"></span>
       </a>
 
-      <div class="flex items-center gap-3 pl-4 border-l border-outline-soft/30">
-        <a routerLink="/profil" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-          <div class="text-right hidden sm:block">
-            <p class="text-sm font-bold text-on-surface">{{ userFullName }}</p>
-            <p class="text-xs text-on-surface-muted">{{ userRole }}</p>
-          </div>
-          <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-sm text-on-secondary-container border-2 border-surface-container-highest overflow-hidden">
+      <!-- Séparateur -->
+      <div class="w-px h-6 bg-outline-variant/30 mx-1"></div>
+
+      <!-- Profil + déconnexion -->
+      <div class="flex items-center gap-2">
+        <a routerLink="/profil" class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-surface-container-low">
+          <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center font-black text-xs text-on-secondary-container overflow-hidden border-2 border-surface-container-highest shrink-0">
             @if (avatarSrc) {
               <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
             } @else {
               {{ userInitials }}
             }
           </div>
+          <div class="hidden sm:block text-left">
+            <p class="text-sm font-bold text-on-surface leading-tight">{{ userFullName }}</p>
+            <p class="text-[11px] text-on-surface-variant capitalize leading-tight">{{ userRole }}</p>
+          </div>
         </a>
         <button
           (click)="logout()"
-          class="p-1 text-on-surface-variant hover:text-error transition-colors"
+          class="p-2.5 text-on-surface-variant hover:text-error hover:bg-error-container/30 rounded-xl"
           title="Se déconnecter"
         >
-          <span class="material-symbols-outlined text-xl">logout</span>
+          <span class="material-symbols-outlined text-[20px]">logout</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Contenu de la page injecté par le router -->
+  <!-- Contenu de la page -->
   <router-outlet />
 </main>

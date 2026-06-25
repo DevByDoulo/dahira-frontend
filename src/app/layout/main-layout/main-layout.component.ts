@@ -8,6 +8,7 @@ interface NavItem {
   label: string;
   icon: string;
   route: string;
+  roles?: string[]; // undefined = visible par tous les rôles
 }
 
 @Component({
@@ -22,18 +23,25 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private profileSub?: Subscription;
 
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-    { label: 'Membres', icon: 'group', route: '/membres' },
-    { label: 'Séances', icon: 'event_repeat', route: '/seances' },
-    { label: 'Cotisations', icon: 'payments', route: '/cotisations' },
-    { label: 'Reçus', icon: 'receipt', route: '/recus' },
-    { label: 'Trésorerie', icon: 'account_balance', route: '/tresorerie' },
-    { label: 'Dépenses', icon: 'receipt_long', route: '/depenses' },
-    { label: 'Événements', icon: 'event', route: '/evenements' },
-    { label: 'Photos', icon: 'photo_library', route: '/photos' },
-    { label: 'Annonces', icon: 'campaign', route: '/annonces' },
-    { label: 'Invitations', icon: 'mail', route: '/invitation' },
+    { label: 'Dashboard',    icon: 'dashboard',       route: '/dashboard' },
+    { label: 'Membres',      icon: 'group',           route: '/membres',    roles: ['bureau'] },
+    { label: 'Séances',      icon: 'event_repeat',    route: '/seances',    roles: ['bureau', 'tresorier'] },
+    { label: 'Cotisations',  icon: 'payments',        route: '/cotisations',roles: ['bureau', 'tresorier'] },
+    { label: 'Reçus',        icon: 'receipt',         route: '/recus',      roles: ['bureau', 'tresorier'] },
+    { label: 'Trésorerie',   icon: 'account_balance', route: '/tresorerie', roles: ['bureau', 'tresorier'] },
+    { label: 'Dépenses',     icon: 'receipt_long',    route: '/depenses',   roles: ['bureau', 'tresorier'] },
+    { label: 'Déclarer un paiement', icon: 'payments',  route: '/cotisations/declarer', roles: ['membre'] },
+    { label: 'Mes reçus',            icon: 'receipt',   route: '/mes-recus',            roles: ['membre'] },
+    { label: 'Événements',   icon: 'event',           route: '/evenements' },
+    { label: 'Photos',       icon: 'photo_library',   route: '/photos' },
+    { label: 'Annonces',     icon: 'campaign',        route: '/annonces' },
+    { label: 'Invitations',  icon: 'mail',            route: '/invitation', roles: ['bureau'] },
   ];
+
+  get visibleNavItems(): NavItem[] {
+    const role = (this.profile?.role ?? this.user?.role ?? '') as string;
+    return this.navItems.filter(item => !item.roles || item.roles.includes(role));
+  }
 
 
   readonly backendUrl = 'http://localhost:3000';

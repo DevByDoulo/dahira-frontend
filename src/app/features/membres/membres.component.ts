@@ -26,7 +26,7 @@ export class MembresComponent implements OnInit {
   constructor(
     private membresService: MembresService,
     private route: ActivatedRoute,
-    private router: Router,
+    readonly router: Router,
   ) {}
 
   ngOnInit(): void {

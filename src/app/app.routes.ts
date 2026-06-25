@@ -48,6 +48,13 @@ export const routes: Routes = [
           import('./features/seances/seances.component').then(m => m.SeancesComponent),
       },
       {
+        path: 'membres/:id',
+        loadComponent: () =>
+          import('./features/membres/detail-membre/detail-membre.component').then(
+            m => m.DetailMembreComponent,
+          ),
+      },
+      {
         path: 'membres/:id/modifier',
         loadComponent: () =>
           import('./features/membres/modifier-membre/modifier-membre.component').then(
@@ -80,6 +87,13 @@ export const routes: Routes = [
         path: 'recus',
         loadComponent: () =>
           import('./features/cotisations/recus/recus.component').then(m => m.RecusComponent),
+      },
+      {
+        path: 'mes-recus',
+        loadComponent: () =>
+          import('./features/cotisations/mes-recus/mes-recus.component').then(
+            m => m.MesRecusComponent,
+          ),
       },
       {
         path: 'cotisations/encaisser',

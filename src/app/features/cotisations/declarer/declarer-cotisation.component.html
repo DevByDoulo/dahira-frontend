@@ -1,204 +1,214 @@
-<div class="flex-1 px-6 py-10 max-w-[900px] w-full mx-auto">
-
-  <!-- Toast -->
-  @if (toast) {
-    <div
-      class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all"
-      [class.bg-green-600]="toast.type === 'success'"
-      [class.bg-red-600]="toast.type === 'error'"
-    >
-      <span class="material-symbols-outlined text-base">
-        {{ toast.type === 'success' ? 'check_circle' : 'error' }}
-      </span>
-      {{ toast.message }}
+<!-- ── État succès ── -->
+@if (submitted) {
+  <div class="p-10 max-w-[640px] mx-auto flex flex-col items-center justify-center min-h-[70vh] text-center gap-6">
+    <div class="w-24 h-24 rounded-full bg-secondary-container flex items-center justify-center">
+      <span class="material-symbols-outlined text-5xl text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
     </div>
-  }
-
-  <!-- Bandeau info -->
-  <div class="mb-10 p-4 bg-[var(--surface-container-high,#dce9ff)] rounded-xl border border-[var(--outline-variant,#c6c6cd)]/20 flex items-start gap-3">
-    <span class="material-symbols-outlined text-[var(--primary,#000)] mt-0.5">info</span>
-    <p class="text-sm text-[var(--on-surface,#0b1c30)]">
-      Votre déclaration sera examinée par le trésorier pour validation.
-    </p>
-  </div>
-
-  <!-- Carte formulaire -->
-  <form
-    [formGroup]="form"
-    (ngSubmit)="onSubmit()"
-    class="bg-white rounded-xl p-10 space-y-6"
-    style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05)"
-  >
-
-    <!-- Grille 2 colonnes -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <!-- Montant -->
-      <div class="space-y-1">
-        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="montant">
-          Montant (FCFA)
-        </label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
-            payments
-          </span>
-          <input
-            id="montant"
-            type="number"
-            formControlName="montant"
-            placeholder="Ex : 5000"
-            class="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none transition-all duration-200 text-sm"
-            [class.border-red-400]="montant.invalid && montant.touched"
-          />
-        </div>
-        @if (montant.invalid && montant.touched) {
-          <p class="text-xs text-red-500 mt-1">
-            {{ montant.hasError('required') ? 'Le montant est obligatoire.' : 'Le montant doit être supérieur à 0.' }}
-          </p>
-        }
-      </div>
-
-      <!-- Méthode de paiement -->
-      <div class="space-y-1">
-        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="mode_paiement">
-          Méthode de paiement
-        </label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
-            account_balance_wallet
-          </span>
-          <select
-            id="mode_paiement"
-            formControlName="mode_paiement"
-            class="w-full pl-12 pr-10 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none appearance-none transition-all duration-200 text-sm bg-transparent"
-          >
-            @for (mode of modes; track mode.value) {
-              <option [value]="mode.value">{{ mode.label }}</option>
-            }
-          </select>
-          <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] pointer-events-none text-xl">
-            expand_more
-          </span>
-        </div>
-      </div>
-
-      <!-- Numéro de transaction -->
-      <div class="space-y-1">
-        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="note">
-          Numéro de transaction
-        </label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
-            confirmation_number
-          </span>
-          <input
-            id="note"
-            type="text"
-            formControlName="note"
-            placeholder="ID de la transaction"
-            class="w-full pl-12 pr-4 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none transition-all duration-200 text-sm"
-          />
-        </div>
-      </div>
-
-      <!-- Séance associée -->
-      <div class="space-y-1">
-        <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)]" for="seance_id">
-          Séance associée
-        </label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] text-xl">
-            calendar_today
-          </span>
-          <select
-            id="seance_id"
-            formControlName="seance_id"
-            class="w-full pl-12 pr-10 py-3 rounded-xl border border-[var(--outline-soft,#c6c6cd)] focus:border-[var(--primary,#000)] focus:ring-1 focus:ring-black/10 outline-none appearance-none transition-all duration-200 text-sm bg-transparent"
-            [class.border-red-400]="seance_id.invalid && seance_id.touched"
-          >
-            <option [value]="null" disabled selected>Choisir une séance…</option>
-            @if (chargementSeances) {
-              <option disabled>Chargement…</option>
-            } @else {
-              @for (s of seances; track s.id) {
-                <option [value]="s.id">{{ formatDateSeance(s) }} — {{ typeLabel(s.type) }}</option>
-              }
-            }
-          </select>
-          <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[var(--outline,#76777d)] pointer-events-none text-xl">
-            expand_more
-          </span>
-        </div>
-        @if (seance_id.invalid && seance_id.touched) {
-          <p class="text-xs text-red-500 mt-1">Veuillez sélectionner une séance.</p>
-        }
-      </div>
-
+    <div>
+      <h2 class="text-2xl font-black text-on-surface mb-3">Déclaration envoyée !</h2>
+      <p class="text-base text-on-surface-variant leading-relaxed">
+        Votre paiement a été déclaré, en attente de validation.
+      </p>
+      <p class="text-sm text-on-surface-variant mt-2">
+        Le trésorier examinera votre déclaration sous peu.
+      </p>
     </div>
-
-    <!-- Zone upload preuve -->
-    <div class="pt-2">
-      <label class="block text-sm font-medium text-[var(--on-surface-variant,#45464d)] mb-1">
-        Capture d'écran de preuve
-      </label>
-      <div
-        class="relative border-2 border-dashed border-[var(--outline-soft,#c6c6cd)] rounded-xl p-16 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group bg-[var(--surface-container-low,#eff4ff)]/30"
-        [class.border-black]="selectedFileName"
-        [class.bg-black]="selectedFileName"
-        style=""
+    <div class="flex flex-col sm:flex-row gap-3 mt-2">
+      <button
+        (click)="nouvelleDeclaration()"
+        class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-semibold text-sm hover:shadow-md active:scale-95 transition-all"
       >
-        <input
-          type="file"
-          accept="image/*,application/pdf"
-          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          (change)="onFileChange($event)"
-        />
-        <div class="w-12 h-12 rounded-full bg-[var(--surface-container-high,#dce9ff)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <span class="material-symbols-outlined text-[var(--primary,#000)]">upload_file</span>
-        </div>
-        @if (selectedFileName) {
-          <p class="text-sm font-semibold text-[var(--on-surface,#0b1c30)]">Fichier prêt : {{ selectedFileName }}</p>
-        } @else {
-          <p class="text-sm font-semibold text-[var(--on-surface,#0b1c30)]">Cliquez pour téléverser</p>
-          <p class="text-xs text-[var(--on-surface-variant,#45464d)] mt-2">Format PNG, JPG ou PDF (max. 5 Mo)</p>
-        }
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        Nouvelle déclaration
+      </button>
+      <a
+        routerLink="/dashboard"
+        class="flex items-center gap-2 px-6 py-3 border border-outline-variant rounded-xl font-semibold text-sm text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-all"
+      >
+        <span class="material-symbols-outlined text-[18px]">home</span>
+        Retour à l'accueil
+      </a>
+    </div>
+  </div>
+}
+
+<!-- ── Formulaire ── -->
+@if (!submitted) {
+  <div class="px-6 py-10 max-w-[900px] w-full mx-auto space-y-6">
+
+    <!-- En-tête -->
+    <div class="flex items-center gap-3">
+      <a
+        routerLink="/dashboard"
+        class="flex items-center justify-center w-9 h-9 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-all"
+        title="Retour"
+      >
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </a>
+      <div>
+        <h2 class="text-2xl font-black text-on-surface">Déclarer un paiement</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Signalez votre cotisation pour validation par le trésorier.</p>
       </div>
     </div>
 
-    <!-- Image décorative -->
-    <div class="relative h-48 rounded-xl overflow-hidden mt-10">
-      <div class="w-full h-full bg-gradient-to-br from-[var(--primary-container,#131b2e)] to-[var(--surface-container-high,#dce9ff)] flex items-end p-6">
-        <p class="text-white text-sm">Soutenez votre communauté, construisons ensemble l'avenir de notre Dahira.</p>
-      </div>
+    <!-- Bandeau info -->
+    <div class="p-4 bg-surface-container-high rounded-xl border border-outline-variant/20 flex items-start gap-3">
+      <span class="material-symbols-outlined text-secondary mt-0.5 text-[20px]">info</span>
+      <p class="text-sm text-on-surface">
+        Votre déclaration sera examinée par le trésorier pour validation.
+      </p>
     </div>
 
     <!-- Erreur globale -->
     @if (errorMessage) {
-      <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-        <span class="material-symbols-outlined text-base">error</span>
+      <div class="flex items-center gap-3 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+        <span class="material-symbols-outlined text-[18px] flex-shrink-0">error</span>
         {{ errorMessage }}
       </div>
     }
 
-    <!-- Bouton soumettre -->
-    <div class="pt-10">
-      <button
-        type="submit"
-        [disabled]="isSubmitting"
-        class="w-full bg-[var(--primary,#000)] text-white py-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[var(--primary-container,#131b2e)] transition-colors shadow-lg disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]"
-      >
-        @if (isSubmitting) {
-          <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
-          Envoi en cours…
-        } @else {
-          <span>Soumettre</span>
-          <span class="material-symbols-outlined text-base">send</span>
-        }
-      </button>
-      <p class="text-center text-xs text-[var(--on-surface-variant,#45464d)] mt-4">
-        En soumettant ce formulaire, vous certifiez l'exactitude des informations fournies.
-      </p>
-    </div>
+    <!-- Carte formulaire -->
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 ambient-card p-8 space-y-6"
+    >
 
-  </form>
-</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Montant -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="montant">
+            Montant (FCFA) <span class="text-error">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">payments</span>
+            <input
+              id="montant"
+              type="number"
+              formControlName="montant"
+              placeholder="Ex : 5 000"
+              min="1"
+              [class]="montant.invalid && montant.touched
+                ? 'w-full pl-11 pr-4 py-3 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none text-sm transition-all'
+                : 'w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-sm transition-all'"
+            />
+          </div>
+          @if (montant.invalid && montant.touched) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              {{ montant.hasError('required') ? 'Le montant est obligatoire.' : 'Le montant doit être supérieur à 0.' }}
+            </p>
+          }
+        </div>
+
+        <!-- Mode de paiement -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="mode_paiement">
+            Méthode de paiement <span class="text-error">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">account_balance_wallet</span>
+            <select
+              id="mode_paiement"
+              formControlName="mode_paiement"
+              class="w-full pl-11 pr-10 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none text-sm bg-transparent transition-all"
+            >
+              @for (mode of modes; track mode.value) {
+                <option [value]="mode.value">{{ mode.label }}</option>
+              }
+            </select>
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none text-[20px]">expand_more</span>
+          </div>
+        </div>
+
+        <!-- Séance associée — pleine largeur -->
+        <div class="md:col-span-2 space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="seance_id">
+            Séance associée <span class="text-error">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">event_repeat</span>
+            <select
+              id="seance_id"
+              formControlName="seance_id"
+              [class]="seance_id.invalid && seance_id.touched
+                ? 'w-full pl-11 pr-10 py-3 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none appearance-none text-sm bg-transparent transition-all'
+                : 'w-full pl-11 pr-10 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none text-sm bg-transparent transition-all'"
+            >
+              <option [ngValue]="null" disabled>Choisir une séance…</option>
+              @if (chargementSeances) {
+                <option disabled>Chargement…</option>
+              } @else if (seances.length === 0) {
+                <option disabled>Aucune séance disponible</option>
+              } @else {
+                @for (s of seances; track s.id) {
+                  <option [ngValue]="s.id">
+                    {{ formatDateSeance(s) }} — {{ typeLabel(s.type) }}
+                  </option>
+                }
+              }
+            </select>
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none text-[20px]">expand_more</span>
+          </div>
+          @if (seance_id.invalid && seance_id.touched) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">error</span>
+              Veuillez sélectionner une séance.
+            </p>
+          }
+        </div>
+
+        <!-- Note optionnelle — pleine largeur -->
+        <div class="md:col-span-2 space-y-1.5">
+          <label class="text-sm font-semibold text-on-surface-variant" for="note">
+            Note <span class="text-xs font-normal text-on-surface-variant">(optionnelle)</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-3.5 material-symbols-outlined text-outline text-[20px]">edit_note</span>
+            <textarea
+              id="note"
+              formControlName="note"
+              rows="3"
+              placeholder="Numéro de transaction, remarque…"
+              class="w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-sm resize-none transition-all"
+            ></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bannière motivationnelle -->
+      <div class="relative h-36 rounded-xl overflow-hidden">
+        <div class="w-full h-full bg-gradient-to-br from-primary-container to-secondary flex items-end p-5">
+          <p class="text-white text-sm font-medium leading-relaxed">
+            Soutenez votre communauté — construisons ensemble l'avenir de notre Dahira.
+          </p>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent pointer-events-none"></div>
+      </div>
+
+      <!-- Bouton soumettre -->
+      <div class="pt-2">
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-primary text-on-primary shadow-md hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          @if (isSubmitting) {
+            <span class="w-5 h-5 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+            Envoi en cours…
+          } @else {
+            <span>Soumettre</span>
+            <span class="material-symbols-outlined text-[18px]">send</span>
+          }
+        </button>
+        <p class="text-center text-xs text-on-surface-variant mt-4">
+          En soumettant ce formulaire, vous certifiez l'exactitude des informations fournies.
+        </p>
+      </div>
+
+    </form>
+  </div>
+}

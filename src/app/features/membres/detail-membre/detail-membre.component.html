@@ -1,0 +1,285 @@
+<!-- Squelette chargement -->
+@if (isLoading) {
+  <div class="p-10 max-w-4xl mx-auto space-y-6">
+    <div class="h-10 w-48 bg-surface-container rounded-xl animate-pulse"></div>
+    <div class="h-48 bg-surface-container-lowest rounded-2xl animate-pulse"></div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="h-24 bg-surface-container-lowest rounded-xl animate-pulse"></div>
+      <div class="h-24 bg-surface-container-lowest rounded-xl animate-pulse"></div>
+    </div>
+    <div class="h-96 bg-surface-container-lowest rounded-xl animate-pulse"></div>
+  </div>
+}
+
+<!-- État d'erreur -->
+@if (!isLoading && errorMessage) {
+  <div class="p-10 max-w-4xl mx-auto flex flex-col items-center justify-center py-24 gap-4 text-center">
+    <span class="material-symbols-outlined text-6xl text-error">person_off</span>
+    <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+    <button
+      (click)="charger()"
+      class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+    >
+      <span class="material-symbols-outlined text-xl">refresh</span>
+      Réessayer
+    </button>
+  </div>
+}
+
+<!-- Contenu -->
+@if (!isLoading && !errorMessage && membre) {
+  <div class="p-10 max-w-4xl mx-auto space-y-6">
+
+    <!-- Bouton retour + fil d'ariane -->
+    <div class="flex items-center gap-3">
+      <button
+        (click)="retour()"
+        class="flex items-center justify-center w-9 h-9 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-all"
+        title="Retour"
+      >
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </button>
+      <nav class="flex items-center gap-2 text-sm text-on-surface-variant">
+        <a routerLink="/membres" class="hover:text-secondary transition-colors">Membres</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <span class="text-on-surface font-medium">{{ membre.prenom }} {{ membre.nom }}</span>
+      </nav>
+    </div>
+
+    <!-- Card profil -->
+    <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 ambient-card p-8 flex flex-col sm:flex-row items-center gap-8">
+
+      <!-- Avatar -->
+      <div class="relative shrink-0">
+        <div class="w-28 h-28 rounded-full border-4 border-secondary-container overflow-hidden">
+          @if (avatarUrl) {
+            <img [src]="avatarUrl" [alt]="membre.prenom + ' ' + membre.nom" class="w-full h-full object-cover" />
+          } @else {
+            <div class="w-full h-full bg-secondary-container flex items-center justify-center">
+              <span class="text-3xl font-black text-on-secondary-container">{{ initiales }}</span>
+            </div>
+          }
+        </div>
+        <span
+          [class]="membre.actif
+            ? 'absolute bottom-1 right-1 w-5 h-5 rounded-full bg-green-500 ring-2 ring-white block'
+            : 'absolute bottom-1 right-1 w-5 h-5 rounded-full bg-outline ring-2 ring-white block'"
+        ></span>
+      </div>
+
+      <!-- Infos principales -->
+      <div class="flex-1 text-center sm:text-left">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+          <h1 class="text-2xl font-black text-on-surface">{{ membre.prenom }} {{ membre.nom }}</h1>
+          <span
+            [class]="membre.actif
+              ? 'inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold self-center sm:self-auto'
+              : 'inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full text-xs font-bold self-center sm:self-auto'"
+          >
+            <span [class]="membre.actif ? 'w-1.5 h-1.5 rounded-full bg-secondary' : 'w-1.5 h-1.5 rounded-full bg-outline'"></span>
+            {{ membre.actif ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+        <div class="flex flex-wrap justify-center sm:justify-start gap-4 text-sm">
+          @if (membre.telephone) {
+            <span class="flex items-center gap-1.5 text-secondary font-medium">
+              <span class="material-symbols-outlined text-[18px]">call</span>
+              {{ formatTel(membre.telephone) }}
+            </span>
+          }
+          @if (membre.responsabilites) {
+            <span class="flex items-center gap-1.5 text-on-surface-variant">
+              <span class="material-symbols-outlined text-[18px]">badge</span>
+              {{ membre.responsabilites }}
+            </span>
+          }
+          @if (membre.date_adhesion) {
+            <span class="flex items-center gap-1.5 text-on-surface-variant">
+              <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+              Depuis {{ formatDate(membre.date_adhesion) }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Bouton modifier -->
+      <a
+        [routerLink]="['/membres', membre.id, 'modifier']"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-semibold text-sm hover:shadow-md active:scale-95 transition-all shrink-0"
+      >
+        <span class="material-symbols-outlined text-xl">edit</span>
+        Modifier
+      </a>
+    </section>
+
+    <!-- KPI -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-5 flex items-center gap-4 ambient-card">
+        <div class="w-11 h-11 rounded-xl bg-secondary-container flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">payments</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cotisations validées</p>
+          <h3 class="text-2xl font-black text-on-surface mt-0.5">{{ nbApprouvees }}</h3>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-5 flex items-center gap-4 ambient-card">
+        <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total versé</p>
+          <h3 class="text-xl font-black text-on-surface mt-0.5">{{ formatMontant(totalApprouvees) }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onglets -->
+    <div class="border-b border-outline-variant/20">
+      <div class="flex gap-1">
+        <button
+          (click)="setTab('infos')"
+          [class]="activeTab === 'infos'
+            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all'
+            : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all'"
+        >
+          Informations
+        </button>
+        <button
+          (click)="setTab('cotisations')"
+          [class]="activeTab === 'cotisations'
+            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all flex items-center gap-2'
+            : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all flex items-center gap-2'"
+        >
+          Cotisations
+          @if (cotisations.length > 0) {
+            <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">{{ cotisations.length }}</span>
+          }
+        </button>
+        <button
+          (click)="setTab('presences')"
+          [class]="activeTab === 'presences'
+            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all'
+            : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all'"
+        >
+          Présences
+        </button>
+      </div>
+    </div>
+
+    <!-- Panneau : Informations -->
+    @if (activeTab === 'infos') {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Informations Dahira -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 ambient-card p-6 space-y-4">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">mosque</span>
+            <h3 class="text-sm font-bold text-on-surface uppercase tracking-wider">Informations Dahira</h3>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+              <span class="text-on-surface-variant">Date d'adhésion</span>
+              <span class="font-medium text-on-surface">{{ formatDate(membre.date_adhesion) }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+              <span class="text-on-surface-variant">Responsabilités</span>
+              <span class="font-medium text-on-surface text-right max-w-[180px]">{{ membre.responsabilites || '—' }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+              <span class="text-on-surface-variant">Statut</span>
+              <span
+                [class]="membre.actif
+                  ? 'inline-flex items-center gap-1 px-2.5 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold'
+                  : 'inline-flex items-center gap-1 px-2.5 py-1 bg-surface-container-high text-on-surface-variant rounded-full text-xs font-bold'"
+              >
+                {{ membre.actif ? 'Actif' : 'Inactif' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 ambient-card p-6">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">contacts</span>
+            <h3 class="text-sm font-bold text-on-surface uppercase tracking-wider">Contact</h3>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center gap-3 py-2 border-b border-outline-variant/20">
+              <span class="material-symbols-outlined text-on-surface-variant text-[18px]">call</span>
+              <div>
+                <p class="text-xs text-on-surface-variant">Téléphone</p>
+                <p class="font-medium text-on-surface mt-0.5">{{ formatTel(membre.telephone) }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 py-2">
+              <span class="material-symbols-outlined text-on-surface-variant text-[18px]">calendar_month</span>
+              <div>
+                <p class="text-xs text-on-surface-variant">Membre depuis</p>
+                <p class="font-medium text-on-surface mt-0.5">{{ formatDate(membre.created_at) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+
+    <!-- Panneau : Cotisations -->
+    @if (activeTab === 'cotisations') {
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden ambient-card">
+        @if (isLoadingCotisations) {
+          <div class="p-12 flex justify-center">
+            <span class="material-symbols-outlined text-4xl text-outline animate-spin">refresh</span>
+          </div>
+        } @else if (cotisations.length === 0) {
+          <div class="py-16 flex flex-col items-center gap-3 text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-5xl text-outline">payments</span>
+            <p class="text-sm font-medium">Aucune cotisation enregistrée</p>
+            <p class="text-xs">Les cotisations de ce membre apparaîtront ici.</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container-low/60">
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Séance</th>
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Mode</th>
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-soft/30">
+                @for (c of cotisations; track c.id) {
+                  <tr class="hover:bg-surface-container-low/30 transition-colors">
+                    <td class="px-6 py-4 text-sm text-on-surface-variant">{{ formatDate(c.date_seance) }}</td>
+                    <td class="px-6 py-4 text-sm text-on-surface font-medium">{{ typeLabel(c.type) }}</td>
+                    <td class="px-6 py-4 text-sm font-bold text-on-surface">{{ formatMontant(c.montant) }}</td>
+                    <td class="px-6 py-4 text-sm text-on-surface-variant">{{ modeLabel(c.mode_paiement) }}</td>
+                    <td class="px-6 py-4">
+                      <span [class]="'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ' + statutClass(c.statut)">
+                        {{ statutLabel(c.statut) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Panneau : Présences -->
+    @if (activeTab === 'presences') {
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 ambient-card py-20 flex flex-col items-center gap-3 text-center">
+        <span class="material-symbols-outlined text-6xl text-outline">event_available</span>
+        <p class="text-base font-semibold text-on-surface-variant">Historique des présences</p>
+        <p class="text-sm text-on-surface-variant/70">Cette fonctionnalité sera disponible prochainement.</p>
+      </div>
+    }
+
+  </div>
+}

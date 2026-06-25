@@ -30,15 +30,51 @@
 
       <!-- Avatar -->
       <div class="relative shrink-0">
-        <div class="w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none overflow-hidden">
+        <!-- Input fichier caché -->
+        <input
+          #photoInput
+          type="file"
+          accept="image/jpeg,image/png,image/jpg"
+          class="hidden"
+          (change)="onPhotoSelected($event)"
+        />
+
+        <!-- Avatar cliquable si membre_id existe -->
+        <button
+          type="button"
+          (click)="ouvrirChoixPhoto()"
+          [disabled]="!user.membre_id || isUploadingPhoto"
+          class="group relative w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none overflow-hidden disabled:cursor-default"
+          [title]="user.membre_id ? 'Changer la photo de profil' : ''"
+        >
           @if (avatarSrc) {
             <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
           } @else {
             {{ initiales }}
           }
-        </div>
+
+          <!-- Overlay caméra au survol (seulement si membre) -->
+          @if (user.membre_id) {
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+              @if (isUploadingPhoto) {
+                <span class="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin block"></span>
+              } @else {
+                <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+              }
+            </div>
+          }
+        </button>
+
         @if (user.actif) {
           <div class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-green-500 border-[3px] border-white"></div>
+        }
+
+        <!-- Feedback upload -->
+        @if (photoSuccess) {
+          <p class="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-secondary font-medium">{{ photoSuccess }}</p>
+        }
+        @if (photoError) {
+          <p class="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-error font-medium">{{ photoError }}</p>
         }
       </div>
 
