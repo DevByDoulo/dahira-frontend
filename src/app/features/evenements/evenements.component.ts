@@ -19,6 +19,9 @@ export class EvenementsComponent implements OnInit, OnDestroy {
   statutActif: 'a_venir' | 'passe' | '' = 'a_venir';
   searchQuery = '';
 
+  page = 1;
+  readonly pageSize = 6;
+
   modalSupprimer: Evenement | null = null;
   isActionLoading = false;
   isBureau = false;
@@ -79,26 +82,54 @@ export class EvenementsComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  get paginated(): Evenement[] {
+    const start = (this.page - 1) * this.pageSize;
+    return this.filtres.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(Math.ceil(this.filtres.length / this.pageSize), 1);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  get rangeLabel(): string {
+    const total = this.filtres.length;
+    if (total === 0) return 'Aucun événement';
+    const start = (this.page - 1) * this.pageSize + 1;
+    const end = Math.min(this.page * this.pageSize, total);
+    return `${start}–${end} sur ${total} événement${total > 1 ? 's' : ''}`;
+  }
+
+  setPage(p: number): void {
+    if (p >= 1 && p <= this.totalPages) this.page = p;
+  }
+
   setOnglet(val: string): void {
     this.statutActif = val as 'a_venir' | 'passe' | '';
+    this.page = 1;
+  }
+
+  onSearch(): void {
+    this.page = 1;
+  }
+
+  get totalEvenements(): number {
+    return this.evenements.length;
+  }
+
+  get evenementsAVenir(): number {
+    return this.evenements.filter((e) => this.statutCalcule(e) === 'a_venir').length;
+  }
+
+  get evenementsPasses(): number {
+    return this.evenements.filter((e) => this.statutCalcule(e) === 'passe').length;
   }
 
   formatDate(d: string): string {
-    return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-  }
-
-  jour(d: string): string {
-    return new Date(d).getDate().toString().padStart(2, '0');
-  }
-
-  mois(d: string): string {
-    return new Date(d).toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase();
-  }
-
-  statutBadge(e: Evenement): string {
-    const s = this.statutCalcule(e);
-    if (s === 'a_venir') return 'bg-secondary-container text-on-secondary-container';
-    return 'bg-surface-container text-on-surface-variant';
+    return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   statutLabel(e: Evenement): string {

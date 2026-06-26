@@ -39,7 +39,7 @@ export class DeclarerCotisationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.seancesService.getSeances({ cloturee: false, limit: 20 }).subscribe({
+    this.seancesService.getSeances({ cloturee: false, limit: 50 }).subscribe({
       next: (res) => {
         this.seances = res.success ? res.data : [];
         this.chargementSeances = false;
@@ -54,6 +54,20 @@ export class DeclarerCotisationComponent implements OnInit {
   formatDateSeance(s: Seance): string {
     return new Date(s.date_seance).toLocaleDateString('fr-FR', {
       weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+    });
+  }
+
+  jourSeance(s: Seance): string {
+    return new Date(s.date_seance).toLocaleDateString('fr-FR', { day: '2-digit' });
+  }
+
+  moisSeance(s: Seance): string {
+    return new Date(s.date_seance).toLocaleDateString('fr-FR', { month: 'short' });
+  }
+
+  jourSemaineSeance(s: Seance): string {
+    return new Date(s.date_seance).toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
     });
   }
 

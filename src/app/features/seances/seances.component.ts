@@ -61,15 +61,26 @@ export class SeancesComponent implements OnInit {
     });
   }
 
-  cloturerSeance(seance: Seance): void {
-    if (!confirm(`Clôturer la séance "${this.getTitre(seance)}" ? Cette action est irréversible.`)) return;
+  confirmerCloture: Seance | null = null;
+  isCloturing = false;
 
+  demanderCloture(seance: Seance): void {
+    this.confirmerCloture = seance;
+  }
+
+  executerCloture(): void {
+    if (!this.confirmerCloture || this.isCloturing) return;
+    const seance = this.confirmerCloture;
+    this.isCloturing = true;
     this.seancesService.cloturerSeance(seance.id).subscribe({
       next: (res) => {
         seance.cloturee = res.data.cloturee;
+        this.confirmerCloture = null;
+        this.isCloturing = false;
       },
       error: () => {
-        alert('Une erreur est survenue. Veuillez réessayer.');
+        this.confirmerCloture = null;
+        this.isCloturing = false;
       },
     });
   }

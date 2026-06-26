@@ -1,8 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
+import { NotificationsService } from '../../core/services/notifications.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { environment } from '../../../environments/environment';
 
 interface NavItem {
   label: string;
@@ -14,13 +18,17 @@ interface NavItem {
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   user: ReturnType<AuthService['getUser']> = null;
   profile: UserProfile | null = null;
   private profileSub?: Subscription;
+
+  sidebarOpen = false;
+  unreadCount = signal(0);
+  showLogoutConfirm = false;
 
   readonly navItems: NavItem[] = [
     { label: 'Dashboard',    icon: 'dashboard',       route: '/dashboard' },
@@ -44,27 +52,38 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
 
-  readonly backendUrl = 'http://localhost:3000';
+  readonly backendUrl = environment.backendUrl;
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private notificationsService: NotificationsService,
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
-    // Charger le profil complet (photo_url inclus) et écouter les mises à jour
     this.profileSub = this.authService.profile$.subscribe(p => { this.profile = p; });
     if (!this.profile) {
       this.authService.getMe().subscribe();
     }
+    this.notificationsService.getNotifications(1, 0).subscribe({
+      next: (res) => { if (res.success) this.unreadCount.set(res.data.unread); },
+    });
   }
+
+  @HostListener('document:keydown.escape')
+  closeSidebar(): void { this.sidebarOpen = false; }
 
   ngOnDestroy(): void {
     this.profileSub?.unsubscribe();
   }
 
   logout(): void {
+    this.showLogoutConfirm = true;
+  }
+
+  confirmLogout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

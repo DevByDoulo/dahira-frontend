@@ -38,6 +38,7 @@ export class RecusComponent implements OnInit {
   page = 1;
   readonly pageSize = 10;
 
+  showFiltres = false;
   downloadingId: number | null = null;
   printingId: number | null = null;
 
@@ -115,6 +116,36 @@ export class RecusComponent implements OnInit {
 
   setPage(p: number): void {
     if (p >= 1 && p <= this.totalPages) this.page = p;
+  }
+
+  // ── Export CSV ───────────────────────────────────────────────────────────────
+
+  exporterTout(): void {
+    const data = this.filtres;
+    if (data.length === 0) {
+      this.showToast('Aucun reçu à exporter.', 'error');
+      return;
+    }
+    const headers = ['Numéro Reçu', 'Prénom', 'Nom', 'Montant (FCFA)', 'Mode de paiement', 'Date'];
+    const rows = data.map((r) => [
+      r.numero_recu,
+      r.prenom,
+      r.nom,
+      Math.round(Number(r.montant)).toString(),
+      r.mode_paiement,
+      this.formatDate(r.date_cotisation),
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `recus_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showToast(`${data.length} reçu(s) exporté(s) en CSV.`, 'success');
   }
 
   // ── Téléchargement ───────────────────────────────────────────────────────────

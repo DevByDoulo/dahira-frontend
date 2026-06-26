@@ -64,8 +64,7 @@ export class AjouterPhotoComponent implements OnInit {
       this.errorMessage = `${tooLarge.length} fichier(s) dépassent 50 Mo et ont été ignorés.`;
     }
     const valides = imageFiles.filter(f => f.size <= MAX_SIZE);
-    const total = this.selectedFiles.length + valides.length;
-    const toAdd = total > 20 ? valides.slice(0, 20 - this.selectedFiles.length) : valides;
+    const toAdd = valides;
     toAdd.forEach(f => {
       this.selectedFiles.push(f);
       const reader = new FileReader();

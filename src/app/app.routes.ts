@@ -1,10 +1,18 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  {
+    path: 'accepter-invitation',
+    loadComponent: () =>
+      import('./features/auth/accepter-invitation/accepter-invitation.component').then(
+        m => m.AccepterInvitationComponent,
+      ),
+  },
   {
     path: 'mot-de-passe-oublie',
     loadComponent: () =>
@@ -32,11 +40,15 @@ export const routes: Routes = [
       },
       {
         path: 'membres',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/membres/membres.component').then(m => m.MembresComponent),
       },
       {
         path: 'membres/ajouter',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/membres/ajouter-membre/ajouter-membre.component').then(
             m => m.AjouterMembreComponent,
@@ -49,6 +61,8 @@ export const routes: Routes = [
       },
       {
         path: 'membres/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/membres/detail-membre/detail-membre.component').then(
             m => m.DetailMembreComponent,
@@ -56,6 +70,8 @@ export const routes: Routes = [
       },
       {
         path: 'membres/:id/modifier',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/membres/modifier-membre/modifier-membre.component').then(
             m => m.ModifierMembreComponent,
@@ -63,16 +79,22 @@ export const routes: Routes = [
       },
       {
         path: 'seances/creer',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/seances/creer-seance/creer-seance.component').then(m => m.CreerSeanceComponent),
       },
       {
         path: 'seances/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/seances/detail-seance/detail-seance.component').then(m => m.DetailSeanceComponent),
       },
       {
         path: 'seances/:id/modifier',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/seances/modifier-seance/modifier-seance.component').then(
             m => m.ModifierSeanceComponent,
@@ -80,16 +102,22 @@ export const routes: Routes = [
       },
       {
         path: 'cotisations',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/cotisations/cotisations.component').then(m => m.CotisationsComponent),
       },
       {
         path: 'recus',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/cotisations/recus/recus.component').then(m => m.RecusComponent),
       },
       {
         path: 'mes-recus',
+        canActivate: [roleGuard],
+        data: { roles: ['membre'] },
         loadComponent: () =>
           import('./features/cotisations/mes-recus/mes-recus.component').then(
             m => m.MesRecusComponent,
@@ -97,6 +125,8 @@ export const routes: Routes = [
       },
       {
         path: 'cotisations/encaisser',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/cotisations/encaisser/encaisser-cotisation.component').then(
             m => m.EncaisserCotisationComponent,
@@ -104,6 +134,8 @@ export const routes: Routes = [
       },
       {
         path: 'cotisations/declarer',
+        canActivate: [roleGuard],
+        data: { roles: ['membre'] },
         loadComponent: () =>
           import('./features/cotisations/declarer/declarer-cotisation.component').then(
             m => m.DeclarerCotisationComponent,
@@ -111,11 +143,15 @@ export const routes: Routes = [
       },
       {
         path: 'depenses',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/depenses/depenses.component').then(m => m.DepensesComponent),
       },
       {
         path: 'depenses/ajouter',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/depenses/ajouter/ajouter-depense.component').then(
             m => m.AjouterDepenseComponent,
@@ -123,6 +159,8 @@ export const routes: Routes = [
       },
       {
         path: 'depenses/:id/modifier',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/depenses/modifier/modifier-depense.component').then(
             m => m.ModifierDepenseComponent,
@@ -130,6 +168,8 @@ export const routes: Routes = [
       },
       {
         path: 'tresorerie',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier'] },
         loadComponent: () =>
           import('./features/tresorerie/tresorerie.component').then(m => m.TresorerieComponent),
       },
@@ -140,6 +180,8 @@ export const routes: Routes = [
       },
       {
         path: 'annonces/creer',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/annonces/creer-annonce/creer-annonce.component').then(
             m => m.CreerAnnonceComponent,
@@ -152,6 +194,8 @@ export const routes: Routes = [
       },
       {
         path: 'evenements/creer',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/evenements/creer-evenement/creer-evenement.component').then(
             m => m.CreerEvenementComponent,
@@ -178,6 +222,8 @@ export const routes: Routes = [
       },
       {
         path: 'photos/ajouter',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau'] },
         loadComponent: () =>
           import('./features/photos/ajouter-photo/ajouter-photo.component').then(
             m => m.AjouterPhotoComponent,

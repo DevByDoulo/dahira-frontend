@@ -1,5 +1,4 @@
-<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6 relative overflow-hidden"
-  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)">
+<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6 relative overflow-hidden bg-background">
 
   <!-- Décoration atmosphérique -->
   <div class="absolute inset-0 pointer-events-none opacity-20">
@@ -12,14 +11,14 @@
     <!-- Logo -->
     <div class="flex justify-center mb-10">
       <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-4xl">account_balance_wallet</span>
-        <h1 class="text-2xl font-bold text-primary tracking-tight">Dahira App</h1>
+        <span class="material-symbols-outlined text-on-surface text-4xl">account_balance_wallet</span>
+        <h1 class="text-2xl font-bold text-on-surface tracking-tight">Dahira App</h1>
       </div>
     </div>
 
     <!-- Carte confirmation envoi -->
     @if (sent) {
-      <div class="bg-white rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
+      <div class="bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
         <div class="p-10 text-center">
           <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary-container mb-6">
@@ -44,7 +43,7 @@
 
     <!-- Carte formulaire -->
     @if (!sent) {
-      <div class="bg-white rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
+      <div class="bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
 
         <!-- Bande décorative -->
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
@@ -54,7 +53,7 @@
           <!-- En-tête -->
           <header class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-low mb-5">
-              <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1">mail</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-3xl" style="font-variation-settings: 'FILL' 1">mail</span>
             </div>
             <h2 class="text-3xl font-bold text-on-surface mb-2">Inviter un membre</h2>
             <p class="text-on-surface-variant text-sm max-w-xs mx-auto">
@@ -94,7 +93,7 @@
 
                 <!-- Dropdown membres -->
                 @if (showDropdown && membresFiltes.length > 0) {
-                  <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-outline-variant/40 shadow-lg z-20 max-h-52 overflow-y-auto">
+                  <div class="absolute top-full left-0 right-0 mt-1 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-lg z-20 max-h-52 overflow-y-auto">
                     @for (m of membresFiltes; track m.id) {
                       <button type="button" (mousedown)="selectionnerMembre(m)"
                         class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container text-left transition-colors">
@@ -113,7 +112,7 @@
                 }
 
                 @if (showDropdown && recherche && membresFiltes.length === 0) {
-                  <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-outline-variant/40 shadow-lg z-20 px-4 py-4 text-center">
+                  <div class="absolute top-full left-0 right-0 mt-1 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-lg z-20 px-4 py-4 text-center">
                     <p class="text-sm text-on-surface-variant">Aucun membre trouvé.</p>
                   </div>
                 }
@@ -144,11 +143,11 @@
               <div class="grid grid-cols-3 gap-3">
                 <label
                   class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'membre' ? 'border-primary bg-primary/5' : 'border-outline-variant hover:border-outline'"
+                  [class]="role === 'membre' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
                 >
                   <input type="radio" name="role" value="membre" [(ngModel)]="role" class="sr-only" />
-                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'membre' ? 'text-primary' : 'text-outline'">person</span>
-                  <span class="text-xs font-semibold" [class]="role === 'membre' ? 'text-primary' : 'text-on-surface-variant'">Membre</span>
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'membre' ? 'text-secondary' : 'text-outline'">person</span>
+                  <span class="text-xs font-semibold" [class]="role === 'membre' ? 'text-secondary' : 'text-on-surface-variant'">Membre</span>
                 </label>
                 <label
                   class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
@@ -160,11 +159,11 @@
                 </label>
                 <label
                   class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'bureau' ? 'border-primary bg-primary/5' : 'border-outline-variant hover:border-outline'"
+                  [class]="role === 'bureau' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
                 >
                   <input type="radio" name="role" value="bureau" [(ngModel)]="role" class="sr-only" />
-                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'bureau' ? 'text-primary' : 'text-outline'">admin_panel_settings</span>
-                  <span class="text-xs font-semibold" [class]="role === 'bureau' ? 'text-primary' : 'text-on-surface-variant'">Administrateur</span>
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'bureau' ? 'text-secondary' : 'text-outline'">admin_panel_settings</span>
+                  <span class="text-xs font-semibold" [class]="role === 'bureau' ? 'text-secondary' : 'text-on-surface-variant'">Administrateur</span>
                 </label>
               </div>
             </div>

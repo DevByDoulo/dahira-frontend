@@ -2,11 +2,6 @@
 
   <!-- Breadcrumb + titre -->
   <div class="mb-10">
-    <div class="flex items-center gap-2 text-sm text-on-surface-muted mb-2">
-      <a routerLink="/seances" class="hover:text-primary transition-colors">Séances</a>
-      <span class="material-symbols-outlined text-base">chevron_right</span>
-      <span class="text-primary font-bold">Nouvelle séance</span>
-    </div>
     <div class="flex items-center gap-4">
       <a
         routerLink="/seances"
@@ -15,7 +10,7 @@
       >
         <span class="material-symbols-outlined">arrow_back</span>
       </a>
-      <h2 class="text-3xl font-bold text-primary">Créer une séance</h2>
+      <h2 class="text-3xl font-bold text-on-surface">Créer une séance</h2>
     </div>
     <p class="text-base text-on-surface-variant mt-2 max-w-2xl">
       Organisez une nouvelle rencontre communautaire. Remplissez les détails ci-dessous pour informer les membres du Dahira.
@@ -50,8 +45,8 @@
               formControlName="theme"
               placeholder="Ex : Étude du Coran — Chapitre 2"
               [class]="theme.invalid && theme.touched
-                ? 'w-full px-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'
-                : 'w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'"
+                ? 'w-full px-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface'
+                : 'w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface'"
             />
             @if (theme.invalid && theme.touched) {
               <p class="text-xs text-error flex items-center gap-1">
@@ -91,7 +86,7 @@
                 formControlName="precision"
                 rows="3"
                 placeholder="Ex : Assemblée extraordinaire, Visite du Cheikh, Collecte spéciale..."
-                class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-sm bg-surface-bright resize-none"
+                class="w-full px-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface resize-none"
               ></textarea>
             </div>
           }
@@ -110,8 +105,8 @@
                   type="date"
                   formControlName="date_seance"
                   [class]="date_seance.invalid && date_seance.touched
-                    ? 'w-full pl-10 pr-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'
-                    : 'w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright'"
+                    ? 'w-full pl-10 pr-4 py-3 rounded-xl border border-error focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface'
+                    : 'w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface'"
                 />
               </div>
               @if (date_seance.invalid && date_seance.touched) {
@@ -130,7 +125,7 @@
                   id="heure"
                   type="time"
                   formControlName="heure"
-                  class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright"
+                  class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface"
                 />
               </div>
             </div>
@@ -147,7 +142,7 @@
                 type="text"
                 formControlName="lieu"
                 placeholder="Ex : Siège Dahira, Grande Mosquée..."
-                class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-black/5 outline-none transition-all text-base bg-surface-bright"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-base bg-surface-container-lowest text-on-surface"
               />
             </div>
           </div>
@@ -212,7 +207,7 @@
         <button
           type="submit"
           [disabled]="isSubmitting"
-          class="order-1 sm:order-2 w-full sm:w-auto px-12 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+          class="order-1 sm:order-2 w-full sm:w-auto px-12 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
         >
           @if (isSubmitting) {
             <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>

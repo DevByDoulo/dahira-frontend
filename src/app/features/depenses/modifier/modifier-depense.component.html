@@ -64,11 +64,11 @@
                 formControlName="description"
                 placeholder="Ex : Achat fournitures, Location salle…"
                 class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-                [class.border-red-400]="description.invalid && description.touched"
+                [class.border-error]="description.invalid && description.touched"
               />
             </div>
             @if (description.invalid && description.touched) {
-              <p class="text-xs text-red-500">L'objet de la dépense est obligatoire (3 caractères min.).</p>
+              <p class="text-xs text-error">L'objet de la dépense est obligatoire (3 caractères min.).</p>
             }
           </div>
 
@@ -85,11 +85,11 @@
                 formControlName="montant"
                 placeholder="0"
                 class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-                [class.border-red-400]="montant.invalid && montant.touched"
+                [class.border-error]="montant.invalid && montant.touched"
               />
             </div>
             @if (montant.invalid && montant.touched) {
-              <p class="text-xs text-red-500">Montant obligatoire et supérieur à 0.</p>
+              <p class="text-xs text-error">Montant obligatoire et supérieur à 0.</p>
             }
           </div>
 
@@ -103,8 +103,8 @@
               <select
                 id="categorie"
                 formControlName="categorie"
-                class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-white"
-                [class.border-red-400]="categorie.invalid && categorie.touched"
+                class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-surface-container-lowest text-on-surface"
+                [class.border-error]="categorie.invalid && categorie.touched"
               >
                 <option value="" disabled>Sélectionner une catégorie</option>
                 @for (cat of categories; track cat.value) {
@@ -114,7 +114,7 @@
               <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-xl">expand_more</span>
             </div>
             @if (categorie.invalid && categorie.touched) {
-              <p class="text-xs text-red-500">Veuillez sélectionner une catégorie.</p>
+              <p class="text-xs text-error">Veuillez sélectionner une catégorie.</p>
             }
           </div>
 
@@ -128,8 +128,8 @@
               <select
                 id="mode_paiement"
                 formControlName="mode_paiement"
-                class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-white"
-                [class.border-red-400]="mode_paiement.invalid && mode_paiement.touched"
+                class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-surface-container-lowest text-on-surface"
+                [class.border-error]="mode_paiement.invalid && mode_paiement.touched"
               >
                 <option value="" disabled>Sélectionner un mode</option>
                 @for (mode of modesPaiement; track mode.value) {
@@ -139,7 +139,7 @@
               <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-xl">expand_more</span>
             </div>
             @if (mode_paiement.invalid && mode_paiement.touched) {
-              <p class="text-xs text-red-500">Veuillez sélectionner un mode de paiement.</p>
+              <p class="text-xs text-error">Veuillez sélectionner un mode de paiement.</p>
             }
           </div>
 
@@ -156,11 +156,11 @@
                 formControlName="date_depense"
                 [max]="today()"
                 class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-                [class.border-red-400]="date_depense.invalid && date_depense.touched"
+                [class.border-error]="date_depense.invalid && date_depense.touched"
               />
             </div>
             @if (date_depense.invalid && date_depense.touched) {
-              <p class="text-xs text-red-500">La date est obligatoire.</p>
+              <p class="text-xs text-error">La date est obligatoire.</p>
             }
           </div>
         </div>
@@ -256,7 +256,7 @@
             }
 
             @if (justificatifErreur) {
-              <p class="text-xs text-red-500 flex items-center gap-1">
+              <p class="text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-sm">error</span>
                 {{ justificatifErreur }}
               </p>

@@ -217,10 +217,14 @@ export class DepensesComponent implements OnInit, OnDestroy {
     return map[c] ?? 'receipt_long';
   }
 
-  statutClass(s: string): string {
-    if (s === 'validee') return 'bg-green-100 text-green-700';
-    if (s === 'rejetee') return 'bg-red-100 text-red-700';
-    return 'bg-yellow-100 text-yellow-700';
+  statutClass(_s: string): string {
+    return 'bg-surface-container-high text-on-surface-variant';
+  }
+
+  statutDotClass(s: string): string {
+    if (s === 'validee') return 'bg-green-400';
+    if (s === 'rejetee') return 'bg-red-400';
+    return 'bg-yellow-400';
   }
 
   statutLabel(s: string): string {

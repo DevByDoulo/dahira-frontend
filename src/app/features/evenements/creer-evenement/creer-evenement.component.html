@@ -1,13 +1,15 @@
 <div class="max-w-5xl mx-auto px-6 py-8">
   <!-- En-tête -->
-  <div class="mb-8">
-    <nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-3">
-      <a routerLink="/evenements" class="hover:text-primary transition-colors">Événements</a>
-      <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-      <span class="text-primary font-semibold">Créer un événement</span>
-    </nav>
-    <h1 class="text-3xl font-bold text-on-surface">Créer un événement</h1>
-    <p class="text-on-surface-variant text-sm mt-1">Remplissez les détails ci-dessous pour organiser votre prochain événement.</p>
+  <div class="mb-8 flex items-center gap-4">
+    <a routerLink="/evenements"
+       class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant"
+       title="Retour">
+      <span class="material-symbols-outlined text-2xl">arrow_back</span>
+    </a>
+    <div>
+      <h1 class="text-2xl font-black text-on-surface">Créer un événement</h1>
+      <p class="text-on-surface-variant text-sm mt-0.5">Remplissez les détails ci-dessous pour organiser votre prochain événement.</p>
+    </div>
   </div>
 
   <!-- Erreur API -->
@@ -124,21 +126,6 @@
           }
         </div>
 
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-semibold text-on-surface">Limite d'inscriptions</label>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">person_add</span>
-            <input
-              type="number"
-              name="capacite_max"
-              [(ngModel)]="capacite_max"
-              min="1"
-              placeholder="Nombre maximum (optionnel)"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant/50 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
-            />
-          </div>
-          <p class="text-xs text-on-surface-variant">Laissez vide si illimité.</p>
-        </div>
 
         <div class="p-4 bg-surface-container-low rounded-xl flex items-start gap-3">
           <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">info</span>
@@ -155,7 +142,7 @@
 
     <!-- Actions -->
     <div class="flex items-center justify-end gap-4">
-      <button type="button" (click)="annuler()" class="px-6 py-3 rounded-xl text-sm font-bold text-primary hover:bg-surface-container transition-all active:scale-95">
+      <button type="button" (click)="annuler()" class="px-6 py-3 rounded-xl text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-all active:scale-95">
         Annuler
       </button>
       <button

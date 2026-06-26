@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
+}
+
+export interface TopContributeur {
+  id: number;
+  nom: string;
+  prenom: string;
+  photo_url: string | null;
+  nb_cotisations: number;
+  total_montant: number;
 }
 
 export interface DashboardStatsData {
@@ -34,6 +44,7 @@ export interface DashboardStatsData {
     date_evenement: string;
     lieu: string;
   }>;
+  top_contributeurs?: TopContributeur[];
 }
 
 export interface DashboardChartsData {
@@ -43,7 +54,7 @@ export interface DashboardChartsData {
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

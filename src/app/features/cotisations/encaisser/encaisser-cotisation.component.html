@@ -40,7 +40,7 @@
           <button
             (click)="genererRecu()"
             [disabled]="generatingRecu"
-            class="flex items-center gap-3 px-10 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 text-base"
+            class="flex items-center gap-3 px-10 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 text-base"
           >
             @if (generatingRecu) {
               <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
@@ -73,11 +73,6 @@
   <!-- Breadcrumb + titre -->
   @if (cotisationSuccessId === null) {
   <div class="mb-10">
-    <div class="flex items-center gap-2 text-sm text-on-surface-muted mb-2">
-      <a routerLink="/cotisations" class="hover:text-primary transition-colors">Cotisations</a>
-      <span class="material-symbols-outlined text-base">chevron_right</span>
-      <span class="text-primary font-bold">Encaisser</span>
-    </div>
     <div class="flex items-center gap-4">
       <a
         routerLink="/cotisations"
@@ -86,7 +81,7 @@
       >
         <span class="material-symbols-outlined">arrow_back</span>
       </a>
-      <h2 class="text-3xl font-bold text-primary">Encaisser une cotisation</h2>
+      <h2 class="text-3xl font-bold text-on-surface">Encaisser une cotisation</h2>
     </div>
   </div>
 
@@ -128,8 +123,8 @@
               (blur)="onSearchBlur()"
               placeholder="Rechercher un membre par nom..."
               [class]="membre_id.invalid && membre_id.touched
-                ? 'w-full pl-12 pr-10 py-4 bg-surface rounded-xl border border-error outline-none transition-all'
-                : 'w-full pl-12 pr-10 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all'"
+                ? 'w-full pl-12 pr-10 h-12 bg-surface-container-lowest text-on-surface rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                : 'w-full pl-12 pr-10 h-12 bg-surface-container-lowest text-on-surface rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all'"
             />
             @if (membreSelectionne) {
               <button
@@ -143,7 +138,7 @@
 
             <!-- Dropdown suggestions -->
             @if (showDropdown && membresFiltres.length > 0) {
-              <div class="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-outline-variant/30 z-10 overflow-hidden">
+              <div class="absolute w-full mt-2 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 z-10 overflow-hidden">
                 @for (m of membresFiltres; track m.id) {
                   <div
                     (mousedown)="selectionnerMembre(m)"
@@ -176,7 +171,7 @@
             }
 
             @if (showDropdown && !chargementMembres && membresFiltres.length === 0 && searchQuery.trim()) {
-              <div class="absolute w-full mt-2 bg-white rounded-xl shadow-xl border border-outline-variant/30 z-10 p-4 text-sm text-on-surface-muted text-center">
+              <div class="absolute w-full mt-2 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 z-10 p-4 text-sm text-on-surface-muted text-center">
                 Aucun membre trouvé pour "{{ searchQuery }}"
               </div>
             }
@@ -227,8 +222,8 @@
                 placeholder="0"
                 min="1"
                 [class]="montant.invalid && montant.touched
-                  ? 'w-full pl-4 pr-14 py-4 bg-surface rounded-xl border border-error outline-none transition-all'
-                  : 'w-full pl-4 pr-14 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all'"
+                  ? 'w-full pl-4 pr-14 h-12 bg-surface-container-lowest text-on-surface rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
+                  : 'w-full pl-4 pr-14 h-12 bg-surface-container-lowest text-on-surface rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all'"
               />
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-outline">XOF</span>
             </div>
@@ -275,8 +270,8 @@
                   id="seance_id"
                   formControlName="seance_id"
                   [class]="seance_id.invalid && seance_id.touched
-                    ? 'w-full pl-12 pr-4 py-4 bg-surface rounded-xl border border-error outline-none appearance-none transition-all'
-                    : 'w-full pl-12 pr-4 py-4 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none appearance-none transition-all'"
+                    ? 'w-full pl-12 pr-4 py-4 bg-surface-container-lowest text-on-surface rounded-xl border border-error outline-none appearance-none transition-all'
+                    : 'w-full pl-12 pr-4 h-12 bg-surface-container-lowest text-on-surface rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none transition-all'"
                 >
                   <option [ngValue]="null" disabled>
                     {{ chargementSeances ? 'Chargement…' : 'Choisir une séance…' }}
@@ -309,7 +304,7 @@
                 (click)="setMode(mode.value)"
                 [class]="form.get('mode_paiement')!.value === mode.value
                   ? 'flex flex-col items-center gap-2 p-4 border-2 border-primary bg-surface-container-high rounded-xl transition-all text-primary'
-                  : 'flex flex-col items-center gap-2 p-4 border border-outline-variant rounded-xl bg-surface hover:border-primary/40 hover:bg-surface-container-low transition-all text-on-surface-variant'"
+                  : 'flex flex-col items-center gap-2 p-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:border-primary/40 hover:bg-surface-container-low transition-all text-on-surface-variant'"
               >
                 <span class="material-symbols-outlined text-2xl">{{ mode.icon }}</span>
                 <span class="text-sm font-medium">{{ mode.label }}</span>
@@ -329,7 +324,7 @@
             formControlName="note"
             rows="4"
             placeholder="Détails supplémentaires sur le versement…"
-            class="w-full px-4 py-3 bg-surface rounded-xl border border-outline-variant focus:border-primary outline-none transition-all resize-none text-sm"
+            class="w-full px-4 py-3 bg-surface-container-lowest text-on-surface rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all resize-none text-sm"
           ></textarea>
         </div>
 
@@ -346,7 +341,7 @@
           <button
             type="submit"
             [disabled]="isSubmitting"
-            class="order-1 sm:order-2 w-full sm:w-auto px-12 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:bg-slate-900 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-3 text-base"
+            class="order-1 sm:order-2 w-full sm:w-auto px-12 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-3 text-base"
           >
             @if (isSubmitting) {
               <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
@@ -370,7 +365,7 @@
         <div class="space-y-3">
 
           <!-- Total collecté -->
-          <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+          <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container flex-shrink-0">
                 <span class="material-symbols-outlined text-base">trending_up</span>
@@ -385,7 +380,7 @@
           </div>
 
           <!-- Membres actifs -->
-          <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+          <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
                 <span class="material-symbols-outlined text-base">group</span>
@@ -401,7 +396,7 @@
 
           <!-- Membres à jour -->
           @if (!chargementStats && stats) {
-            <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+            <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-secondary-container/50 flex items-center justify-center text-secondary flex-shrink-0">
                   <span class="material-symbols-outlined text-base">check_circle</span>
@@ -430,9 +425,9 @@
       <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-sm flex items-center justify-between">
         <div>
           <p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider mb-1">Date d'opération</p>
-          <p class="font-bold text-sm">{{ currentDate || '—' }}</p>
+          <p class="font-bold text-sm text-on-surface">{{ currentDate || '—' }}</p>
         </div>
-        <p class="text-2xl font-black tabular-nums">{{ currentTime || '00:00' }}</p>
+        <p class="text-2xl font-black tabular-nums text-on-surface">{{ currentTime || '00:00' }}</p>
       </div>
 
       <!-- Récapitulatif dynamique -->

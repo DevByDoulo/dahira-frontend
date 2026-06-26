@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AnnoncesService, CreateAnnoncePayload } from '../../../core/services/annonces.service';
 
 @Component({
   selector: 'app-creer-annonce',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './creer-annonce.component.html',
 })
 export class CreerAnnonceComponent {

@@ -5,6 +5,7 @@ import { take } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MembresService, Membre } from '../../core/services/membres.service';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-membres',
@@ -13,15 +14,22 @@ import { SkeletonTableComponent } from '../../shared/components/skeleton-table/s
   templateUrl: './membres.component.html',
 })
 export class MembresComponent implements OnInit {
+  readonly backendUrl = environment.backendUrl;
   isLoading = true;
   errorMessage = '';
   membres: Membre[] = [];
+  toastMessage = '';
 
   searchQuery = '';
   statutFilter = '';
+  cotisationFilter = '';
 
   page = 1;
   readonly pageSize = 10;
+
+  // Modale désactivation
+  confirmTarget: Membre | null = null;
+  isTogglingActif = false;
 
   constructor(
     private membresService: MembresService,
@@ -30,10 +38,18 @@ export class MembresComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const nav = this.router.getCurrentNavigation();
+    const toast = nav?.extras?.state?.['toast'] as string | undefined;
+    if (toast) {
+      this.toastMessage = toast;
+      setTimeout(() => (this.toastMessage = ''), 4000);
+    }
+
     this.route.queryParams.pipe(take(1)).subscribe((params) => {
-      this.searchQuery  = params['q']      ?? '';
-      this.statutFilter = params['statut'] ?? '';
-      this.page         = parseInt(params['page'] ?? '1', 10) || 1;
+      this.searchQuery      = params['q']          ?? '';
+      this.statutFilter     = params['statut']     ?? '';
+      this.cotisationFilter = params['cotisation'] ?? '';
+      this.page             = parseInt(params['page'] ?? '1', 10) || 1;
       this.chargerMembres();
     });
   }
@@ -53,21 +69,29 @@ export class MembresComponent implements OnInit {
     });
   }
 
-  desactiverMembre(membre: Membre): void {
-    const action = membre.actif ? 'désactiver' : 'réactiver';
-    if (!confirm(`Voulez-vous ${action} ${membre.prenom} ${membre.nom} ?`)) return;
+  demanderToggle(membre: Membre): void {
+    this.confirmTarget = membre;
+  }
 
-    this.membresService.desactiverMembre(membre.id).subscribe({
+  confirmerToggle(): void {
+    if (!this.confirmTarget || this.isTogglingActif) return;
+    const target = this.confirmTarget;
+    this.isTogglingActif = true;
+
+    this.membresService.desactiverMembre(target.id).subscribe({
       next: (res) => {
-        membre.actif = res.data.actif;
+        target.actif = res.data.actif;
+        this.confirmTarget = null;
+        this.isTogglingActif = false;
       },
       error: () => {
-        alert('Une erreur est survenue. Veuillez réessayer.');
+        this.confirmTarget = null;
+        this.isTogglingActif = false;
       },
     });
   }
 
-  // ── Filtrage ────────────────────────────────────────────────────────────────
+  // ── Filtrage ─────────────────────────────────────────────────────────────────
 
   get filtered(): Membre[] {
     const q = this.searchQuery.toLowerCase().trim();
@@ -79,25 +103,33 @@ export class MembresComponent implements OnInit {
       const matchStatut =
         !this.statutFilter ||
         (this.statutFilter === 'actif' ? m.actif : !m.actif);
-      return matchSearch && matchStatut;
+      const matchCotisation =
+        !this.cotisationFilter || m.statut_cotisation === this.cotisationFilter;
+      return matchSearch && matchStatut && matchCotisation;
     });
   }
 
-  onSearch(): void {
+  onSearch(): void { this.page = 1; this.syncUrl(); }
+  onFilterChange(): void { this.page = 1; this.syncUrl(); }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.statutFilter = '';
+    this.cotisationFilter = '';
     this.page = 1;
     this.syncUrl();
   }
 
-  onFilterChange(): void {
-    this.page = 1;
-    this.syncUrl();
+  get hasActiveFilters(): boolean {
+    return !!(this.searchQuery || this.statutFilter || this.cotisationFilter);
   }
 
   private syncUrl(): void {
     const queryParams: Record<string, string | number | null> = {};
-    if (this.searchQuery)  queryParams['q']      = this.searchQuery;
-    if (this.statutFilter) queryParams['statut'] = this.statutFilter;
-    if (this.page > 1)     queryParams['page']   = this.page;
+    if (this.searchQuery)      queryParams['q']          = this.searchQuery;
+    if (this.statutFilter)     queryParams['statut']     = this.statutFilter;
+    if (this.cotisationFilter) queryParams['cotisation'] = this.cotisationFilter;
+    if (this.page > 1)         queryParams['page']       = this.page;
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -106,7 +138,7 @@ export class MembresComponent implements OnInit {
     });
   }
 
-  // ── Pagination ──────────────────────────────────────────────────────────────
+  // ── Pagination ────────────────────────────────────────────────────────────────
 
   get totalPages(): number {
     return Math.max(Math.ceil(this.filtered.length / this.pageSize), 1);
@@ -128,10 +160,14 @@ export class MembresComponent implements OnInit {
     }
   }
 
-  // ── KPIs ────────────────────────────────────────────────────────────────────
+  // ── KPIs ──────────────────────────────────────────────────────────────────────
 
-  get totalMembres(): number {
-    return this.membres.length;
+  get totalMembres(): number { return this.membres.length; }
+
+  get membresActifs(): number { return this.membres.filter(m => m.actif).length; }
+
+  get tauxActivite(): number {
+    return this.membres.length ? Math.round((this.membresActifs / this.membres.length) * 100) : 0;
   }
 
   get nouveauxCeMois(): number {
@@ -143,10 +179,22 @@ export class MembresComponent implements OnInit {
     return this.membres.filter((m) => m.actif && m.statut_cotisation === 'en_retard').length;
   }
 
-  // ── Affichage ───────────────────────────────────────────────────────────────
+  // ── Affichage ─────────────────────────────────────────────────────────────────
 
   getInitiales(m: Membre): string {
     return `${(m.prenom[0] ?? '').toUpperCase()}${(m.nom[0] ?? '').toUpperCase()}`;
+  }
+
+  private readonly AVATAR_PALETTES = [
+    'bg-secondary-container text-on-secondary-container',
+    'bg-primary-fixed text-on-primary-fixed',
+    'bg-surface-dim text-on-surface',
+    'bg-secondary text-on-secondary',
+    'bg-error-container text-on-error-container',
+  ];
+
+  getAvatarClass(m: Membre): string {
+    return this.AVATAR_PALETTES[m.id % this.AVATAR_PALETTES.length];
   }
 
   formatTelephone(tel: string | null): string {
@@ -159,17 +207,15 @@ export class MembresComponent implements OnInit {
   formatDate(dateStr: string | null): string {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+      day: '2-digit', month: 'short', year: 'numeric',
     });
   }
 
   get rangeLabel(): string {
     const total = this.filtered.length;
-    if (total === 0) return 'Aucun membre';
+    if (total === 0) return 'Aucun résultat';
     const start = (this.page - 1) * this.pageSize + 1;
     const end = Math.min(this.page * this.pageSize, total);
-    return `Affichage de ${start} à ${end} sur ${total} membre${total > 1 ? 's' : ''}`;
+    return `${start}–${end} sur ${total} membre${total > 1 ? 's' : ''}`;
   }
 }

@@ -229,10 +229,8 @@ export class TresorerieComponent implements OnInit {
     return labels[mode] ?? mode;
   }
 
-  modePaiementClass(mode: string): string {
-    if (mode === 'wave') return 'bg-blue-100 text-blue-700';
-    if (mode === 'orange_money') return 'bg-orange-100 text-orange-700';
-    return 'bg-surface-container text-on-surface-variant';
+  modePaiementClass(_mode: string): string {
+    return 'bg-surface-container-high text-on-surface-variant';
   }
 
   modePaiementIcon(mode: string): string {
@@ -314,14 +312,12 @@ export class TresorerieComponent implements OnInit {
     return 'receipt_long';
   }
 
-  alerteClass(a: Alerte): string {
-    return a.type === 'danger'
-      ? 'bg-red-50 border border-red-200 text-red-700'
-      : 'bg-amber-50 border border-amber-200 text-amber-700';
+  alerteClass(_a: Alerte): string {
+    return 'bg-surface-container border border-outline-variant/30 text-on-surface-variant';
   }
 
-  alerteIconClass(a: Alerte): string {
-    return a.type === 'danger' ? 'text-red-500' : 'text-amber-500';
+  alerteIconClass(_a: Alerte): string {
+    return 'text-on-surface-variant';
   }
 
   alerteIcon(a: Alerte): string {

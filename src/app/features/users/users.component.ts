@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 interface User {
   id: number;
@@ -23,7 +24,7 @@ type ModalMode = 'creer' | 'modifier';
   templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit {
-  readonly apiUrl = 'http://localhost:3000/api';
+  readonly apiUrl = environment.apiUrl;
 
   users: User[] = [];
   isLoading = true;

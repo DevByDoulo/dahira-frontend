@@ -51,12 +51,12 @@
               type="text"
               formControlName="description"
               placeholder="Ex : Achat fournitures, Location salle…"
-              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-              [class.border-red-400]="description.invalid && description.touched"
+              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+              [class.border-error]="description.invalid && description.touched"
             />
           </div>
           @if (description.invalid && description.touched) {
-            <p class="text-xs text-red-500">L'objet de la dépense est obligatoire (3 caractères min.).</p>
+            <p class="text-xs text-error">L'objet de la dépense est obligatoire (3 caractères min.).</p>
           }
         </div>
 
@@ -74,12 +74,12 @@
               type="number"
               formControlName="montant"
               placeholder="0"
-              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-              [class.border-red-400]="montant.invalid && montant.touched"
+              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+              [class.border-error]="montant.invalid && montant.touched"
             />
           </div>
           @if (montant.invalid && montant.touched) {
-            <p class="text-xs text-red-500">Montant obligatoire et supérieur à 0.</p>
+            <p class="text-xs text-error">Montant obligatoire et supérieur à 0.</p>
           }
         </div>
 
@@ -95,8 +95,8 @@
             <select
               id="categorie"
               formControlName="categorie"
-              class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-white"
-              [class.border-red-400]="categorie.invalid && categorie.touched"
+              class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none transition-all text-sm bg-surface-container-lowest text-on-surface"
+              [class.border-error]="categorie.invalid && categorie.touched"
             >
               <option value="" disabled>Sélectionner une catégorie</option>
               @for (cat of categories; track cat.value) {
@@ -108,7 +108,7 @@
             </span>
           </div>
           @if (categorie.invalid && categorie.touched) {
-            <p class="text-xs text-red-500">Veuillez sélectionner une catégorie.</p>
+            <p class="text-xs text-error">Veuillez sélectionner une catégorie.</p>
           }
         </div>
 
@@ -124,8 +124,8 @@
             <select
               id="mode_paiement"
               formControlName="mode_paiement"
-              class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none appearance-none transition-all text-sm bg-white"
-              [class.border-red-400]="mode_paiement.invalid && mode_paiement.touched"
+              class="w-full pl-10 pr-10 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none transition-all text-sm bg-surface-container-lowest text-on-surface"
+              [class.border-error]="mode_paiement.invalid && mode_paiement.touched"
             >
               <option value="" disabled>Sélectionner un mode</option>
               @for (mode of modesPaiement; track mode.value) {
@@ -137,7 +137,7 @@
             </span>
           </div>
           @if (mode_paiement.invalid && mode_paiement.touched) {
-            <p class="text-xs text-red-500">Veuillez sélectionner un mode de paiement.</p>
+            <p class="text-xs text-error">Veuillez sélectionner un mode de paiement.</p>
           }
         </div>
 
@@ -155,12 +155,12 @@
               type="date"
               formControlName="date_depense"
               [max]="today()"
-              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
-              [class.border-red-400]="date_depense.invalid && date_depense.touched"
+              class="w-full pl-10 pr-4 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+              [class.border-error]="date_depense.invalid && date_depense.touched"
             />
           </div>
           @if (date_depense.invalid && date_depense.touched) {
-            <p class="text-xs text-red-500">La date est obligatoire.</p>
+            <p class="text-xs text-error">La date est obligatoire.</p>
           }
         </div>
       </div>
@@ -181,7 +181,7 @@
             formControlName="note"
             rows="4"
             placeholder="Précisez la nature de la dépense ou les bénéficiaires…"
-            class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm resize-none"
+            class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm resize-none"
           ></textarea>
         </div>
 
@@ -230,36 +230,36 @@
           }
 
           @if (form.get('justificatif_url')?.value && !isUploadingJustificatif) {
-            <div class="rounded-xl border border-green-200 overflow-hidden bg-green-50">
+            <div class="rounded-xl border border-secondary/30 overflow-hidden bg-secondary-container/20">
               @if (justificatifEstImage && justificatifPreviewUrl) {
                 <img
                   [src]="justificatifPreviewUrl"
                   alt="Aperçu justificatif"
-                  class="w-full max-h-48 object-contain bg-white"
+                  class="w-full max-h-48 object-contain bg-surface-container-lowest"
                 />
               }
               <div class="flex items-center gap-3 p-3">
-                <span class="material-symbols-outlined text-green-600 text-xl flex-shrink-0">
+                <span class="material-symbols-outlined text-secondary text-xl flex-shrink-0">
                   {{ justificatifEstImage ? 'image' : 'picture_as_pdf' }}
                 </span>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-green-800 truncate">{{ justificatifNom }}</p>
-                  <p class="text-xs text-green-600">Uploadé avec succès</p>
+                  <p class="text-sm font-medium text-on-surface truncate">{{ justificatifNom }}</p>
+                  <p class="text-xs text-secondary">Uploadé avec succès</p>
                 </div>
                 <button
                   type="button"
                   (click)="clearJustificatif()"
-                  class="p-1.5 hover:bg-green-100 rounded-full transition-colors flex-shrink-0"
+                  class="p-1.5 hover:bg-surface-container-low rounded-full transition-colors flex-shrink-0"
                   title="Supprimer"
                 >
-                  <span class="material-symbols-outlined text-base text-green-700">close</span>
+                  <span class="material-symbols-outlined text-base text-on-surface-variant">close</span>
                 </button>
               </div>
             </div>
           }
 
           @if (justificatifErreur) {
-            <p class="text-xs text-red-500 flex items-center gap-1">
+            <p class="text-xs text-error flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">error</span>
               {{ justificatifErreur }}
             </p>
@@ -280,7 +280,7 @@
 
     <!-- Erreur globale -->
     @if (errorMessage) {
-      <div class="mt-8 flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+      <div class="mt-8 flex items-center gap-2 p-3 bg-error-container border border-error/20 rounded-xl text-on-error-container text-sm">
         <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
         {{ errorMessage }}
       </div>
@@ -291,7 +291,7 @@
       <button
         type="submit"
         [disabled]="isSubmitting || isUploadingJustificatif"
-        class="bg-primary text-white font-bold px-10 py-3 rounded-full hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+        class="bg-primary text-on-primary font-bold px-10 py-3 rounded-full hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         @if (isSubmitting) {
           <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
@@ -312,7 +312,7 @@
 
   <!-- Cartes contextuelles -->
   <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-white/60 backdrop-blur p-4 rounded-xl border border-outline-variant/20 flex gap-4">
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 flex gap-4">
       <div class="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary flex-shrink-0">
         <span class="material-symbols-outlined">info</span>
       </div>
@@ -321,7 +321,7 @@
         <p class="text-xs text-on-surface-variant mt-0.5">Toute dépense doit être validée par le bureau.</p>
       </div>
     </div>
-    <div class="bg-white/60 backdrop-blur p-4 rounded-xl border border-outline-variant/20 flex gap-4">
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 flex gap-4">
       <div class="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary flex-shrink-0">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">security</span>
       </div>
@@ -330,7 +330,7 @@
         <p class="text-xs text-on-surface-variant mt-0.5">Vos données sont chiffrées et sécurisées.</p>
       </div>
     </div>
-    <div class="bg-white/60 backdrop-blur p-4 rounded-xl border border-outline-variant/20 flex gap-4">
+    <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 flex gap-4">
       <div class="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary flex-shrink-0">
         <span class="material-symbols-outlined">history</span>
       </div>

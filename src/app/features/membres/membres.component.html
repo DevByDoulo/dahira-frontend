@@ -1,220 +1,296 @@
+@if (toastMessage) {
+  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 bg-surface-container-lowest border border-secondary/20 rounded-2xl shadow-lg">
+    <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings:'FILL' 1">check_circle</span>
+    <span class="text-sm font-medium text-on-surface">{{ toastMessage }}</span>
+  </div>
+}
+
 @if (isLoading) {
   <app-skeleton-table [count]="5" />
 }
 
-<!-- État d'erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto">
-    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
-      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
-      <button
-        (click)="chargerMembres()"
-        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-      >
-        <span class="material-symbols-outlined text-xl">refresh</span>
-        Réessayer
-      </button>
-    </div>
+  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-20 gap-4 text-center">
+    <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
+    <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+    <button
+      (click)="chargerMembres()"
+      class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+    >
+      <span class="material-symbols-outlined text-xl">refresh</span>
+      Réessayer
+    </button>
   </div>
 }
 
-<!-- Contenu principal -->
 @if (!isLoading && !errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
-    <div>
-      <h2 class="text-3xl font-bold text-primary">Membres</h2>
-      <p class="text-sm text-on-surface-variant mt-0.5">Gérez les membres et leur statut au sein du Dahira</p>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-black text-on-surface">Membres</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Gérez les membres et leur statut au sein du Dahira</p>
+      </div>
+      <a
+        routerLink="/membres/ajouter"
+        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold text-sm hover:shadow-md hover:opacity-90 active:scale-95 transition-all"
+      >
+        <span class="material-symbols-outlined text-[18px]">person_add</span>
+        Ajouter
+      </a>
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">groups</span>
+      <!-- Total -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Total</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">groups</span>
+          </div>
         </div>
+        <p class="text-3xl font-black text-on-surface">{{ totalMembres }}</p>
+        <p class="text-xs text-on-surface-variant/60">membres enregistrés</p>
+      </div>
+
+      <!-- Actifs + taux -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Actifs</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">verified_user</span>
+          </div>
+        </div>
+        <p class="text-3xl font-black text-on-surface">{{ membresActifs }}</p>
         <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total membres</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ totalMembres }}</h3>
+          <p class="text-xs text-on-surface-variant/60 mb-1.5">{{ tauxActivite }}% du total</p>
+          <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+            <div
+              class="h-full bg-outline-variant rounded-full transition-all duration-500"
+              [style.width]="tauxActivite + '%'"
+            ></div>
+          </div>
         </div>
       </div>
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-sky-500" style="font-variation-settings: 'FILL' 1;">person_add</span>
+      <!-- Nouveaux ce mois -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Ce mois</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">person_add</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Nouveaux (mois)</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">+{{ nouveauxCeMois }}</h3>
-        </div>
+        <p class="text-3xl font-black text-on-surface">+{{ nouveauxCeMois }}</p>
+        <p class="text-xs text-on-surface-variant/60">nouveaux membres</p>
       </div>
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">assignment_late</span>
+      <!-- En retard -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">En retard</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">assignment_late</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cotisations en retard</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ cotisationsEnRetard }}</h3>
-        </div>
+        <p class="text-3xl font-black text-on-surface">{{ cotisationsEnRetard }}</p>
+        <p class="text-xs text-on-surface-variant/60">cotisations en retard</p>
       </div>
 
     </div>
 
     <!-- Table container -->
-    <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/30">
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
 
-      <!-- Barre d'actions -->
-      <div class="p-6 flex flex-wrap items-center justify-between gap-4 border-b border-outline-soft/50">
-        <div class="flex flex-1 min-w-[280px] gap-3">
+      <!-- Barre de filtres -->
+      <div class="p-5 flex flex-wrap items-center gap-3 border-b border-outline-variant/15">
 
-          <!-- Recherche -->
-          <div class="relative flex-1 group">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary transition-colors text-xl">
-              search
-            </span>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (ngModelChange)="onSearch()"
-              placeholder="Rechercher un membre..."
-              class="w-full pl-10 pr-4 py-2.5 bg-background border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-sm"
-            />
-          </div>
-
-          <!-- Filtre statut -->
-          <div class="relative min-w-[150px]">
-            <select
-              [(ngModel)]="statutFilter"
-              (ngModelChange)="onFilterChange()"
-              class="w-full pl-4 pr-9 py-2.5 bg-background border border-outline-variant rounded-xl appearance-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-sm"
-            >
-              <option value="">Tous les statuts</option>
-              <option value="actif">Actif</option>
-              <option value="inactif">Inactif</option>
-            </select>
-            <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-xl">
-              expand_more
-            </span>
-          </div>
+        <!-- Recherche -->
+        <div class="relative flex-1 min-w-[200px] group">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[18px]">search</span>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearch()"
+            placeholder="Nom, téléphone..."
+            class="w-full pl-9 pr-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm"
+          />
         </div>
 
-        <!-- Bouton Ajouter -->
-        <a
-          routerLink="/membres/ajouter"
-          class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-semibold text-sm hover:shadow-md active:scale-95 transition-all"
-        >
-          <span class="material-symbols-outlined text-xl">person_add</span>
-          <span>Ajouter un membre</span>
-        </a>
+        <!-- Filtre statut -->
+        <div class="relative min-w-[140px]">
+          <select
+            [(ngModel)]="statutFilter"
+            (ngModelChange)="onFilterChange()"
+            class="w-full pl-3 pr-8 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl appearance-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm"
+          >
+            <option value="">Tous les statuts</option>
+            <option value="actif">Actif</option>
+            <option value="inactif">Inactif</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+        </div>
+
+        <!-- Filtre cotisation -->
+        <div class="relative min-w-[160px]">
+          <select
+            [(ngModel)]="cotisationFilter"
+            (ngModelChange)="onFilterChange()"
+            class="w-full pl-3 pr-8 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-xl appearance-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm"
+          >
+            <option value="">Toutes les cotisations</option>
+            <option value="a_jour">À jour</option>
+            <option value="en_retard">En retard</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+        </div>
+
+        <!-- Effacer filtres -->
+        @if (hasActiveFilters) {
+          <button
+            (click)="clearFilters()"
+            class="flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold text-on-surface-variant hover:text-error hover:bg-error-container/30 rounded-xl transition-colors border border-outline-variant/30"
+          >
+            <span class="material-symbols-outlined text-[15px]">filter_list_off</span>
+            Effacer
+          </button>
+        }
+
       </div>
 
       <!-- Tableau -->
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left">
           <thead>
-            <tr class="bg-surface-container-low/60">
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Membre</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Téléphone</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date d'adhésion</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+            <tr class="border-b border-outline-variant/15">
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Membre</th>
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Téléphone</th>
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Cotisation</th>
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Adhésion</th>
+              <th class="px-6 py-3.5 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-outline-soft/30">
+          <tbody>
 
             @if (paginated.length === 0) {
               <tr>
-                <td colspan="5" class="px-6 py-12 text-center text-on-surface-muted text-sm">
-                  <span class="material-symbols-outlined text-4xl block mb-2 text-outline">group_off</span>
-                  Aucun membre trouvé
+                <td colspan="6" class="px-6 py-16 text-center">
+                  <span class="material-symbols-outlined text-5xl text-outline block mb-3">group_off</span>
+                  <p class="text-sm font-semibold text-on-surface-variant">Aucun membre trouvé</p>
+                  @if (hasActiveFilters) {
+                    <button (click)="clearFilters()" class="mt-3 text-xs font-bold text-primary hover:underline">
+                      Effacer les filtres
+                    </button>
+                  }
                 </td>
               </tr>
             }
 
             @for (membre of paginated; track membre.id) {
               <tr
-                class="hover:bg-surface-container-low/30 transition-colors cursor-pointer"
+                class="border-b border-outline-variant/10 hover:bg-surface-container-low/50 transition-colors cursor-pointer group"
                 (click)="router.navigate(['/membres', membre.id])"
               >
-
                 <!-- Membre -->
-                <td class="px-6 py-4">
+                <td class="px-6 py-3.5">
                   <div class="flex items-center gap-3">
-                    @if (membre.photo_url) {
-                      <img
-                        [src]="'http://localhost:3000' + membre.photo_url"
-                        [alt]="membre.prenom + ' ' + membre.nom"
-                        class="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                      />
-                    } @else {
-                      <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-bold text-on-secondary-container">{{ getInitiales(membre) }}</span>
-                      </div>
-                    }
+                    <!-- Avatar -->
+                    <div class="relative shrink-0">
+                      @if (membre.photo_url) {
+                        <img
+                          [src]="backendUrl + membre.photo_url"
+                          [alt]="membre.prenom + ' ' + membre.nom"
+                          class="w-10 h-10 rounded-full object-cover"
+                        />
+                      } @else {
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                          [ngClass]="getAvatarClass(membre)"
+                        >{{ getInitiales(membre) }}</div>
+                      }
+                      <!-- Indicateur actif/inactif -->
+                      <span
+                        class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-surface-container-lowest"
+                        [class]="membre.actif ? 'bg-outline' : 'bg-outline-variant/40'"
+                      ></span>
+                    </div>
+                    <!-- Infos -->
                     <div>
-                      <p class="font-semibold text-sm text-on-surface">{{ membre.prenom }} {{ membre.nom }}</p>
+                      <p class="text-sm font-semibold text-on-surface">
+                        {{ membre.prenom }} {{ membre.nom }}
+                      </p>
                       @if (membre.responsabilites) {
-                        <p class="text-xs text-on-surface-muted">{{ membre.responsabilites }}</p>
+                        <p class="text-xs text-on-surface-variant truncate max-w-[180px]">{{ membre.responsabilites }}</p>
                       }
                     </div>
                   </div>
                 </td>
 
                 <!-- Téléphone -->
-                <td class="px-6 py-4 text-sm text-on-surface-variant">
+                <td class="px-6 py-3.5 text-sm text-on-surface-variant">
                   {{ formatTelephone(membre.telephone) }}
                 </td>
 
-                <!-- Statut -->
-                <td class="px-6 py-4">
-                  @if (membre.actif) {
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                      Actif
+                <!-- Cotisation -->
+                <td class="px-6 py-3.5">
+                  @if (membre.statut_cotisation === 'a_jour') {
+                    <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
+                      <span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
+                      À jour
                     </span>
                   } @else {
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
-                      Inactif
+                    <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
+                      <span class="w-1.5 h-1.5 rounded-full bg-error shrink-0"></span>
+                      En retard
                     </span>
                   }
                 </td>
 
+                <!-- Statut membre -->
+                <td class="px-6 py-3.5">
+                  <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
+                    <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                      [class]="membre.actif ? 'bg-outline' : 'bg-outline-variant/50'"
+                    ></span>
+                    {{ membre.actif ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+
                 <!-- Date adhésion -->
-                <td class="px-6 py-4 text-sm text-on-surface-variant">
+                <td class="px-6 py-3.5 text-sm text-on-surface-variant">
                   {{ formatDate(membre.date_adhesion) }}
                 </td>
 
                 <!-- Actions -->
-                <td class="px-6 py-4 text-right" (click)="$event.stopPropagation()">
-                  <div class="flex items-center justify-end gap-1">
+                <td class="px-6 py-3.5 text-right" (click)="$event.stopPropagation()">
+                  <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <a
                       [routerLink]="['/membres', membre.id]"
-                      class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
+                      class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                       title="Voir le profil"
                     >
-                      <span class="material-symbols-outlined text-xl">visibility</span>
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
                     </a>
                     <a
                       [routerLink]="['/membres', membre.id, 'modifier']"
-                      class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-low rounded-lg transition-all"
-                      title="Modifier le membre"
+                      class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary/10 rounded-xl transition-all"
+                      title="Modifier"
                     >
-                      <span class="material-symbols-outlined text-xl">edit</span>
+                      <span class="material-symbols-outlined text-[18px]">edit</span>
                     </a>
                     <button
-                      (click)="desactiverMembre(membre)"
-                      [title]="membre.actif ? 'Désactiver le membre' : 'Réactiver le membre'"
-                      class="p-2 rounded-lg transition-all"
+                      (click)="demanderToggle(membre)"
+                      [title]="membre.actif ? 'Désactiver' : 'Réactiver'"
+                      class="p-2 rounded-xl transition-all"
                       [class]="membre.actif
-                        ? 'text-on-surface-variant hover:text-error hover:bg-error-container'
+                        ? 'text-on-surface-variant hover:text-error hover:bg-error-container/50'
                         : 'text-secondary hover:bg-secondary/10'"
                     >
-                      <span class="material-symbols-outlined text-xl">
+                      <span class="material-symbols-outlined text-[18px]">
                         {{ membre.actif ? 'person_off' : 'person' }}
                       </span>
                     </button>
@@ -228,52 +304,106 @@
       </div>
 
       <!-- Pagination -->
-      <div class="px-6 py-4 bg-surface-container-low/50 flex items-center justify-between border-t border-outline-soft/50 flex-wrap gap-3">
-        <p class="text-sm text-on-surface-variant">{{ rangeLabel }}</p>
+      <div class="px-6 py-4 flex items-center justify-between flex-wrap gap-3 border-t border-outline-variant/15">
+        <p class="text-xs text-on-surface-variant">{{ rangeLabel }}</p>
 
         @if (totalPages > 1) {
-          <div class="flex items-center gap-2">
-            <!-- Précédent -->
+          <div class="flex items-center gap-1.5">
             <button
               (click)="setPage(page - 1)"
               [disabled]="page === 1"
-              class="w-9 h-9 flex items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined text-xl">chevron_left</span>
+              <span class="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
 
-            <!-- Numéros de page -->
             @for (p of pageNumbers; track p) {
               @if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
                 <button
                   (click)="setPage(p)"
                   [class]="p === page
-                    ? 'w-9 h-9 flex items-center justify-center rounded-xl bg-primary text-on-primary font-bold text-sm shadow-sm'
-                    : 'w-9 h-9 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-all text-sm'"
-                >
-                  {{ p }}
-                </button>
+                    ? 'w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold text-xs shadow-sm'
+                    : 'w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all text-xs'"
+                >{{ p }}</button>
               }
               @if (p === page - 2 && p > 2) {
-                <span class="text-on-surface-variant px-1 text-sm">…</span>
+                <span class="text-on-surface-variant text-xs px-1">…</span>
               }
               @if (p === page + 2 && p < totalPages - 1) {
-                <span class="text-on-surface-variant px-1 text-sm">…</span>
+                <span class="text-on-surface-variant text-xs px-1">…</span>
               }
             }
 
-            <!-- Suivant -->
             <button
               (click)="setPage(page + 1)"
               [disabled]="page === totalPages"
-              class="w-9 h-9 flex items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined text-xl">chevron_right</span>
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
         }
       </div>
-    </div>
 
+    </div>
+  </div>
+}
+
+<!-- Modale confirmation désactiver / réactiver -->
+@if (confirmTarget) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    (click)="confirmTarget = null">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div
+      class="relative bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/20 w-full max-w-sm p-8 flex flex-col items-center gap-5"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Icône -->
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center"
+        [class]="confirmTarget.actif ? 'bg-error-container' : 'bg-secondary-container'"
+      >
+        <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1"
+          [class]="confirmTarget.actif ? 'text-error' : 'text-secondary'"
+        >{{ confirmTarget.actif ? 'person_off' : 'person' }}</span>
+      </div>
+
+      <!-- Texte -->
+      <div class="text-center">
+        <h3 class="text-lg font-black text-on-surface">
+          {{ confirmTarget.actif ? 'Désactiver le membre ?' : 'Réactiver le membre ?' }}
+        </h3>
+        <p class="text-sm text-on-surface-variant mt-1">
+          <span class="font-bold">{{ confirmTarget.prenom }} {{ confirmTarget.nom }}</span>
+          @if (confirmTarget.actif) {
+            &nbsp;ne pourra plus accéder à l'application.
+          } @else {
+            &nbsp;retrouvera un accès complet.
+          }
+        </p>
+      </div>
+
+      <!-- Boutons -->
+      <div class="flex gap-3 w-full">
+        <button
+          (click)="confirmTarget = null"
+          [disabled]="isTogglingActif"
+          class="flex-1 py-3 rounded-xl border border-outline-variant/40 text-sm font-bold text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50"
+        >Annuler</button>
+        <button
+          (click)="confirmerToggle()"
+          [disabled]="isTogglingActif"
+          class="flex-1 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 disabled:opacity-60"
+          [class]="confirmTarget.actif
+            ? 'bg-error text-on-error hover:opacity-90'
+            : 'bg-secondary text-on-secondary hover:opacity-90'"
+        >
+          @if (isTogglingActif) {
+            <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+          } @else {
+            {{ confirmTarget.actif ? 'Désactiver' : 'Réactiver' }}
+          }
+        </button>
+      </div>
+    </div>
   </div>
 }

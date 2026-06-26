@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Photo {
   id: number;
@@ -25,8 +26,8 @@ export interface PhotosResponse {
 
 @Injectable({ providedIn: 'root' })
 export class PhotosService {
-  private readonly apiUrl = 'http://localhost:3000/api';
-  readonly backendUrl = 'http://localhost:3000';
+  private readonly apiUrl = environment.apiUrl;
+  readonly backendUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) {}
 

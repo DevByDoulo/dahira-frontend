@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 type Section = 'profil' | 'securite' | 'notifications';
 
@@ -20,7 +21,7 @@ export class ParametresComponent implements OnInit {
   photoUrl: string | null = null;
   isUploadingPhoto = false;
   photoError = '';
-  readonly backendUrl = 'http://localhost:3000';
+  readonly backendUrl = environment.backendUrl;
 
   prenom = '';
   nomFamille = '';
@@ -61,6 +62,11 @@ export class ParametresComponent implements OnInit {
       },
       error: () => { this.isLoading = false; },
     });
+  }
+
+  formatDate(date: string | null | undefined): string {
+    if (!date) return '—';
+    return new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   get roleLabel(): string {

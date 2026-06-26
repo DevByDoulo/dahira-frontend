@@ -30,6 +30,14 @@ interface Cotisation {
   created_at: string;
 }
 
+interface PresencesStats {
+  total_seances: number;
+  presents: number;
+  absents: number;
+  non_enregistres: number;
+  taux_presence: number;
+}
+
 @Component({
   selector: 'app-detail-membre',
   standalone: true,
@@ -43,9 +51,11 @@ export class DetailMembreComponent implements OnInit {
 
   isLoading = true;
   isLoadingCotisations = false;
+  isLoadingPresences = false;
   errorMessage = '';
 
   activeTab: 'infos' | 'cotisations' | 'presences' = 'infos';
+  presencesStats: PresencesStats | null = null;
 
   private readonly apiUrl = environment.apiUrl;
   readonly backendUrl = environment.apiUrl.replace('/api', '');
@@ -98,6 +108,24 @@ export class DetailMembreComponent implements OnInit {
 
   setTab(tab: 'infos' | 'cotisations' | 'presences'): void {
     this.activeTab = tab;
+    if (tab === 'presences' && !this.presencesStats && !this.isLoadingPresences) {
+      this.chargerPresences();
+    }
+  }
+
+  private chargerPresences(): void {
+    this.isLoadingPresences = true;
+    this.http
+      .get<{ success: boolean; data: PresencesStats }>(
+        `${this.apiUrl}/presences/membre/${this.membreId}/stats`,
+      )
+      .subscribe({
+        next: (res) => {
+          this.presencesStats = res.success ? res.data : null;
+          this.isLoadingPresences = false;
+        },
+        error: () => { this.isLoadingPresences = false; },
+      });
   }
 
   get initiales(): string {

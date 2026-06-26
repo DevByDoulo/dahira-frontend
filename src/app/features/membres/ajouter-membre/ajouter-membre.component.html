@@ -10,7 +10,7 @@
       <span class="material-symbols-outlined">arrow_back</span>
     </a>
     <div>
-      <h2 class="text-3xl font-bold text-primary">Ajouter un membre</h2>
+      <h2 class="text-3xl font-bold text-on-surface">Ajouter un membre</h2>
       <p class="text-sm text-on-surface-muted mt-0.5">Créez une nouvelle fiche pour un membre de votre Dahira.</p>
     </div>
   </div>
@@ -43,8 +43,8 @@
               formControlName="nom_complet"
               placeholder="Ex : Moussa Diop"
               [class]="nom_complet.invalid && nom_complet.touched
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
             />
             @if (nom_complet.invalid && nom_complet.touched) {
               <p class="text-xs text-error flex items-center gap-1">
@@ -63,7 +63,7 @@
               id="date_adhesion"
               type="date"
               formControlName="date_adhesion"
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface [placeholder]:text-outline-variant"
             />
           </div>
 
@@ -77,7 +77,7 @@
               type="text"
               formControlName="responsabilites"
               placeholder="Ex : Trésorier, Secrétaire..."
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm"
+              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface"
             />
           </div>
 
@@ -97,8 +97,8 @@
               formControlName="email"
               placeholder="Ex : moussa.diop@email.com"
               [class]="email.invalid && email.touched
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
             />
             @if (email.invalid && email.touched) {
               <p class="text-xs text-error flex items-center gap-1">
@@ -106,6 +106,24 @@
                 {{ email.hasError('required') ? "L'email est obligatoire." : "L'adresse email n'est pas valide." }}
               </p>
             }
+          </div>
+
+          <!-- Rôle -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-on-surface-variant">Rôle attribué</label>
+            <div class="flex gap-2">
+              @for (r of roles; track r.value) {
+                <button
+                  type="button"
+                  (click)="form.get('role')!.setValue(r.value)"
+                  [class]="form.get('role')!.value === r.value
+                    ? 'flex-1 py-2.5 rounded-xl border-2 border-secondary bg-secondary/5 text-sm font-semibold text-secondary transition-all'
+                    : 'flex-1 py-2.5 rounded-xl border border-outline-variant/50 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'"
+                >
+                  {{ r.label }}
+                </button>
+              }
+            </div>
           </div>
 
           <!-- Téléphone principal -->
@@ -120,8 +138,8 @@
               placeholder="77 123 45 67"
               (input)="onPhoneInput($event)"
               [class]="phoneErrorMessage
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm'"
+                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
+                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
             />
             @if (phoneErrorMessage) {
               <p class="text-xs text-error flex items-center gap-1">
@@ -151,10 +169,10 @@
         >
           @if (isSubmitting) {
             <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
-            Enregistrement…
+            Création en cours…
           } @else {
-            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">save</span>
-            Enregistrer
+            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">send</span>
+            Créer et inviter
           }
         </button>
       </div>
@@ -171,7 +189,7 @@
       <div>
         <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Conseil</p>
         <p class="text-xs text-on-secondary-container mt-0.5">
-          Le prénom et nom (ex : Moussa Diop) ainsi que l'email sont obligatoires.
+          Le membre recevra un email d'invitation pour créer son mot de passe et accéder à l'application.
         </p>
       </div>
     </div>

@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { DashboardService } from '../../core/services/dashboard.service';
+import { DashboardService, TopContributeur } from '../../core/services/dashboard.service';
 import { AnnoncesService, Annonce } from '../../core/services/annonces.service';
+import { environment } from '../../../environments/environment';
 
 interface BarData {
   label: string;
-  heightPx: number;
   active: boolean;
+  montant: number;
+  nombre: number;
 }
 
 interface EventItem {
@@ -19,6 +21,11 @@ interface EventItem {
   title: string;
   time: string;
   place: string;
+  type: string;
+  daysUntil: number;
+  nbParticipants: number;
+  maxParticipants: number | null;
+  inscriptionsOuvertes: boolean;
 }
 
 interface TresPoint {
@@ -29,15 +36,16 @@ interface TresPoint {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
   isLoading = true;
 
-  // Rôle extrait du localStorage
   readonly role: string =
     (JSON.parse(localStorage.getItem('user') ?? 'null') as { role?: string } | null)?.role ?? '';
+
+  readonly backendUrl = environment.apiUrl.replace('/api', '');
 
   get isFinancier(): boolean {
     return this.role === 'bureau' || this.role === 'tresorier';
@@ -50,30 +58,55 @@ export class DashboardComponent implements OnInit {
     );
   }
 
+  // KPIs principaux
   totalMembres = 0;
   membresActifs = 0;
+  membresNouveaux = 0;
+  membresEnRetard = 0;
   cotisationsMois = 0;
+  cotisationsApprouvees = 0;
+  cotisationsEnAttente = 0;
   tauxAJour = 0;
   soldeTresorerie = 0;
+  entreesTotal = 0;
+  sortiesTotal = 0;
   evenementsCount = 0;
 
-  bars: BarData[] = [
-    { label: 'Jan', heightPx: 72, active: false },
-    { label: 'Fév', heightPx: 99, active: false },
-    { label: 'Mar', heightPx: 81, active: false },
-    { label: 'Avr', heightPx: 126, active: false },
-    { label: 'Mai', heightPx: 153, active: false },
-    { label: 'Juin', heightPx: 171, active: true },
-  ];
+  // Graphiques — barres
+  private allBarsData: BarData[] = [];
+  chartPeriod: 6 | 12 = 6;
+  hoveredBarIndex: number | null = null;
 
-  tresLineD = 'M0,80 Q20,75 40,60 T80,30 T100,20';
-  tresAreaD = 'M0,80 Q20,75 40,60 T80,30 T100,20 L100,100 L0,100 Z';
-  tresPts: TresPoint[] = [{ x: 0, y: 80 }, { x: 40, y: 60 }, { x: 100, y: 20 }];
+  get bars(): BarData[] { return this.allBarsData.slice(-this.chartPeriod); }
+
+  get barMaxMontant(): number { return Math.max(...this.bars.map(b => b.montant), 1); }
+
+  get barTotalPeriod(): number { return this.bars.reduce((s, b) => s + b.montant, 0); }
+
+  readonly yAxisTicks = [100, 75, 50, 25, 0] as const;
+
+  // Graphiques — courbe trésorerie
+  tresLineD = '';
+  tresAreaD = '';
+  tresPts: TresPoint[] = [];
   tresFirstLabel = 'Jan';
-  tresLastLabel = 'Juin';
+  tresLastLabel = '';
+  hoveredTresIndex: number | null = null;
+  tresRawData: Array<{ label: string; solde: number }> = [];
+  private tresMinSolde = 0;
+  private tresMaxSolde = 1;
+
+  get tresYLabels(): Array<{ text: string; y: number }> {
+    const range = this.tresMaxSolde - this.tresMinSolde || 1;
+    return [0, 1, 2, 3, 4].map(i => ({
+      text: this.formatFCFAShort(Math.round(this.tresMinSolde + (range * (4 - i)) / 4)),
+      y: 10 + (i / 4) * 75,
+    }));
+  }
 
   events: EventItem[] = [];
   annonces: Annonce[] = [];
+  topContributeurs: TopContributeur[] = [];
 
   constructor(
     private dashboardService: DashboardService,
@@ -90,24 +123,36 @@ export class DashboardComponent implements OnInit {
       next: ({ stats, charts, annonces }) => {
         if (stats?.success) {
           const d = stats.data;
-          this.totalMembres = d.membres.total ?? 0;
-          this.membresActifs = Number(d.membres.actifs ?? 0);
-          this.cotisationsMois = Number(d.cotisations.montant_total_mois ?? 0);
-          this.tauxAJour = Number(d.cotisations.taux_a_jour ?? 0);
-          this.soldeTresorerie = Number(d.tresorerie.solde_global ?? 0);
-          this.evenementsCount = d.evenements_a_venir?.length ?? 0;
+          this.totalMembres         = d.membres.total ?? 0;
+          this.membresActifs        = Number(d.membres.actifs ?? 0);
+          this.membresNouveaux      = Number(d.membres.nouveaux_ce_mois ?? 0);
+          this.membresEnRetard      = Number(d.cotisations.membres_en_retard ?? 0);
+          this.cotisationsMois      = Number(d.cotisations.montant_total_mois ?? 0);
+          this.cotisationsApprouvees = Number(d.cotisations.approuvees ?? 0);
+          this.cotisationsEnAttente = Number(d.cotisations.en_attente ?? 0);
+          this.tauxAJour            = Number(d.cotisations.taux_a_jour ?? 0);
+          this.soldeTresorerie      = Number(d.tresorerie.solde_global ?? 0);
+          this.entreesTotal         = Number(d.tresorerie.entrees_total ?? 0);
+          this.sortiesTotal         = Number(d.tresorerie.sorties_total ?? 0);
+          this.evenementsCount      = d.evenements_a_venir?.length ?? 0;
           this.events = (d.evenements_a_venir ?? []).map((e: any) => ({
             id: e.id,
             ...this.parseEventDate(e.date_evenement),
             title: e.titre,
             time: this.parseEventTime(e.date_evenement),
             place: e.lieu ?? '',
+            type: e.type ?? 'autre',
+            daysUntil: this.daysUntil(e.date_evenement),
+            nbParticipants: Number(e.nb_participants ?? 0),
+            maxParticipants: e.max_participants != null ? Number(e.max_participants) : null,
+            inscriptionsOuvertes: e.inscriptions_ouvertes != null ? Boolean(e.inscriptions_ouvertes) : false,
           }));
+          this.topContributeurs = d.top_contributeurs ?? [];
         }
 
         if (charts?.success) {
           const evoCot = charts.data.evolution_cotisations;
-          if (evoCot?.length) this.bars = this.buildBars(evoCot);
+          this.allBarsData = this.buildBars(this.fillMissingMonths(evoCot ?? [], 12));
 
           const evoTres = charts.data.evolution_tresorerie;
           if (evoTres?.length) this.buildTresChart(evoTres);
@@ -119,20 +164,40 @@ export class DashboardComponent implements OnInit {
 
         this.isLoading = false;
       },
-      error: () => {
-        this.isLoading = false;
-      },
+      error: () => { this.isLoading = false; },
     });
   }
 
+  setChartPeriod(p: 6 | 12): void {
+    this.chartPeriod = p;
+  }
+
+  private fillMissingMonths(
+    data: Array<{ mois: string; nombre: number; montant: number }>,
+    months: number,
+  ): Array<{ mois: string; nombre: number; montant: number }> {
+    const map = new Map(data.map(d => [d.mois, d]));
+    const result: Array<{ mois: string; nombre: number; montant: number }> = [];
+    const now = new Date();
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      result.push(map.get(key) ?? { mois: key, nombre: 0, montant: 0 });
+    }
+    return result;
+  }
+
+  barHeightPx(bar: BarData): number {
+    return Math.max(Math.round((bar.montant / this.barMaxMontant) * 140), 4);
+  }
+
   private buildBars(data: Array<{ mois: string; nombre: number; montant: number }>): BarData[] {
-    const slice = data.slice(-6);
-    const max = Math.max(...slice.map(d => Number(d.montant)), 1);
-    const lastMois = slice[slice.length - 1]?.mois;
-    return slice.map(d => ({
+    const lastMois = data[data.length - 1]?.mois;
+    return data.map(d => ({
       label: this.formatMonthShort(d.mois),
-      heightPx: Math.max(Math.round((Number(d.montant) / max) * 180), 4),
       active: d.mois === lastMois,
+      montant: Number(d.montant),
+      nombre: Number(d.nombre),
     }));
   }
 
@@ -145,15 +210,43 @@ export class DashboardComponent implements OnInit {
     const minS = Math.min(...soldes, 0);
     const range = maxS - minS || 1;
 
-    this.tresPts = soldes.map((s, i) => ({
-      x: +(n === 1 ? 50 : (i / (n - 1)) * 100).toFixed(1),
-      y: +(90 - ((s - minS) / range) * 75).toFixed(1),
+    this.tresMinSolde = minS;
+    this.tresMaxSolde = maxS;
+
+    this.tresRawData = data.map((d, i) => ({
+      label: this.formatMonthShort(d.periode),
+      solde: Number(d.solde),
     }));
 
-    this.tresLineD = 'M' + this.tresPts.map(p => `${p.x},${p.y}`).join(' L');
-    this.tresAreaD = `${this.tresLineD} L100,100 L0,100 Z`;
+    this.tresPts = soldes.map((s, i) => ({
+      x: +(n === 1 ? 50 : (i / (n - 1)) * 100).toFixed(1),
+      y: +(85 - ((s - minS) / range) * 70).toFixed(1),
+    }));
+
+    this.tresLineD = this.smoothCatmullRom(this.tresPts);
+    this.tresAreaD = `${this.tresLineD} L${this.tresPts[n - 1].x},95 L${this.tresPts[0].x},95 Z`;
     this.tresFirstLabel = this.formatMonthShort(data[0].periode);
     this.tresLastLabel = this.formatMonthShort(data[n - 1].periode);
+  }
+
+  private smoothCatmullRom(pts: TresPoint[]): string {
+    if (pts.length === 0) return '';
+    if (pts.length === 1) return `M ${pts[0].x},${pts[0].y}`;
+    if (pts.length === 2) return `M ${pts[0].x},${pts[0].y} L ${pts[1].x},${pts[1].y}`;
+
+    let d = `M ${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[Math.max(0, i - 1)];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[Math.min(pts.length - 1, i + 2)];
+      const cp1x = +(p1.x + (p2.x - p0.x) / 6).toFixed(2);
+      const cp1y = +(p1.y + (p2.y - p0.y) / 6).toFixed(2);
+      const cp2x = +(p2.x - (p3.x - p1.x) / 6).toFixed(2);
+      const cp2y = +(p2.y - (p3.y - p1.y) / 6).toFixed(2);
+      d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+    }
+    return d;
   }
 
   private formatMonthShort(moisStr: string): string {
@@ -173,16 +266,68 @@ export class DashboardComponent implements OnInit {
     return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   }
 
+  daysUntil(dateStr: string): number {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const target = new Date(dateStr); target.setHours(0, 0, 0, 0);
+    return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+  }
+
+  eventUrgencyLabel(days: number): string {
+    if (days === 0) return "Aujourd'hui";
+    if (days === 1) return 'Demain';
+    if (days <= 7) return `Dans ${days} jours`;
+    return '';
+  }
+
+  eventTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      conference: 'Conférence', sortie: 'Sortie', ceremonie: 'Cérémonie',
+      formation: 'Formation', autre: 'Événement',
+    };
+    return labels[type] ?? 'Événement';
+  }
+
+  eventTypeColor(_type: string): string {
+    return 'bg-surface-container text-on-surface-variant border-outline-variant/30';
+  }
+
+  eventAccentColor(_type: string): string {
+    return 'bg-outline-variant/50';
+  }
+
+  participationPct(nb: number, max: number): number {
+    return Math.min(Math.round((nb / max) * 100), 100);
+  }
+
   formatFCFA(value: number): string {
     const n = Math.round(value);
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  formatFCFAShort(value: number): string {
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + 'M';
+    if (value >= 1_000) return (value / 1_000).toFixed(0) + 'K';
+    return String(Math.round(value));
   }
 
   formatAnnonceDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
   }
 
+  avatarUrl(url: string | null): string | null {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `${this.backendUrl}${url}`;
+  }
+
+  initiales(nom: string, prenom: string): string {
+    return `${(prenom ?? '?')[0]}${(nom ?? '?')[0]}`.toUpperCase();
+  }
+
   navigateToEvents(): void {
     this.router.navigate(['/evenements']);
+  }
+
+  navigateToPendingCotisations(): void {
+    this.router.navigate(['/cotisations']);
   }
 }

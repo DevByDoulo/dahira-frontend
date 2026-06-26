@@ -91,8 +91,8 @@
               placeholder="Ex : 5 000"
               min="1"
               [class]="montant.invalid && montant.touched
-                ? 'w-full pl-11 pr-4 py-3 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none text-sm transition-all'
-                : 'w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-sm transition-all'"
+                ? 'w-full pl-11 pr-4 py-3 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none text-sm bg-surface-container-lowest text-on-surface transition-all'
+                : 'w-full pl-11 pr-4 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none text-sm bg-surface-container-lowest text-on-surface transition-all'"
             />
           </div>
           @if (montant.invalid && montant.touched) {
@@ -113,7 +113,7 @@
             <select
               id="mode_paiement"
               formControlName="mode_paiement"
-              class="w-full pl-11 pr-10 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none text-sm bg-transparent transition-all"
+              class="w-full pl-11 pr-10 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none text-sm bg-surface-container-lowest text-on-surface transition-all"
             >
               @for (mode of modes; track mode.value) {
                 <option [value]="mode.value">{{ mode.label }}</option>
@@ -124,34 +124,55 @@
         </div>
 
         <!-- Séance associée — pleine largeur -->
-        <div class="md:col-span-2 space-y-1.5">
-          <label class="text-sm font-semibold text-on-surface-variant" for="seance_id">
+        <div class="md:col-span-2 space-y-2">
+          <label class="text-sm font-semibold text-on-surface-variant">
             Séance associée <span class="text-error">*</span>
           </label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">event_repeat</span>
-            <select
-              id="seance_id"
-              formControlName="seance_id"
-              [class]="seance_id.invalid && seance_id.touched
-                ? 'w-full pl-11 pr-10 py-3 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none appearance-none text-sm bg-transparent transition-all'
-                : 'w-full pl-11 pr-10 py-3 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none appearance-none text-sm bg-transparent transition-all'"
-            >
-              <option [ngValue]="null" disabled>Choisir une séance…</option>
-              @if (chargementSeances) {
-                <option disabled>Chargement…</option>
-              } @else if (seances.length === 0) {
-                <option disabled>Aucune séance disponible</option>
-              } @else {
-                @for (s of seances; track s.id) {
-                  <option [ngValue]="s.id">
-                    {{ formatDateSeance(s) }} — {{ typeLabel(s.type) }}
-                  </option>
-                }
+
+          @if (chargementSeances) {
+            <div class="flex items-center gap-2 py-4 text-on-surface-variant text-sm">
+              <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+              Chargement des séances…
+            </div>
+          } @else if (seances.length === 0) {
+            <div class="flex items-center gap-2 py-4 text-on-surface-variant text-sm">
+              <span class="material-symbols-outlined text-[18px]">event_busy</span>
+              Aucune séance disponible pour le moment.
+            </div>
+          } @else {
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1">
+              @for (s of seances; track s.id) {
+                <button
+                  type="button"
+                  (click)="form.get('seance_id')!.setValue(s.id)"
+                  [class]="form.get('seance_id')!.value === s.id
+                    ? 'flex items-center gap-3 p-3.5 rounded-xl border-2 border-secondary bg-secondary/5 text-left transition-all w-full'
+                    : 'flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant/50 hover:border-outline-variant hover:bg-surface-container-low text-left transition-all w-full'"
+                >
+                  <!-- Bloc date -->
+                  <div class="flex flex-col items-center justify-center w-12 h-12 rounded-xl shrink-0"
+                       [class]="form.get('seance_id')!.value === s.id ? 'bg-secondary/10' : 'bg-surface-container-high'">
+                    <span class="text-lg font-black leading-none text-on-surface">{{ jourSeance(s) }}</span>
+                    <span class="text-[10px] font-medium text-on-surface-variant uppercase">{{ moisSeance(s) }}</span>
+                  </div>
+                  <!-- Infos -->
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-on-surface">{{ jourSemaineSeance(s) }}</p>
+                    <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      <span class="text-xs px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-medium">{{ typeLabel(s.type) }}</span>
+                      @if (s.lieu) {
+                        <span class="text-xs text-on-surface-variant/60 truncate">{{ s.lieu }}</span>
+                      }
+                    </div>
+                  </div>
+                  @if (form.get('seance_id')!.value === s.id) {
+                    <span class="material-symbols-outlined text-secondary text-[20px] shrink-0" style="font-variation-settings:'FILL' 1">check_circle</span>
+                  }
+                </button>
               }
-            </select>
-            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none text-[20px]">expand_more</span>
-          </div>
+            </div>
+          }
+
           @if (seance_id.invalid && seance_id.touched) {
             <p class="text-xs text-error flex items-center gap-1">
               <span class="material-symbols-outlined text-[14px]">error</span>

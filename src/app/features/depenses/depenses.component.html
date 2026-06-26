@@ -1,36 +1,35 @@
 <!-- Toast -->
 @if (toast) {
   <div
-    class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium"
-    [class.bg-green-600]="toast.type === 'success'"
-    [class.bg-red-600]="toast.type === 'error'"
+    class="fixed top-5 right-5 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium"
+    [class]="toast.type === 'success'
+      ? 'bg-surface-container-highest text-on-surface border border-outline-variant/30 shadow-lg'
+      : 'bg-error-container text-on-error-container border border-error/20 shadow-lg'"
   >
-    <span class="material-symbols-outlined text-base">
+    <span class="material-symbols-outlined text-[18px]">
       {{ toast.type === 'success' ? 'check_circle' : 'error' }}
     </span>
     {{ toast.message }}
   </div>
 }
 
-<!-- État : chargement -->
+<!-- Chargement -->
 @if (isLoading) {
   <app-skeleton-table [count]="8" />
 }
 
-<!-- État : erreur -->
+<!-- Erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto">
-    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
-      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
-      <button
-        (click)="charger()"
-        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-      >
-        <span class="material-symbols-outlined text-xl">refresh</span>
-        Réessayer
-      </button>
-    </div>
+  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-16 gap-4 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline">cloud_off</span>
+    <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+    <button
+      (click)="charger()"
+      class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+    >
+      <span class="material-symbols-outlined text-xl">refresh</span>
+      Réessayer
+    </button>
   </div>
 }
 
@@ -40,82 +39,83 @@
 @if (modalMode === 'detail' && depenseSelectionnee) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModal()">
     <div class="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl" (click)="$event.stopPropagation()">
-      <div class="flex items-center justify-between p-6 border-b border-outline-variant/20">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-xl">{{ categorieIcon(depenseSelectionnee.categorie) }}</span>
+          <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[20px]">{{ categorieIcon(depenseSelectionnee.categorie) }}</span>
           </div>
-          <h3 class="text-lg font-bold text-on-surface">Détail de la dépense</h3>
+          <h3 class="text-base font-bold text-on-surface">Détail de la dépense</h3>
         </div>
-        <button (click)="fermerModal()" class="p-1.5 hover:bg-surface-container-high rounded-full transition-colors">
-          <span class="material-symbols-outlined text-xl text-on-surface-variant">close</span>
+        <button (click)="fermerModal()" class="p-1.5 hover:bg-surface-container-high rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px] text-on-surface-variant">close</span>
         </button>
       </div>
       <div class="p-6 space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Objet</p>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Objet</p>
             <p class="text-sm font-semibold text-on-surface">{{ depenseSelectionnee.description }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Montant</p>
-            <p class="text-base font-bold text-error">– {{ formatMontant(depenseSelectionnee.montant) }}</p>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Montant</p>
+            <p class="text-base font-bold text-on-surface">{{ formatMontant(depenseSelectionnee.montant) }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Catégorie</p>
-            <span class="px-2.5 py-1 bg-surface-container-high text-primary text-xs font-bold rounded-full uppercase tracking-tight">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Catégorie</p>
+            <span class="px-2.5 py-1 bg-surface-container-high text-on-surface-variant text-xs font-medium rounded-full">
               {{ categorieLabel(depenseSelectionnee.categorie) }}
             </span>
           </div>
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Statut</p>
-            <span class="px-2.5 py-1 text-xs font-semibold rounded-full" [ngClass]="statutClass(depenseSelectionnee.statut)">
-              {{ statutLabel(depenseSelectionnee.statut) }}
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Statut</p>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0" [class]="statutDotClass(depenseSelectionnee.statut)"></span>
+              <span class="text-sm text-on-surface-variant">{{ statutLabel(depenseSelectionnee.statut) }}</span>
             </span>
           </div>
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Mode de paiement</p>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Mode de paiement</p>
             <p class="text-sm text-on-surface capitalize">{{ depenseSelectionnee.mode_paiement.replace('_', ' ') }}</p>
           </div>
           <div>
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Date</p>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Date</p>
             <p class="text-sm text-on-surface">{{ formatDate(depenseSelectionnee.date_depense) }}</p>
           </div>
           @if (depenseSelectionnee.cree_par_nom) {
             <div>
-              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Créé par</p>
+              <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Créé par</p>
               <p class="text-sm text-on-surface">{{ depenseSelectionnee.cree_par_nom }}</p>
             </div>
           }
           @if (depenseSelectionnee.valide_par_nom) {
             <div>
-              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Validé par</p>
+              <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Validé par</p>
               <p class="text-sm text-on-surface">{{ depenseSelectionnee.valide_par_nom }}</p>
             </div>
           }
         </div>
         @if (depenseSelectionnee.note) {
-          <div class="pt-2 border-t border-outline-variant/20">
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Note</p>
+          <div class="pt-3 border-t border-outline-variant/15">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Note</p>
             <p class="text-sm text-on-surface leading-relaxed">{{ depenseSelectionnee.note }}</p>
           </div>
         }
         @if (depenseSelectionnee.justificatif_url) {
-          <div class="pt-2 border-t border-outline-variant/20">
-            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Justificatif</p>
+          <div class="pt-3 border-t border-outline-variant/15">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Justificatif</p>
             <a
               [href]="fileUrl(depenseSelectionnee.justificatif_url)"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-xl text-sm text-primary font-medium hover:opacity-80 transition-opacity"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-xl text-sm text-on-surface font-medium hover:bg-surface-container transition-colors"
             >
-              <span class="material-symbols-outlined text-base">open_in_new</span>
+              <span class="material-symbols-outlined text-[16px] text-on-surface-variant">open_in_new</span>
               Ouvrir le justificatif
             </a>
           </div>
         }
       </div>
-      <div class="p-6 pt-0">
+      <div class="px-6 pb-6">
         <button (click)="fermerModal()" class="w-full py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors">
           Fermer
         </button>
@@ -129,23 +129,25 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModal()">
     <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl" (click)="$event.stopPropagation()">
       <div class="p-6 flex flex-col items-center text-center gap-4">
-        <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-          <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
+        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl">check_circle</span>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-on-surface">Valider la dépense ?</h3>
+          <h3 class="text-base font-bold text-on-surface">Valider la dépense ?</h3>
           <p class="text-sm text-on-surface-variant mt-1">
             « <span class="font-medium text-on-surface">{{ depenseSelectionnee.description }}</span> »
-            — <span class="font-semibold text-error">{{ formatMontant(depenseSelectionnee.montant) }}</span>
+            — <span class="font-semibold text-on-surface">{{ formatMontant(depenseSelectionnee.montant) }}</span>
           </p>
-          <p class="text-xs text-on-surface-variant mt-2">Cette action sera enregistrée dans la trésorerie.</p>
+          <p class="text-xs text-on-surface-variant/60 mt-2">Cette action sera enregistrée dans la trésorerie.</p>
         </div>
       </div>
       <div class="px-6 pb-6 flex gap-3">
-        <button (click)="fermerModal()" [disabled]="isActionLoading" class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+        <button (click)="fermerModal()" [disabled]="isActionLoading"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
           Annuler
         </button>
-        <button (click)="execValider()" [disabled]="isActionLoading" class="flex-1 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
+        <button (click)="execValider()" [disabled]="isActionLoading"
+          class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
           @if (isActionLoading) {
             <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
           }
@@ -161,37 +163,39 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModal()">
     <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl" (click)="$event.stopPropagation()">
       <div class="p-6 flex flex-col items-center text-center gap-4">
-        <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
-          <span class="material-symbols-outlined text-error text-3xl">cancel</span>
+        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl">cancel</span>
         </div>
         <div class="w-full text-left">
-          <h3 class="text-lg font-bold text-on-surface text-center">Rejeter la dépense ?</h3>
+          <h3 class="text-base font-bold text-on-surface text-center">Rejeter la dépense ?</h3>
           <p class="text-sm text-on-surface-variant mt-1 text-center">
             « <span class="font-medium text-on-surface">{{ depenseSelectionnee.description }}</span> »
           </p>
-          <div class="mt-4 space-y-1">
-            <label class="block text-sm font-medium text-on-surface" for="motif">
-              Motif du rejet <span class="text-error">*</span>
+          <div class="mt-4 space-y-1.5">
+            <label class="block text-xs font-medium text-on-surface-variant" for="motif">
+              Motif du rejet <span class="text-on-surface">*</span>
             </label>
             <textarea
               id="motif"
               [(ngModel)]="motifRejet"
               rows="3"
               placeholder="Ex : Justificatif manquant, montant incorrect…"
-              class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-error focus:border-error outline-none transition-all text-sm resize-none"
+              class="w-full px-4 py-3 border border-outline-variant/40 rounded-xl focus:ring-2 focus:ring-outline focus:border-outline outline-none transition-all text-sm resize-none bg-transparent text-on-surface"
               (click)="$event.stopPropagation()"
             ></textarea>
             @if (!motifRejet.trim()) {
-              <p class="text-xs text-error">Le motif est obligatoire.</p>
+              <p class="text-xs text-on-surface-variant/60">Le motif est obligatoire.</p>
             }
           </div>
         </div>
       </div>
       <div class="px-6 pb-6 flex gap-3">
-        <button (click)="fermerModal()" [disabled]="isActionLoading" class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+        <button (click)="fermerModal()" [disabled]="isActionLoading"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
           Annuler
         </button>
-        <button (click)="execRejeter()" [disabled]="isActionLoading || !motifRejet.trim()" class="flex-1 py-2.5 bg-error text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+        <button (click)="execRejeter()" [disabled]="isActionLoading || !motifRejet.trim()"
+          class="flex-1 py-2.5 bg-error text-on-error rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
           @if (isActionLoading) {
             <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
           }
@@ -207,22 +211,24 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModal()">
     <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl" (click)="$event.stopPropagation()">
       <div class="p-6 flex flex-col items-center text-center gap-4">
-        <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
-          <span class="material-symbols-outlined text-error text-3xl">delete_forever</span>
+        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl">delete_forever</span>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-on-surface">Supprimer la dépense ?</h3>
+          <h3 class="text-base font-bold text-on-surface">Supprimer la dépense ?</h3>
           <p class="text-sm text-on-surface-variant mt-1">
             « <span class="font-medium text-on-surface">{{ depenseSelectionnee.description }}</span> »
           </p>
-          <p class="text-xs text-error mt-2 font-medium">Cette action est irréversible.</p>
+          <p class="text-xs text-on-surface-variant/60 mt-2">Cette action est irréversible.</p>
         </div>
       </div>
       <div class="px-6 pb-6 flex gap-3">
-        <button (click)="fermerModal()" [disabled]="isActionLoading" class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+        <button (click)="fermerModal()" [disabled]="isActionLoading"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
           Annuler
         </button>
-        <button (click)="execSupprimer()" [disabled]="isActionLoading" class="flex-1 py-2.5 bg-error text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+        <button (click)="execSupprimer()" [disabled]="isActionLoading"
+          class="flex-1 py-2.5 bg-error text-on-error rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
           @if (isActionLoading) {
             <span class="material-symbols-outlined animate-spin text-base">progress_activity</span>
           }
@@ -233,90 +239,90 @@
   </div>
 }
 
+<!-- ═══════════════════════ CONTENU ═══════════════════════ -->
+
 @if (!isLoading && !errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-bold text-primary">Dépenses</h2>
+        <h2 class="text-2xl font-black text-on-surface">Dépenses</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">Suivez et validez les dépenses du Dahira</p>
       </div>
       <a
         routerLink="/depenses/ajouter"
-        class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-sm flex-shrink-0"
+        class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all self-start sm:self-auto"
       >
-        <span class="material-symbols-outlined text-xl">add_circle</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
         Ajouter une dépense
       </a>
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1">receipt_long</span>
-        </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total dépenses (mois)</p>
-          <p class="text-xl font-bold text-error mt-0.5">{{ formatMontant(totalMois) }}</p>
-          <p class="text-xs text-on-surface-variant mt-0.5">{{ depenses.length }} dépense{{ depenses.length > 1 ? 's' : '' }} au total</p>
-        </div>
-      </div>
-
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-yellow-700" style="font-variation-settings: 'FILL' 1">pending</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">En attente</p>
-          <p class="text-xl font-bold text-on-surface mt-0.5">
-            {{ nombreEnAttente }}
-            <span class="text-sm font-medium text-on-surface-variant">à valider</span>
-          </p>
-          <div class="mt-2 w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-            <div
-              class="bg-yellow-400 h-full rounded-full transition-all"
-              [style.width.%]="depenses.length ? (nombreEnAttente / depenses.length) * 100 : 0"
-            ></div>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Ce mois</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">receipt_long</span>
           </div>
         </div>
+        <p class="text-2xl font-black text-on-surface">{{ formatMontant(totalMois) }}</p>
+        <p class="text-xs text-on-surface-variant/60">{{ depenses.length }} dépense{{ depenses.length > 1 ? 's' : '' }} au total</p>
       </div>
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-violet-500" style="font-variation-settings: 'FILL' 1">pie_chart</span>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">En attente</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">pending</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Top catégorie</p>
-          <p class="text-xl font-bold text-primary mt-0.5">{{ topCategorie }}</p>
-          <p class="text-xs text-on-surface-variant mt-0.5">{{ topCategoriePercent }}% des dépenses totales</p>
+        <p class="text-2xl font-black text-on-surface">
+          {{ nombreEnAttente }}
+          <span class="text-sm font-medium text-on-surface-variant">à valider</span>
+        </p>
+        <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+          <div
+            class="h-full bg-outline-variant rounded-full transition-all"
+            [style.width.%]="depenses.length ? (nombreEnAttente / depenses.length) * 100 : 0"
+          ></div>
         </div>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Top catégorie</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">pie_chart</span>
+          </div>
+        </div>
+        <p class="text-2xl font-black text-on-surface">{{ topCategorie }}</p>
+        <p class="text-xs text-on-surface-variant/60">{{ topCategoriePercent }}% des dépenses totales</p>
       </div>
 
     </div>
 
-    <!-- Barre filtres -->
+    <!-- Filtres -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-      <!-- Recherche -->
-      <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/40 rounded-xl px-4 py-2.5 focus-within:border-primary transition-all flex-1 min-w-0">
-        <span class="material-symbols-outlined text-outline text-xl flex-shrink-0">search</span>
+      <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 flex-1 min-w-0">
+        <span class="material-symbols-outlined text-on-surface-variant/50 text-[18px] shrink-0">search</span>
         <input
           type="text"
           [(ngModel)]="searchQuery"
           (ngModelChange)="onFilterChange()"
           placeholder="Rechercher une dépense…"
-          class="bg-transparent border-none outline-none text-sm w-full placeholder-on-surface-variant"
+          class="bg-transparent outline-none text-sm w-full placeholder:text-on-surface-variant/40 text-on-surface"
         />
       </div>
 
-      <!-- Filtre catégorie -->
-      <div class="relative flex-shrink-0">
+      <div class="relative shrink-0">
         <select
           [(ngModel)]="categorieFilter"
           (ngModelChange)="onFilterChange()"
-          class="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-xl text-sm font-medium hover:border-primary focus:border-primary outline-none transition-all cursor-pointer"
+          class="appearance-none pl-4 pr-9 py-2.5 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-sm text-on-surface font-medium outline-none cursor-pointer hover:border-outline-variant transition-colors"
         >
           @for (cat of categories; track cat.value) {
             <option [value]="cat.value">
@@ -324,154 +330,148 @@
             </option>
           }
         </select>
-        <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-sm pointer-events-none">
-          expand_more
-        </span>
+        <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50 text-[18px] pointer-events-none">expand_more</span>
       </div>
     </div>
 
     <!-- Tableau -->
-    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden"
-         style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05)">
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
       <table class="w-full text-left border-collapse">
-        <thead class="bg-surface-container-low/50">
-          <tr>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Libellé</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Catégorie</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Justificatif</th>
-            <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+        <thead>
+          <tr class="border-b border-outline-variant/15">
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Libellé</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Catégorie</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Justificatif</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-outline-variant/20">
+        <tbody class="divide-y divide-outline-variant/10">
           @if (paginated.length === 0) {
             <tr>
               <td colspan="7" class="px-6 py-16 text-center">
-                <div class="flex flex-col items-center gap-3">
-                  <span class="material-symbols-outlined text-5xl text-on-surface-variant/40">receipt_long</span>
-                  <p class="text-sm text-on-surface-variant">Aucune dépense trouvée</p>
-                </div>
+                <span class="material-symbols-outlined text-4xl text-outline block mb-2">receipt_long</span>
+                <p class="text-sm text-on-surface-variant">Aucune dépense trouvée</p>
               </td>
             </tr>
           }
           @for (d of paginated; track d.id) {
-            <tr class="hover:bg-surface-container-low/30 transition-colors">
+            <tr class="group hover:bg-surface-container-low/40 transition-colors cursor-pointer" (click)="ouvrirModal('detail', d)">
 
               <!-- Libellé -->
-              <td class="px-6 py-5">
+              <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined text-primary text-xl">{{ categorieIcon(d.categorie) }}</span>
+                  <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-on-surface-variant text-[18px]">{{ categorieIcon(d.categorie) }}</span>
                   </div>
                   <div>
                     <p class="text-sm font-semibold text-on-surface">{{ d.description }}</p>
                     @if (d.cree_par_nom) {
-                      <p class="text-xs text-on-surface-variant mt-0.5">par {{ d.cree_par_nom }}</p>
+                      <p class="text-xs text-on-surface-variant/60 mt-0.5">{{ d.cree_par_nom }}</p>
                     }
                   </div>
                 </div>
               </td>
 
               <!-- Catégorie -->
-              <td class="px-6 py-5">
-                <span class="px-3 py-1 bg-surface-container-high text-primary text-xs font-bold rounded-full uppercase tracking-tight">
+              <td class="px-6 py-4">
+                <span class="px-2.5 py-1 bg-surface-container-high text-on-surface-variant text-xs font-medium rounded-full">
                   {{ categorieLabel(d.categorie) }}
                 </span>
               </td>
 
               <!-- Montant -->
-              <td class="px-6 py-5">
-                <span class="text-base font-bold text-error">– {{ formatMontant(d.montant) }}</span>
+              <td class="px-6 py-4">
+                <span class="text-sm font-bold text-on-surface">{{ formatMontant(d.montant) }}</span>
               </td>
 
               <!-- Date -->
-              <td class="px-6 py-5 text-sm text-on-surface-variant">
+              <td class="px-6 py-4 text-sm text-on-surface-variant">
                 {{ formatDate(d.date_depense) }}
               </td>
 
               <!-- Statut -->
-              <td class="px-6 py-5">
-                <span
-                  class="px-2.5 py-1 text-xs font-semibold rounded-full"
-                  [ngClass]="statutClass(d.statut)"
-                >
-                  {{ statutLabel(d.statut) }}
+              <td class="px-6 py-4">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full shrink-0" [class]="statutDotClass(d.statut)"></span>
+                  <span class="text-xs text-on-surface-variant">{{ statutLabel(d.statut) }}</span>
                 </span>
               </td>
 
               <!-- Justificatif -->
-              <td class="px-6 py-5">
+              <td class="px-6 py-4">
                 @if (d.justificatif_url) {
                   <a
                     [href]="fileUrl(d.justificatif_url)"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center gap-1 text-secondary hover:underline text-sm"
+                    class="inline-flex items-center gap-1 text-on-surface-variant hover:text-on-surface transition-colors text-xs"
                   >
-                    <span class="material-symbols-outlined text-base">receipt</span>
+                    <span class="material-symbols-outlined text-[16px]">attach_file</span>
                     Voir
                   </a>
                 } @else {
-                  <span class="text-sm text-on-surface-variant/40 italic">Aucun</span>
+                  <span class="text-xs text-on-surface-variant/30">—</span>
                 }
               </td>
 
               <!-- Actions -->
-              <td class="px-6 py-5 text-right">
+              <td class="px-6 py-4 text-right" (click)="$event.stopPropagation()">
                 <div class="relative inline-block">
                   <button
                     (click)="toggleMenu($event, d.id)"
-                    class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors"
+                    class="p-2 text-on-surface-variant/50 group-hover:text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors"
                   >
-                    <span class="material-symbols-outlined text-xl">more_vert</span>
+                    <span class="material-symbols-outlined text-[20px]">more_vert</span>
                   </button>
 
                   @if (menuOpenId === d.id) {
                     <div
-                      class="absolute right-0 top-10 z-30 w-44 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-lg py-1"
+                      class="absolute right-0 top-10 z-30 w-44 bg-surface-container-lowest rounded-xl border border-outline-variant/25 shadow-xl py-1"
                       (click)="$event.stopPropagation()"
                     >
                       <button
                         (click)="ouvrirModal('detail', d)"
-                        class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                        class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                       >
-                        <span class="material-symbols-outlined text-base">visibility</span>
+                        <span class="material-symbols-outlined text-on-surface-variant text-[16px]">visibility</span>
                         Voir le détail
                       </button>
                       @if (d.statut === 'en_attente') {
                         <a
                           [routerLink]="['/depenses', d.id, 'modifier']"
-                          class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-secondary hover:bg-surface-container-low transition-colors"
+                          class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                         >
-                          <span class="material-symbols-outlined text-base">edit</span>
+                          <span class="material-symbols-outlined text-on-surface-variant text-[16px]">edit</span>
                           Modifier
                         </a>
                       }
                       @if (d.statut === 'en_attente' && isBureau) {
+                        <div class="border-t border-outline-variant/15 my-1"></div>
                         <button
                           (click)="ouvrirModal('valider', d)"
-                          class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-700 hover:bg-green-50 transition-colors"
+                          class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                         >
-                          <span class="material-symbols-outlined text-base">check_circle</span>
+                          <span class="material-symbols-outlined text-on-surface-variant text-[16px]">check_circle</span>
                           Valider
                         </button>
                         <button
                           (click)="ouvrirModal('rejeter', d)"
-                          class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-error hover:bg-error-container/30 transition-colors"
+                          class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                         >
-                          <span class="material-symbols-outlined text-base">cancel</span>
+                          <span class="material-symbols-outlined text-on-surface-variant text-[16px]">cancel</span>
                           Rejeter
                         </button>
                       }
                       @if (isBureau && d.statut !== 'validee') {
-                        <div class="border-t border-outline-variant/20 my-1"></div>
+                        <div class="border-t border-outline-variant/15 my-1"></div>
                         <button
                           (click)="ouvrirModal('supprimer', d)"
-                          class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-error hover:bg-error-container/20 transition-colors"
+                          class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-error hover:bg-error-container/20 transition-colors"
                         >
-                          <span class="material-symbols-outlined text-base">delete</span>
+                          <span class="material-symbols-outlined text-[16px]">delete</span>
                           Supprimer
                         </button>
                       }
@@ -486,40 +486,35 @@
       </table>
 
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="px-6 py-4 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-3">
         <span class="text-xs text-on-surface-variant">{{ rangeLabel }}</span>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1">
           <button
             (click)="setPage(page - 1)"
             [disabled]="page === 1"
-            class="p-1.5 border border-outline-variant/40 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <span class="material-symbols-outlined text-xl">chevron_left</span>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_left</span>
           </button>
           @for (p of pageNumbers; track p) {
             <button
               (click)="setPage(p)"
-              class="min-w-[2rem] h-8 px-2 rounded-lg text-sm font-medium transition-colors"
-              [class.bg-primary]="p === page"
-              [class.text-on-primary]="p === page"
-              [class.border]="p !== page"
-              [class.border-outline-variant\/40]="p !== page"
-              [class.hover:bg-surface-container-low]="p !== page"
-            >
-              {{ p }}
-            </button>
+              class="min-w-[2rem] h-8 px-2 rounded-lg text-xs font-medium transition-colors"
+              [class]="p === page
+                ? 'bg-primary text-on-primary font-bold'
+                : 'border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low'"
+            >{{ p }}</button>
           }
           <button
             (click)="setPage(page + 1)"
             [disabled]="page === totalPages"
-            class="p-1.5 border border-outline-variant/40 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <span class="material-symbols-outlined text-xl">chevron_right</span>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
           </button>
         </div>
       </div>
     </div>
-
 
   </div>
 }

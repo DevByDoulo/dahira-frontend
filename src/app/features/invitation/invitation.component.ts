@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+
 import { MembresService, Membre } from '../../core/services/membres.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-invitation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './invitation.component.html',
 })
 export class InvitationComponent implements OnInit {
-  readonly apiUrl = 'http://localhost:3000/api';
+  readonly apiUrl = environment.apiUrl;
 
   // Membres
   membres: Membre[] = [];

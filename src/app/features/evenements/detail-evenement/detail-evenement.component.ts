@@ -13,8 +13,10 @@ import { environment } from '../../../../environments/environment';
 })
 export class DetailEvenementComponent implements OnInit {
   evenement: Evenement | null = null;
+
   isLoading = true;
   errorMessage = '';
+
   isBureau = false;
 
   constructor(
@@ -44,6 +46,13 @@ export class DetailEvenementComponent implements OnInit {
     });
   }
 
+  statutCalcule(): 'a_venir' | 'passe' {
+    if (!this.evenement) return 'passe';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(this.evenement.date_evenement) >= today ? 'a_venir' : 'passe';
+  }
+
   photoUrl(): string {
     if (!this.evenement?.photo_url) return '';
     if (this.evenement.photo_url.startsWith('http')) return this.evenement.photo_url;
@@ -52,13 +61,6 @@ export class DetailEvenementComponent implements OnInit {
 
   formatDate(d: string): string {
     return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  }
-
-  statutCalcule(): 'a_venir' | 'passe' {
-    if (!this.evenement) return 'passe';
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return new Date(this.evenement.date_evenement) >= today ? 'a_venir' : 'passe';
   }
 
   mapsUrl(): string {

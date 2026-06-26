@@ -2,7 +2,9 @@ import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MembresService } from '../../../core/services/membres.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-ajouter-membre',
@@ -16,24 +18,33 @@ export class AjouterMembreComponent implements OnDestroy {
   errorMessage = '';
   phoneErrorMessage = '';
 
+  readonly roles = [
+    { value: 'membre',    label: 'Membre' },
+    { value: 'tresorier', label: 'Trésorier' },
+    { value: 'bureau',    label: 'Bureau (Admin)' },
+  ];
+
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(
     private fb: FormBuilder,
     private membresService: MembresService,
+    private http: HttpClient,
     private router: Router,
   ) {
     this.form = this.fb.group({
-      nom_complet: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      telephone: [''],
-      date_adhesion: [''],
-      responsabilites: [''],
+      nom_complet:    ['', [Validators.required, Validators.minLength(2)]],
+      email:          ['', [Validators.required, Validators.email]],
+      role:           ['membre', Validators.required],
+      telephone:      [''],
+      date_adhesion:  [''],
+      responsabilites:[''],
     });
   }
 
   get nom_complet() { return this.form.get('nom_complet')!; }
-  get email() { return this.form.get('email')!; }
-  get telephone() { return this.form.get('telephone')!; }
+  get email()       { return this.form.get('email')!; }
+  get telephone()   { return this.form.get('telephone')!; }
 
   onPhoneInput(event: Event): void {
     this.phoneErrorMessage = '';
@@ -59,40 +70,46 @@ export class AjouterMembreComponent implements OnDestroy {
     this.phoneErrorMessage = '';
 
     const raw = this.form.value as Record<string, string>;
+    const email = raw['email']?.trim();
+    const role  = raw['role'] ?? 'membre';
 
     // Séparer prénom et nom depuis le champ combiné
     const parts = (raw['nom_complet'] ?? '').trim().split(/\s+/);
     raw['prenom'] = parts[0] ?? '';
     raw['nom']    = parts.length > 1 ? parts.slice(1).join(' ') : parts[0] ?? '';
     delete raw['nom_complet'];
+    delete raw['email'];
+    delete raw['role'];
 
-    // Stocker les téléphones sans espaces
     if (raw['telephone']) raw['telephone'] = raw['telephone'].replace(/\s/g, '');
 
     const body = Object.fromEntries(
       Object.entries(raw).filter(([, v]) => v !== ''),
     ) as unknown as Parameters<MembresService['createMembre']>[0];
 
-    this.membresService
-      .createMembre(body)
-      .subscribe({
-        next: () => this.router.navigate(['/membres']),
-        error: (err) => {
-          const message: string = err?.error?.message ?? '';
-          const isPhoneDuplicate =
-            err?.status === 409 ||
-            err?.status === 400 && /t[eé]l[eé]phone|duplic|ER_DUP/i.test(message);
+    this.membresService.createMembre(body).subscribe({
+      next: (res) => {
+        const membreId = res.data.id;
+        this.http.post(`${this.apiUrl}/invitations`, { membre_id: membreId, email, role }).subscribe({
+          next: () => this.router.navigate(['/membres'], { state: { toast: 'Membre créé et invitation envoyée.' } }),
+          error: () => this.router.navigate(['/membres'], { state: { toast: 'Membre créé. Invitation non envoyée (vérifiez la configuration email).' } }),
+        });
+      },
+      error: (err) => {
+        const message: string = err?.error?.message ?? '';
+        const isPhoneDuplicate =
+          err?.status === 409 ||
+          (err?.status === 400 && /t[eé]l[eé]phone|duplic|ER_DUP/i.test(message));
 
-          if (isPhoneDuplicate) {
-            this.phoneErrorMessage = 'Ce numéro de téléphone est déjà utilisé par un autre membre.';
-            this.errorMessage = '';
-          } else {
-            this.errorMessage = message || 'Erreur serveur. Veuillez réessayer.';
-            this.phoneErrorMessage = '';
-          }
-
-          this.isSubmitting = false;
-        },
+        if (isPhoneDuplicate) {
+          this.phoneErrorMessage = 'Ce numéro de téléphone est déjà utilisé par un autre membre.';
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = message || 'Erreur serveur. Veuillez réessayer.';
+          this.phoneErrorMessage = '';
+        }
+        this.isSubmitting = false;
+      },
     });
   }
 

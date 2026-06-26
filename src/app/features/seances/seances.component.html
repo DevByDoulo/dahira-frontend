@@ -1,145 +1,182 @@
+<!-- Chargement -->
 @if (isLoading) {
-  <app-skeleton-table [count]="5" />
+  <app-skeleton-table [count]="8" />
 }
 
+<!-- Erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto">
-    <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
-      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
-      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
-      <button
-        (click)="chargerSeances()"
-        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-      >
-        <span class="material-symbols-outlined text-xl">refresh</span>
-        Réessayer
-      </button>
+  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-16 gap-4 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline">cloud_off</span>
+    <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+    <button
+      (click)="chargerSeances()"
+      class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+    >
+      <span class="material-symbols-outlined text-xl">refresh</span>
+      Réessayer
+    </button>
+  </div>
+}
+
+<!-- Modal confirmation clôture -->
+@if (confirmerCloture) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="confirmerCloture = null">
+    <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="p-6 flex flex-col items-center text-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl">lock</span>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-on-surface">Clôturer la séance ?</h3>
+          <p class="text-sm text-on-surface-variant mt-1">
+            « <span class="font-medium text-on-surface">{{ getTitre(confirmerCloture) }}</span> »
+          </p>
+          <p class="text-xs text-on-surface-variant/60 mt-2">Cette action est irréversible.</p>
+        </div>
+      </div>
+      <div class="px-6 pb-6 flex gap-3">
+        <button (click)="confirmerCloture = null" [disabled]="isCloturing"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+          Annuler
+        </button>
+        <button (click)="executerCloture()" [disabled]="isCloturing"
+          class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+          @if (isCloturing) {
+            <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+          }
+          Confirmer
+        </button>
+      </div>
     </div>
   </div>
 }
 
+<!-- Contenu -->
 @if (!isLoading && !errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-bold text-primary">Séances</h2>
-        <p class="text-sm text-on-surface-variant mt-0.5">Gérez les rencontres et les activités de votre Dahira</p>
+        <h2 class="text-2xl font-black text-on-surface">Séances</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Gérez les rencontres et activités de votre Dahira</p>
       </div>
       <a
         routerLink="/seances/creer"
-        class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-md"
+        class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all self-start sm:self-auto"
       >
-        <span class="material-symbols-outlined">add_circle</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
         Créer une séance
       </a>
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Total séances</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">calendar_month</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total séances</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ totalSeances }}</h3>
-        </div>
+        <p class="text-2xl font-black text-on-surface">{{ totalSeances }}</p>
+        <p class="text-xs text-on-surface-variant/60">{{ seancesTerminees }} terminée{{ seancesTerminees > 1 ? 's' : '' }}</p>
       </div>
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-sky-500" style="font-variation-settings: 'FILL' 1;">event_upcoming</span>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">À venir</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">event_upcoming</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">À venir</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ seancesAVenir }}</h3>
-        </div>
+        <p class="text-2xl font-black text-on-surface">{{ seancesAVenir }}</p>
+        <p class="text-xs text-on-surface-variant/60">Séances planifiées</p>
       </div>
 
-      <div class="p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Terminées</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">task_alt</span>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Terminées</p>
-          <h3 class="text-xl font-bold text-on-surface mt-0.5">{{ seancesTerminees }}</h3>
+        <p class="text-2xl font-black text-on-surface">{{ seancesTerminees }}</p>
+        <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+          <div class="h-full bg-outline-variant rounded-full transition-all"
+            [style.width.%]="totalSeances ? (seancesTerminees / totalSeances) * 100 : 0"></div>
         </div>
       </div>
 
     </div>
 
-    <!-- Barre de filtres -->
-    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-sm p-4 flex flex-wrap items-center gap-6">
+    <!-- Filtres -->
+    <div class="flex flex-wrap items-center gap-3">
 
-      <!-- Période -->
-      <div class="flex items-center gap-2 text-on-surface-variant">
-        <span class="material-symbols-outlined text-xl">calendar_month</span>
-        <span class="text-sm font-medium">Période :</span>
+      <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5">
+        <span class="material-symbols-outlined text-on-surface-variant/50 text-[16px]">calendar_month</span>
         <input
           type="date"
           [(ngModel)]="dateDebut"
           (ngModelChange)="onFilterChange()"
-          class="bg-transparent border-none focus:ring-0 text-sm text-primary font-bold outline-none"
+          class="bg-transparent outline-none text-sm text-on-surface"
         />
-        <span class="text-outline text-sm">à</span>
+        <span class="text-on-surface-variant/40 text-xs">—</span>
         <input
           type="date"
           [(ngModel)]="dateFin"
           (ngModelChange)="onFilterChange()"
-          class="bg-transparent border-none focus:ring-0 text-sm text-primary font-bold outline-none"
+          class="bg-transparent outline-none text-sm text-on-surface"
         />
       </div>
 
-      <div class="h-6 w-px bg-outline-variant/30 hidden md:block"></div>
-
-      <!-- Statut -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-on-surface-variant font-medium">Statut :</span>
+      <div class="relative">
         <select
           [(ngModel)]="statutFilter"
           (ngModelChange)="onFilterChange()"
-          class="bg-surface-container-low border-none rounded-lg text-sm text-primary font-medium focus:ring-2 focus:ring-secondary/20 outline-none py-1.5 px-3"
+          class="appearance-none bg-surface-container-lowest border border-outline-variant/30 rounded-xl pl-4 pr-9 py-2.5 text-sm text-on-surface font-medium outline-none cursor-pointer"
         >
-          <option value="">Tous</option>
+          <option value="">Tous les statuts</option>
           <option value="termine">Terminé</option>
           <option value="en_cours">En cours</option>
           <option value="a_venir">À venir</option>
         </select>
+        <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[16px] pointer-events-none">expand_more</span>
       </div>
 
-      <button
-        (click)="resetFiltres()"
-        class="ml-auto text-secondary font-bold text-sm hover:underline transition-all"
-      >
-        Réinitialiser les filtres
-      </button>
+      @if (dateDebut || dateFin || statutFilter) {
+        <button
+          (click)="resetFiltres()"
+          class="text-xs text-on-surface-variant hover:text-on-surface transition-colors"
+        >
+          Effacer les filtres
+        </button>
+      }
+
     </div>
 
     <!-- Tableau -->
-    <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Titre / Thème</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Heure</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Lieu</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Type</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+            <tr class="border-b border-outline-variant/15">
+              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Titre / Type</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Date & heure</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Lieu</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/10">
 
             @if (paginated.length === 0) {
               <tr>
-                <td colspan="7" class="px-6 py-12 text-center text-on-surface-muted text-sm">
-                  <span class="material-symbols-outlined text-4xl block mb-2 text-outline">event_busy</span>
-                  Aucune séance trouvée
+                <td colspan="5" class="px-6 py-16 text-center">
+                  <span class="material-symbols-outlined text-4xl text-outline block mb-2">event_busy</span>
+                  <p class="text-sm font-medium text-on-surface">Aucune séance trouvée</p>
+                  <p class="text-xs text-on-surface-variant mt-1">Modifiez vos filtres ou créez une nouvelle séance.</p>
                 </td>
               </tr>
             }
@@ -147,96 +184,78 @@
             @for (seance of paginated; track seance.id) {
               @let statut = getStatut(seance);
               <tr
-                class="hover:bg-surface-container-low/30 transition-colors group cursor-pointer"
+                class="group hover:bg-surface-container-low/40 transition-colors cursor-pointer"
                 [routerLink]="['/seances', seance.id]"
               >
 
-                <!-- Titre / Thème -->
-                <td class="px-6 py-5">
+                <!-- Titre / Type -->
+                <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div
-                      [class]="statut === 'termine'
-                        ? 'h-10 w-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0'
-                        : statut === 'en_cours'
-                        ? 'h-10 w-10 rounded-lg bg-primary text-on-primary flex items-center justify-center flex-shrink-0'
-                        : 'h-10 w-10 rounded-lg bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0'"
-                    >
-                      <span class="material-symbols-outlined text-xl">{{ typeIcon(seance.type) }}</span>
+                    <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-on-surface-variant text-[18px]">{{ typeIcon(seance.type) }}</span>
                     </div>
                     <div>
-                      <p class="font-semibold text-sm text-on-surface">{{ getTitre(seance) }}</p>
-                      <p class="text-xs text-on-surface-muted">{{ typeLabel(seance.type) }}</p>
+                      <p class="text-sm font-semibold text-on-surface">{{ getTitre(seance) }}</p>
+                      <p class="text-xs text-on-surface-variant/60 mt-0.5">{{ typeLabel(seance.type) }}</p>
                     </div>
                   </div>
                 </td>
 
-                <!-- Date -->
-                <td class="px-6 py-5 text-sm text-on-surface">{{ formatDate(seance.date_seance) }}</td>
-
-                <!-- Heure -->
-                <td class="px-6 py-5 text-sm text-on-surface">{{ formatHeure(seance.heure) }}</td>
-
-                <!-- Lieu -->
-                <td class="px-6 py-5 text-sm text-on-surface">{{ seance.lieu ?? '—' }}</td>
-
-                <!-- Type -->
-                <td class="px-6 py-5">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container text-xs font-medium text-on-surface-variant capitalize">
-                    {{ seance.type }}
-                  </span>
-                </td>
-
-                <!-- Statut -->
-                <td class="px-6 py-5">
-                  @if (statut === 'termine') {
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                      Terminé
-                    </span>
-                  } @else if (statut === 'en_cours') {
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
-                      En cours
-                    </span>
-                  } @else {
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary text-xs font-bold">
-                      <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                      À venir
-                    </span>
+                <!-- Date & heure -->
+                <td class="px-6 py-4">
+                  <p class="text-sm text-on-surface">{{ formatDate(seance.date_seance) }}</p>
+                  @if (seance.heure) {
+                    <div class="flex items-center gap-1 mt-0.5">
+                      <span class="material-symbols-outlined text-on-surface-variant/50" style="font-size:13px;line-height:1">alarm</span>
+                      <span class="text-xs text-on-surface-variant/60">{{ formatHeure(seance.heure) }}</span>
+                    </div>
                   }
                 </td>
 
+                <!-- Lieu -->
+                <td class="px-6 py-4">
+                  @if (seance.lieu) {
+                    <div class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-on-surface-variant/50" style="font-size:13px;line-height:1">pin_drop</span>
+                      <span class="text-sm text-on-surface-variant">{{ seance.lieu }}</span>
+                    </div>
+                  } @else {
+                    <span class="text-sm text-on-surface-variant/30">—</span>
+                  }
+                </td>
+
+                <!-- Statut -->
+                <td class="px-6 py-4">
+                  <span class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                      [class]="statut === 'termine' ? 'bg-outline' : statut === 'en_cours' ? 'bg-yellow-400' : 'bg-green-400'"></span>
+                    <span class="text-xs text-on-surface-variant">
+                      {{ statut === 'termine' ? 'Terminé' : statut === 'en_cours' ? 'En cours' : 'À venir' }}
+                    </span>
+                  </span>
+                </td>
+
                 <!-- Actions -->
-                <td class="px-6 py-5 text-right" (click)="$event.stopPropagation()">
+                <td class="px-6 py-4 text-right" (click)="$event.stopPropagation()">
                   <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
-                      title="Voir (bientôt disponible)"
-                      disabled
-                    >
-                      <span class="material-symbols-outlined text-xl opacity-40">visibility</span>
-                    </button>
                     <a
                       [routerLink]="['/seances', seance.id, 'modifier']"
-                      class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
-                      title="Modifier la séance"
+                      class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors"
+                      title="Modifier"
                     >
-                      <span class="material-symbols-outlined text-xl">edit</span>
+                      <span class="material-symbols-outlined text-[18px]">edit</span>
                     </a>
                     @if (!seance.cloturee) {
                       <button
-                        (click)="cloturerSeance(seance)"
-                        title="Clôturer la séance"
-                        class="p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container-high rounded-full transition-all"
+                        (click)="demanderCloture(seance)"
+                        class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors"
+                        title="Clôturer"
                       >
-                        <span class="material-symbols-outlined text-xl">lock</span>
+                        <span class="material-symbols-outlined text-[18px]">lock</span>
                       </button>
                     } @else {
-                      <span
-                        class="p-2 text-outline"
-                        title="Séance déjà clôturée"
-                      >
-                        <span class="material-symbols-outlined text-xl">lock</span>
+                      <span class="p-2 text-outline/40" title="Déjà clôturée">
+                        <span class="material-symbols-outlined text-[18px]">lock</span>
                       </span>
                     }
                   </div>
@@ -250,50 +269,37 @@
       </div>
 
       <!-- Pagination -->
-      <div class="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant/10 flex items-center justify-between flex-wrap gap-3">
-        <p class="text-sm text-on-surface-variant">{{ rangeLabel }}</p>
-
+      <div class="px-6 py-4 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span class="text-xs text-on-surface-variant">{{ rangeLabel }}</span>
         @if (totalPages > 1) {
           <div class="flex items-center gap-1">
             <button
               (click)="setPage(page - 1)"
               [disabled]="page === 1"
-              class="p-2 hover:bg-surface-container-high rounded-lg text-outline disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined">chevron_left</span>
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_left</span>
             </button>
-
             @for (p of pageNumbers; track p) {
-              @if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
-                <button
-                  (click)="setPage(p)"
-                  [class]="p === page
-                    ? 'px-3 py-1 bg-primary text-on-primary rounded-lg font-bold text-sm'
-                    : 'px-3 py-1 hover:bg-surface-container-high text-primary rounded-lg text-sm transition-all'"
-                >
-                  {{ p }}
-                </button>
-              }
-              @if (p === page - 2 && p > 2) {
-                <span class="px-1 text-outline text-sm">…</span>
-              }
-              @if (p === page + 2 && p < totalPages - 1) {
-                <span class="px-1 text-outline text-sm">…</span>
-              }
+              <button
+                (click)="setPage(p)"
+                class="min-w-[2rem] h-8 px-2 rounded-lg text-xs font-medium transition-colors"
+                [class]="p === page
+                  ? 'bg-primary text-on-primary font-bold'
+                  : 'border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low'"
+              >{{ p }}</button>
             }
-
             <button
               (click)="setPage(page + 1)"
               [disabled]="page === totalPages"
-              class="p-2 hover:bg-surface-container-high rounded-lg text-outline disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined">chevron_right</span>
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
             </button>
           </div>
         }
       </div>
     </div>
-
 
   </div>
 }

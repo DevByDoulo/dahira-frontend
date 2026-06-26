@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface UserProfile {
   id: number;
@@ -38,7 +39,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl;
 
   private profileSubject = new BehaviorSubject<UserProfile | null>(null);
   profile$ = this.profileSubject.asObservable();
@@ -77,7 +78,12 @@ export class AuthService {
 
   getMe(): Observable<{ success: boolean; data: UserProfile }> {
     return this.http.get<{ success: boolean; data: UserProfile }>(`${this.apiUrl}/auth/me`).pipe(
-      tap(res => { if (res.success) this.profileSubject.next(res.data); })
+      tap(res => {
+        if (res.success) {
+          this.profileSubject.next(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }
+      })
     );
   }
 
@@ -95,7 +101,12 @@ export class AuthService {
 
   updateProfile(data: { nom: string; telephone: string; email: string }): Observable<{ success: boolean; data: UserProfile }> {
     return this.http.patch<{ success: boolean; data: UserProfile }>(`${this.apiUrl}/users/me`, data).pipe(
-      tap(res => { if (res.success) this.profileSubject.next(res.data); })
+      tap(res => {
+        if (res.success) {
+          this.profileSubject.next(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }
+      })
     );
   }
 }

@@ -1,84 +1,124 @@
 <!-- Skeleton -->
 @if (isLoading) {
-  <div class="px-10 py-8 max-w-7xl mx-auto space-y-6">
-    <div class="h-8 w-52 bg-surface-container rounded-xl animate-pulse"></div>
-    <div class="h-10 w-72 bg-surface-container rounded-xl animate-pulse"></div>
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6 animate-pulse">
+    <div class="h-8 w-52 bg-surface-container rounded-xl"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="h-28 bg-surface-container rounded-2xl"></div>
+      }
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       @for (_ of [1,2,3,4,5,6]; track $index) {
-        <div class="bg-surface-container-lowest rounded-2xl h-72 animate-pulse border border-outline-variant/10"></div>
+        <div class="h-72 bg-surface-container rounded-2xl"></div>
       }
     </div>
   </div>
 }
 
 @if (!isLoading) {
-  <div class="px-10 py-8 max-w-7xl mx-auto space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-bold text-on-surface">Événements</h2>
-        <p class="text-on-surface-variant text-sm mt-1">
-          Gérez vos rassemblements communautaires, cérémonies et réunions.
-          @if (filtres.length > 0) {
-            <span class="ml-1.5 inline-flex items-center justify-center bg-surface-container text-on-surface-variant text-xs font-bold px-2 py-0.5 rounded-full">{{ filtres.length }}</span>
-          }
-        </p>
+        <h2 class="text-2xl font-black text-on-surface">Événements</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Gérez vos rassemblements communautaires, cérémonies et réunions.</p>
       </div>
       @if (isBureau) {
         <a routerLink="/evenements/creer"
-           class="inline-flex items-center justify-center gap-2 bg-primary text-on-primary font-bold px-5 py-2.5 rounded-xl hover:shadow-lg hover:-translate-y-px active:scale-[0.98] transition-all text-sm">
+           class="inline-flex items-center gap-2 bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all text-sm self-start sm:self-auto">
           <span class="material-symbols-outlined text-[18px]">add</span>
           Créer un événement
         </a>
       }
     </div>
 
-    <!-- Barre de recherche + onglets -->
-    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <div class="relative flex-1 max-w-xs">
-        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          placeholder="Rechercher un événement..."
-          class="w-full pl-11 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
-        />
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Total</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">event</span>
+          </div>
+        </div>
+        <p class="text-2xl font-black text-on-surface">{{ totalEvenements }}</p>
+        <p class="text-xs text-on-surface-variant/60">événement{{ totalEvenements > 1 ? 's' : '' }} au total</p>
       </div>
 
-      <!-- Onglets statut (pill style) -->
-      <div class="flex items-center gap-1 bg-surface-container rounded-xl p-1">
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">À venir</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">event_upcoming</span>
+          </div>
+        </div>
+        <p class="text-2xl font-black text-on-surface">{{ evenementsAVenir }}</p>
+        <p class="text-xs text-on-surface-variant/60">planifié{{ evenementsAVenir > 1 ? 's' : '' }}</p>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Passés</span>
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">event_available</span>
+          </div>
+        </div>
+        <p class="text-2xl font-black text-on-surface">{{ evenementsPasses }}</p>
+        <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+          <div class="h-full bg-outline-variant rounded-full transition-all"
+            [style.width.%]="totalEvenements ? (evenementsPasses / totalEvenements) * 100 : 0"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Onglets + recherche -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div class="flex items-center gap-0.5 bg-surface-container-low p-1 rounded-xl">
         @for (onglet of onglets; track onglet.value) {
           <button
             (click)="setOnglet(onglet.value)"
-            class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
+            class="px-4 py-1.5 rounded-lg text-xs font-medium transition-all"
             [class]="statutActif === onglet.value
               ? 'bg-surface-container-lowest text-on-surface font-bold shadow-sm'
               : 'text-on-surface-variant hover:text-on-surface'"
           >{{ onglet.label }}</button>
         }
       </div>
+
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/40 text-[18px]">search</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Rechercher un événement…"
+          class="pl-11 pr-4 py-2.5 w-64 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:border-outline-variant transition-all"
+        />
+      </div>
     </div>
 
     <!-- Erreur -->
     @if (errorMessage) {
-      <div class="p-4 bg-error-container text-on-error-container rounded-xl text-sm flex items-center gap-2">
-        <span class="material-symbols-outlined text-[18px]">error</span>
+      <div class="px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-xl text-sm text-on-surface-variant flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">error</span>
         {{ errorMessage }}
       </div>
     }
 
     <!-- État vide -->
     @if (filtres.length === 0) {
-      <div class="flex flex-col items-center justify-center py-20 text-center">
-        <span class="material-symbols-outlined text-outline-variant text-6xl mb-3">event_busy</span>
-        <p class="text-on-surface font-semibold mb-1">Aucun événement trouvé</p>
-        <p class="text-on-surface-variant text-sm mb-5">
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 flex flex-col items-center justify-center py-20 text-center">
+        <span class="material-symbols-outlined text-outline text-6xl mb-3">event_busy</span>
+        <p class="text-on-surface font-semibold mb-1">Aucun événement</p>
+        <p class="text-sm text-on-surface-variant mb-5">
           {{ statutActif === 'a_venir' ? 'Aucun événement à venir pour le moment.' : 'Aucun événement ne correspond à votre recherche.' }}
         </p>
         @if (isBureau) {
           <a routerLink="/evenements/creer"
-             class="inline-flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-md transition-all">
+             class="inline-flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all">
             <span class="material-symbols-outlined text-[16px]">add</span>
             Créer un événement
           </a>
@@ -86,137 +126,112 @@
       </div>
     }
 
-    <!-- Grille événements -->
+    <!-- Grille cartes -->
     @if (filtres.length > 0) {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-8">
-        @for (ev of filtres; track ev.id; let first = $first) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        @for (ev of paginated; track ev.id) {
+          @let isPasse = statutCalcule(ev) === 'passe';
+
           <article
-            [class]="first ? 'lg:col-span-2' : ''"
-            class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/15 custom-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-200 cursor-pointer"
+            class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/15 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col"
             [routerLink]="['/evenements', ev.id]"
           >
-
-            <!-- Image / placeholder -->
-            <div [class]="first ? 'h-60' : 'h-44'" class="relative overflow-hidden">
+            <!-- Image -->
+            <div class="h-44 relative overflow-hidden shrink-0">
               @if (ev.photo_url) {
-                <img [src]="photoUrl(ev)" [alt]="ev.titre"
-                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img
+                  [src]="photoUrl(ev)"
+                  [alt]="ev.titre"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
               } @else {
-                <div class="w-full h-full bg-gradient-to-br from-secondary-container via-surface-container to-surface-container-high flex items-center justify-center">
-                  <span class="material-symbols-outlined text-secondary/30 text-7xl">event</span>
+                <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
+                  <span class="material-symbols-outlined text-on-surface-variant/15 text-6xl">event</span>
                 </div>
               }
-
-              <!-- Overlay gradient bas (hero seulement) -->
-              @if (first) {
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-              }
-
-              <!-- Widget date calendrier -->
-              <div class="absolute top-3 left-3 bg-white rounded-xl overflow-hidden shadow-md text-center w-12 shrink-0">
-                <div class="bg-primary py-0.5">
-                  <span class="text-on-primary text-[9px] font-bold uppercase tracking-wide">{{ mois(ev.date_evenement) }}</span>
-                </div>
-                <div class="py-1">
-                  <span class="text-on-surface font-bold text-lg leading-none">{{ jour(ev.date_evenement) }}</span>
-                </div>
-              </div>
 
               <!-- Badge statut -->
               <div class="absolute top-3 right-3">
-                <span [class]="statutActif === 'a_venir' || statutCalcule(ev) === 'a_venir'
-                  ? 'bg-secondary text-on-secondary px-2.5 py-1 rounded-full text-xs font-bold'
-                  : 'bg-black/50 text-white px-2.5 py-1 rounded-full text-xs font-bold'">
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant border border-outline-variant/20">
+                  <span class="w-1.5 h-1.5 rounded-full shrink-0" [class]="isPasse ? 'bg-outline' : 'bg-green-400'"></span>
                   {{ statutLabel(ev) }}
                 </span>
               </div>
+            </div>
 
-              <!-- Actions bureau (hover) -->
-              @if (isBureau) {
-                <div class="absolute bottom-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <!-- Contenu -->
+            <div class="p-4 flex flex-col flex-1">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1">
+                {{ formatDate(ev.date_evenement) }}
+              </p>
+              <h3 class="font-bold text-sm text-on-surface mb-3 line-clamp-2 flex-1">{{ ev.titre }}</h3>
+
+              <div class="space-y-1.5 text-xs text-on-surface-variant mb-4">
+                @if (ev.heure) {
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-on-surface-variant/40 text-[13px]">alarm</span>
+                    {{ ev.heure }}
+                  </div>
+                }
+                @if (ev.lieu) {
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-on-surface-variant/40 text-[13px]">pin_drop</span>
+                    <span class="line-clamp-1">{{ ev.lieu }}</span>
+                  </div>
+                }
+                @if (ev.participants_count !== undefined) {
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-on-surface-variant/40 text-[13px]">group</span>
+                    {{ ev.participants_count }} participants
+                  </div>
+                }
+              </div>
+
+              <div class="pt-3 border-t border-outline-variant/15 flex items-center justify-between">
+                <span class="text-xs font-semibold text-on-surface-variant group-hover:text-on-surface transition-colors">
+                  Voir les détails →
+                </span>
+                @if (isBureau) {
                   <button
                     (click)="$event.stopPropagation(); ouvrirSupprimer(ev)"
-                    class="p-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-error hover:bg-error hover:text-on-error transition-colors shadow-sm">
-                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                    class="p-1 text-on-surface-variant/30 hover:text-error transition-colors">
+                    <span class="material-symbols-outlined text-[15px]">delete</span>
                   </button>
-                </div>
-              }
-            </div>
-
-            <!-- Corps -->
-            <div [class]="first ? 'p-6' : 'p-4'">
-
-              @if (first) {
-                <!-- Hero : titre + méta inline -->
-                <div class="flex justify-between items-start gap-4 mb-3">
-                  <div class="flex-1">
-                    @if (ev.lieu) {
-                      <p class="text-secondary text-xs font-bold uppercase tracking-wider mb-1">{{ ev.lieu }}</p>
-                    }
-                    <h3 class="font-bold text-xl text-on-surface leading-snug">{{ ev.titre }}</h3>
-                  </div>
-                </div>
-                <div class="flex flex-wrap gap-4 text-on-surface-variant text-sm">
-                  @if (ev.heure) {
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
-                      {{ ev.heure }}
-                    </div>
-                  }
-                  @if (ev.lieu) {
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-outline text-[16px]">location_on</span>
-                      {{ ev.lieu }}
-                    </div>
-                  }
-                  @if (ev.participants_count !== undefined) {
-                    <div class="flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-outline text-[16px]">group</span>
-                      {{ ev.participants_count }} participants
-                    </div>
-                  }
-                </div>
-
-              } @else {
-                <!-- Carte normale -->
-                <h3 class="font-bold text-base text-on-surface mb-3 line-clamp-1">{{ ev.titre }}</h3>
-                <div class="space-y-1.5 text-on-surface-variant text-sm mb-4">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-outline text-[15px]">calendar_today</span>
-                    <span>{{ formatDate(ev.date_evenement) }}</span>
-                  </div>
-                  @if (ev.heure) {
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-outline text-[15px]">schedule</span>
-                      <span>{{ ev.heure }}</span>
-                    </div>
-                  }
-                  @if (ev.lieu) {
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-outline text-[15px]">location_on</span>
-                      <span class="line-clamp-1">{{ ev.lieu }}</span>
-                    </div>
-                  }
-                  @if (ev.participants_count !== undefined) {
-                    <div class="flex items-center gap-2">
-                      <span class="material-symbols-outlined text-outline text-[15px]">group</span>
-                      <span>{{ ev.participants_count }} participants</span>
-                    </div>
-                  }
-                </div>
-
-                <div class="h-px bg-outline-variant/20 mb-3"></div>
-
-                <a
-                  [routerLink]="['/evenements', ev.id]"
-                  class="block w-full py-2 text-center text-secondary text-sm font-bold border border-secondary/30 hover:bg-secondary-container/40 rounded-xl transition-colors"
-                >
-                  Voir les détails
-                </a>
-              }
-
+                }
+              </div>
             </div>
           </article>
+        }
+      </div>
+
+      <!-- Pagination -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span class="text-xs text-on-surface-variant">{{ rangeLabel }}</span>
+        @if (totalPages > 1) {
+          <div class="flex items-center gap-1">
+            <button
+              (click)="setPage(page - 1)"
+              [disabled]="page === 1"
+              class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_left</span>
+            </button>
+            @for (p of pageNumbers; track p) {
+              <button
+                (click)="setPage(p)"
+                class="min-w-[2rem] h-8 px-2 rounded-lg text-xs font-medium transition-colors"
+                [class]="p === page
+                  ? 'bg-primary text-on-primary font-bold'
+                  : 'border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low'">
+                {{ p }}
+              </button>
+            }
+            <button
+              (click)="setPage(page + 1)"
+              [disabled]="page === totalPages"
+              class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+            </button>
+          </div>
         }
       </div>
     }
@@ -226,21 +241,22 @@
   <!-- Modal suppression -->
   @if (modalSupprimer) {
     <div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="fermerModal()">
-      <div class="bg-surface-container-lowest rounded-2xl p-8 max-w-sm w-full custom-shadow" (click)="$event.stopPropagation()">
-        <div class="w-12 h-12 bg-error-container rounded-xl flex items-center justify-center mb-4">
-          <span class="material-symbols-outlined text-error">delete</span>
+      <div class="bg-surface-container-lowest rounded-2xl p-6 max-w-sm w-full shadow-2xl" (click)="$event.stopPropagation()">
+        <div class="w-12 h-12 bg-surface-container-high rounded-xl flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-on-surface-variant text-2xl">delete</span>
         </div>
-        <h3 class="text-lg font-bold text-on-surface mb-2">Supprimer l'événement ?</h3>
+        <h3 class="text-base font-bold text-on-surface mb-2">Supprimer l'événement ?</h3>
         <p class="text-sm text-on-surface-variant mb-6">
-          Cette action est irréversible. L'événement <strong class="text-on-surface">{{ modalSupprimer.titre }}</strong> sera définitivement supprimé.
+          <strong class="text-on-surface">{{ modalSupprimer.titre }}</strong> sera définitivement supprimé. Cette action est irréversible.
         </p>
-        <div class="flex gap-3 justify-end">
-          <button (click)="fermerModal()" class="px-5 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Annuler</button>
-          <button
-            (click)="execSupprimer()"
-            [disabled]="isActionLoading"
-            class="px-5 py-2.5 rounded-xl text-sm font-bold bg-error text-on-error disabled:opacity-60 hover:shadow-md transition-all">
-            {{ isActionLoading ? 'Suppression...' : 'Supprimer' }}
+        <div class="flex gap-3">
+          <button (click)="fermerModal()"
+            class="flex-1 py-2.5 rounded-xl text-sm font-medium border border-outline-variant/40 text-on-surface hover:bg-surface-container-low transition-colors">
+            Annuler
+          </button>
+          <button (click)="execSupprimer()" [disabled]="isActionLoading"
+            class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-error text-on-error disabled:opacity-60 hover:opacity-90 transition-all">
+            {{ isActionLoading ? 'Suppression…' : 'Supprimer' }}
           </button>
         </div>
       </div>
@@ -251,14 +267,18 @@
 <!-- FAB mobile -->
 @if (isBureau) {
   <a routerLink="/evenements/creer"
-     class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full custom-shadow flex items-center justify-center active:scale-90 transition-transform z-40">
+     class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-40">
     <span class="material-symbols-outlined">add</span>
   </a>
 }
 
 <!-- Toast -->
 @if (toast) {
-  <div [class]="'fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl custom-shadow text-sm font-medium text-white ' + (toast.type === 'success' ? 'bg-secondary' : 'bg-error')">
+  <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium border"
+    [class]="toast.type === 'success'
+      ? 'bg-surface-container-highest text-on-surface border-outline-variant/30'
+      : 'bg-error-container text-on-error-container border-error/20'">
+    <span class="material-symbols-outlined text-[18px]">{{ toast.type === 'success' ? 'check_circle' : 'error' }}</span>
     {{ toast.message }}
   </div>
 }

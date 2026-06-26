@@ -1,288 +1,261 @@
-<!-- Skeleton chargement -->
+<!-- Skeleton -->
 @if (isLoading) {
   <div class="p-10 max-w-7xl mx-auto space-y-6 animate-pulse">
-    <div class="h-8 w-56 bg-surface-container rounded-xl"></div>
+    <div class="h-12 w-64 bg-surface-container rounded-xl"></div>
     <div class="grid grid-cols-3 gap-4">
-      <div class="h-24 bg-surface-container rounded-xl"></div>
-      <div class="h-24 bg-surface-container rounded-xl"></div>
-      <div class="h-24 bg-surface-container rounded-xl"></div>
+      <div class="h-32 bg-surface-container rounded-2xl"></div>
+      <div class="h-32 bg-surface-container rounded-2xl"></div>
+      <div class="h-32 bg-surface-container rounded-2xl"></div>
     </div>
-    <div class="grid grid-cols-3 gap-6">
-      <div class="col-span-2 h-52 bg-surface-container rounded-xl"></div>
-      <div class="h-52 bg-surface-container rounded-xl"></div>
+    <div class="grid grid-cols-3 gap-5">
+      <div class="col-span-2 h-56 bg-surface-container rounded-2xl"></div>
+      <div class="h-56 bg-surface-container rounded-2xl"></div>
     </div>
-    <div class="h-72 bg-surface-container rounded-xl"></div>
-    <div class="grid grid-cols-2 gap-6">
-      <div class="h-64 bg-surface-container rounded-xl"></div>
-      <div class="h-64 bg-surface-container rounded-xl"></div>
+    <div class="h-72 bg-surface-container rounded-2xl"></div>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="h-64 bg-surface-container rounded-2xl"></div>
+      <div class="h-64 bg-surface-container rounded-2xl"></div>
     </div>
   </div>
 }
 
 <!-- Erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto">
-    <div class="flex flex-col items-center justify-center py-20 gap-4 text-center">
-      <span class="material-symbols-outlined text-5xl text-error">cloud_off</span>
-      <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
-      <button
-        (click)="charger()"
-        class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-      >
-        <span class="material-symbols-outlined text-xl">refresh</span>
-        Réessayer
-      </button>
-    </div>
+  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-20 gap-4 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline">cloud_off</span>
+    <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
+    <button
+      (click)="charger()"
+      class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+    >
+      <span class="material-symbols-outlined text-xl">refresh</span>
+      Réessayer
+    </button>
   </div>
 }
 
 <!-- Contenu principal -->
 @if (!isLoading && !errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
 
     <!-- En-tête -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-bold text-primary">Trésorerie</h2>
-        <p class="text-sm text-on-surface-variant mt-0.5">Suivi des flux financiers et de la santé de votre Dahira</p>
+        <h2 class="text-2xl font-black text-on-surface">Trésorerie</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">Suivi des flux financiers de votre Dahira</p>
       </div>
       <button
         (click)="exporterCSV()"
         [disabled]="isExporting"
-        class="flex items-center gap-2 border border-outline-variant text-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container-low transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
       >
         @if (isExporting) {
-          <span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>
+          <span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
           Export en cours…
         } @else {
-          <span class="material-symbols-outlined text-xl">file_download</span>
+          <span class="material-symbols-outlined text-[18px]">file_download</span>
           Exporter relevé
         }
       </button>
     </div>
 
-    <!-- Alertes trésorerie -->
+    <!-- Alertes -->
     @if (alertes.length > 0) {
       <div class="space-y-2">
         @for (alerte of alertes; track alerte.message) {
-          <div [class]="alerteClass(alerte) + ' rounded-xl px-4 py-3 flex items-center gap-3'">
-            <span class="material-symbols-outlined text-xl flex-shrink-0" [class]="alerteIconClass(alerte)">
-              {{ alerteIcon(alerte) }}
-            </span>
-            <span class="text-sm font-medium">{{ alerte.message }}</span>
+          <div class="bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-3 flex items-center gap-3">
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">{{ alerteIcon(alerte) }}</span>
+            <span class="text-sm text-on-surface-variant">{{ alerte.message }}</span>
           </div>
         }
       </div>
     }
 
-    <!-- KPI Cards du mois en cours -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- KPI du mois -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-5 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">arrow_circle_down</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Collecté ce mois</p>
-          <h3 class="text-xl font-bold text-secondary mt-0.5">+{{ formatMontant(collecteCeMois) }}</h3>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_down</span>
+          </div>
           @if (tendanceCollectePct !== null) {
-            <div class="flex items-center gap-1 mt-1">
-              <span class="material-symbols-outlined text-xs"
-                [class]="tendanceCollectePct >= 0 ? 'text-secondary' : 'text-error'">
-                {{ tendanceCollectePct >= 0 ? 'trending_up' : 'trending_down' }}
-              </span>
-              <span class="text-xs font-semibold"
-                [class]="tendanceCollectePct >= 0 ? 'text-secondary' : 'text-error'">
-                {{ tendanceCollectePct >= 0 ? '+' : '' }}{{ tendanceCollectePct }}% vs mois préc.
-              </span>
-            </div>
+            <span class="text-xs text-on-surface-variant/60 flex items-center gap-0.5">
+              <span class="material-symbols-outlined text-[14px]">{{ tendanceCollectePct >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              {{ tendanceCollectePct >= 0 ? '+' : '' }}{{ tendanceCollectePct }}%
+            </span>
           }
+        </div>
+        <div>
+          <p class="text-3xl font-black text-on-surface">{{ formatMontant(collecteCeMois) }}</p>
+          <p class="text-xs font-medium text-on-surface-variant mt-1">Collecté ce mois</p>
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-5 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">arrow_circle_up</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Dépensé ce mois</p>
-          <h3 class="text-xl font-bold text-error mt-0.5">−{{ formatMontant(depenseCeMois) }}</h3>
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_up</span>
+          </div>
           @if (tendanceDepensePct !== null) {
-            <div class="flex items-center gap-1 mt-1">
-              <span class="material-symbols-outlined text-xs"
-                [class]="tendanceDepensePct <= 0 ? 'text-secondary' : 'text-error'">
-                {{ tendanceDepensePct <= 0 ? 'trending_down' : 'trending_up' }}
-              </span>
-              <span class="text-xs font-semibold"
-                [class]="tendanceDepensePct <= 0 ? 'text-secondary' : 'text-error'">
-                {{ tendanceDepensePct >= 0 ? '+' : '' }}{{ tendanceDepensePct }}% vs mois préc.
-              </span>
-            </div>
+            <span class="text-xs text-on-surface-variant/60 flex items-center gap-0.5">
+              <span class="material-symbols-outlined text-[14px]">{{ tendanceDepensePct <= 0 ? 'trending_down' : 'trending_up' }}</span>
+              {{ tendanceDepensePct >= 0 ? '+' : '' }}{{ tendanceDepensePct }}%
+            </span>
           }
+        </div>
+        <div>
+          <p class="text-3xl font-black text-on-surface">{{ formatMontant(depenseCeMois) }}</p>
+          <p class="text-xs font-medium text-on-surface-variant mt-1">Dépensé ce mois</p>
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-5 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-          [class]="soldeCeMois >= 0 ? 'bg-secondary/10' : 'bg-error/10'">
-          <span class="material-symbols-outlined"
-            [class]="soldeCeMois >= 0 ? 'text-secondary' : 'text-error'"
-            style="font-variation-settings: 'FILL' 1;">
-            {{ soldeCeMois >= 0 ? 'account_balance_wallet' : 'warning' }}
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">balance</span>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-medium">
+            {{ soldeCeMois >= 0 ? 'Excédent' : 'Déficit' }}
           </span>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Bilan du mois</p>
-          <h3 class="text-xl font-bold mt-0.5" [class]="soldeCeMois >= 0 ? 'text-secondary' : 'text-error'">
+        <div>
+          <p class="text-3xl font-black text-on-surface">
             {{ soldeCeMois >= 0 ? '+' : '' }}{{ formatMontant(soldeCeMois) }}
-          </h3>
-          <p class="text-xs text-on-surface-muted mt-1">{{ soldeCeMois >= 0 ? 'Excédent ce mois' : 'Déficit ce mois' }}</p>
+          </p>
+          <p class="text-xs font-medium text-on-surface-variant mt-1">Bilan du mois</p>
         </div>
       </div>
+
     </div>
 
-    <!-- Bloc principal : Solde + Répartition -->
+    <!-- Solde global + Répartition par mode -->
     @if (solde) {
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-        <!-- Solde actuel (2/3) -->
-        <div class="md:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-8 flex flex-col justify-between relative overflow-hidden group">
-          <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-secondary-container/10 rounded-full blur-3xl group-hover:bg-secondary-container/20 transition-all duration-700 pointer-events-none"></div>
-
-          <div class="relative z-10">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1">Solde actuel</p>
-                <p class="text-xs text-on-surface-muted">Cotisations approuvées − Dépenses validées</p>
-              </div>
-              <div class="w-12 h-12 bg-secondary-container rounded-xl flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">wallet</span>
-              </div>
+        <!-- Solde global (2/3) -->
+        <div class="md:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Solde global</p>
+              <p class="text-xs text-on-surface-variant/50 mt-0.5">Cotisations approuvées − Dépenses validées</p>
             </div>
-
-            <div class="flex items-end gap-4 mt-4">
-              <h3 class="text-5xl font-black leading-none"
-                [class]="solde.solde_global >= 0 ? 'text-primary' : 'text-error'">
-                {{ formatMontant(solde.solde_global) }}
-              </h3>
-              @if (solde.solde_global < 0) {
-                <div class="flex items-center gap-1 mb-1 bg-error/10 text-error px-3 py-1 rounded-full">
-                  <span class="material-symbols-outlined text-sm">warning</span>
-                  <span class="text-xs font-bold">Solde négatif</span>
-                </div>
-              }
+            <div class="w-10 h-10 bg-surface-container-high rounded-xl flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-on-surface-variant text-[20px]">account_balance_wallet</span>
             </div>
           </div>
 
-          <div class="relative z-10 mt-8 grid grid-cols-2 gap-4">
-            <div class="bg-secondary/5 border border-secondary/10 rounded-xl p-4">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-secondary text-lg">arrow_circle_down</span>
-                <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total entrées</span>
+          <div class="flex items-end gap-3">
+            <p class="text-5xl font-black text-on-surface leading-none">
+              {{ formatMontant(solde.solde_global) }}
+            </p>
+            @if (solde.solde_global < 0) {
+              <span class="mb-1 text-xs font-medium text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">
+                Solde négatif
+              </span>
+            }
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-4 border-t border-outline-variant/15">
+            <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-on-surface-variant text-[14px]">arrow_circle_down</span>
+                <p class="text-xs text-on-surface-variant/70">Total entrées</p>
               </div>
-              <p class="text-xl font-bold text-secondary">+{{ formatMontant(solde.entrees.total) }}</p>
+              <p class="text-xl font-bold text-on-surface">{{ formatMontant(solde.entrees.total) }}</p>
+              <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="h-full bg-outline-variant rounded-full transition-all"
+                     [style.width]="solde.entrees.total / (solde.entrees.total + solde.sorties.total + 1) * 100 + '%'"></div>
+              </div>
             </div>
-            <div class="bg-error/5 border border-error/10 rounded-xl p-4">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-error text-lg">arrow_circle_up</span>
-                <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total dépenses</span>
+            <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-on-surface-variant text-[14px]">arrow_circle_up</span>
+                <p class="text-xs text-on-surface-variant/70">Total dépenses</p>
               </div>
-              <p class="text-xl font-bold text-error">−{{ formatMontant(solde.sorties.total) }}</p>
+              <p class="text-xl font-bold text-on-surface">{{ formatMontant(solde.sorties.total) }}</p>
+              <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+                <div class="h-full bg-outline-variant/50 rounded-full transition-all"
+                     [style.width]="solde.sorties.total / (solde.entrees.total + solde.sorties.total + 1) * 100 + '%'"></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Répartition par mode de paiement (1/3) -->
-        <div class="bg-primary text-on-primary rounded-xl shadow-sm p-8 flex flex-col justify-between">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-widest mb-6 opacity-70">Solde par mode</p>
-            <div class="space-y-3">
-              <div class="bg-white/10 rounded-xl p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="material-symbols-outlined text-sm opacity-80">payments</span>
-                  <span class="text-xs font-bold uppercase tracking-wide opacity-80">Espèces</span>
+        <!-- Répartition par mode (1/3) -->
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-5">
+          <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Solde par mode</p>
+
+          <div class="flex-1 space-y-1">
+            @for (item of [
+              { icon: 'payments', label: 'Espèces', value: solde.soldes_par_mode.especes },
+              { icon: 'contactless', label: 'Wave', value: solde.soldes_par_mode.wave },
+              { icon: 'phone_android', label: 'Orange Money', value: solde.soldes_par_mode.orange_money }
+            ]; track item.label) {
+              <div class="flex items-center justify-between px-3 py-3.5 rounded-xl hover:bg-surface-container-low transition-colors">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-surface-variant text-[16px]">{{ item.icon }}</span>
+                  </div>
+                  <span class="text-sm text-on-surface-variant">{{ item.label }}</span>
                 </div>
-                <p class="text-lg font-bold">{{ formatMontant(solde.soldes_par_mode.especes) }}</p>
+                <span class="text-sm font-bold text-on-surface">{{ formatMontant(item.value) }}</span>
               </div>
-              <div class="bg-white/10 rounded-xl p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="material-symbols-outlined text-sm opacity-80">contactless</span>
-                  <span class="text-xs font-bold uppercase tracking-wide opacity-80">Wave</span>
-                </div>
-                <p class="text-lg font-bold">{{ formatMontant(solde.soldes_par_mode.wave) }}</p>
-              </div>
-              <div class="bg-white/10 rounded-xl p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="material-symbols-outlined text-sm opacity-80">phone_android</span>
-                  <span class="text-xs font-bold uppercase tracking-wide opacity-80">Orange Money</span>
-                </div>
-                <p class="text-lg font-bold">{{ formatMontant(solde.soldes_par_mode.orange_money) }}</p>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </div>
     }
 
-    <!-- ─── Graphique en aires SVG ──────────────────────────────────────── -->
-    <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-8">
+    <!-- Graphique évolution -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7">
 
-      <!-- Entête graphique -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex flex-wrap justify-between items-start gap-4 mb-5">
         <div>
-          <h3 class="text-xl font-bold text-primary">Évolution de la trésorerie</h3>
-          <p class="text-sm text-on-surface-muted mt-0.5">Entrées et dépenses par mois</p>
+          <h3 class="text-base font-bold text-on-surface">Évolution de la trésorerie</h3>
+          <p class="text-xs text-on-surface-variant/60 mt-0.5">Entrées et dépenses par mois</p>
         </div>
-        <div class="flex bg-surface-container-low p-1 rounded-lg gap-1">
+        <div class="flex bg-surface-container-low p-1 rounded-lg gap-0.5">
           <button
             (click)="setPeriode(6)"
             [class]="periodeNbMois === 6
-              ? 'px-4 py-1.5 text-sm font-bold bg-surface-container-lowest shadow-sm rounded-md text-secondary'
-              : 'px-4 py-1.5 text-sm font-medium text-on-surface-variant hover:text-secondary rounded-md transition-colors'"
-          >
-            6 Mois
-          </button>
+              ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
+              : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'"
+          >6 mois</button>
           <button
             (click)="setPeriode(12)"
             [class]="periodeNbMois === 12
-              ? 'px-4 py-1.5 text-sm font-bold bg-surface-container-lowest shadow-sm rounded-md text-secondary'
-              : 'px-4 py-1.5 text-sm font-medium text-on-surface-variant hover:text-secondary rounded-md transition-colors'"
-          >
-            12 Mois
-          </button>
+              ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
+              : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'"
+          >12 mois</button>
         </div>
       </div>
 
-      <!-- Légende -->
-      <div class="flex items-center gap-6 mb-4">
+      <div class="flex flex-wrap items-center gap-5 mb-4">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-0.5 bg-secondary rounded-full"></div>
-          <span class="text-xs text-on-surface-muted font-medium">Entrées</span>
+          <div class="w-6 h-0.5 bg-on-surface/40 rounded-full"></div>
+          <span class="text-xs text-on-surface-variant">Entrées</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-8 h-0.5 bg-error rounded-full"></div>
-          <span class="text-xs text-on-surface-muted font-medium">Dépenses</span>
+          <div class="w-6 h-0.5 bg-outline-variant rounded-full" style="border-top: 2px dashed"></div>
+          <span class="text-xs text-on-surface-variant">Dépenses</span>
         </div>
         @if (hoveredPoint) {
-          <div class="ml-auto flex items-center gap-3 text-xs text-on-surface-muted">
+          <div class="ml-auto flex items-center gap-3 text-xs text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg">
             <span class="font-bold text-on-surface">{{ hoveredPoint.label }}</span>
-            <span class="text-secondary font-semibold">+{{ formatMontant(hoveredPoint.montantE) }}</span>
-            <span class="text-error font-semibold">−{{ formatMontant(hoveredPoint.montantS) }}</span>
-            <span class="font-bold" [class]="hoveredPoint.solde >= 0 ? 'text-secondary' : 'text-error'">
-              Bilan : {{ hoveredPoint.solde >= 0 ? '+' : '' }}{{ formatMontant(hoveredPoint.solde) }}
-            </span>
+            <span>↑ {{ formatMontant(hoveredPoint.montantE) }}</span>
+            <span>↓ {{ formatMontant(hoveredPoint.montantS) }}</span>
+            <span class="font-bold text-on-surface">= {{ formatMontant(hoveredPoint.solde) }}</span>
           </div>
         }
       </div>
 
       @if (evolutionFiltered.length === 0) {
-        <div class="flex flex-col items-center justify-center h-48 gap-3 text-on-surface-muted">
+        <div class="flex flex-col items-center justify-center h-48 gap-3 text-on-surface-variant">
           <span class="material-symbols-outlined text-5xl text-outline">show_chart</span>
           <span class="text-sm">Aucune donnée disponible</span>
         </div>
       } @else {
-
-        <!-- SVG Area Chart -->
         <svg
           [attr.viewBox]="'0 0 ' + CW + ' ' + CH"
           class="w-full overflow-visible"
@@ -290,214 +263,137 @@
           (mouseleave)="hoveredPoint = null"
         >
           <defs>
-            <!-- Gradient entrées -->
             <linearGradient id="grad-entrees" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#006a61" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#006a61" stop-opacity="0.02"/>
+              <stop offset="0%"   stop-color="#45464d" stop-opacity="0.12"/>
+              <stop offset="100%" stop-color="#45464d" stop-opacity="0.01"/>
             </linearGradient>
-            <!-- Gradient dépenses -->
             <linearGradient id="grad-sorties" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#ba1a1a" stop-opacity="0.18"/>
-              <stop offset="100%" stop-color="#ba1a1a" stop-opacity="0.02"/>
+              <stop offset="0%"   stop-color="#c6c6cd" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#c6c6cd" stop-opacity="0.01"/>
             </linearGradient>
           </defs>
 
-          <!-- Lignes de grille horizontales -->
           @for (g of yGridLines; track g.label) {
-            <line
-              [attr.x1]="PAD_L" [attr.y1]="g.y"
-              [attr.x2]="CW - PAD_R" [attr.y2]="g.y"
-              stroke="#c6c6cd" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"
-            />
-            <text
-              [attr.x]="PAD_L - 8" [attr.y]="g.y + 4"
-              text-anchor="end" font-size="10" font-family="Inter, sans-serif"
-              fill="#45464d">{{ g.label }}</text>
+            <line [attr.x1]="PAD_L" [attr.y1]="g.y" [attr.x2]="CW - PAD_R" [attr.y2]="g.y"
+              stroke="#c6c6cd" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
+            <text [attr.x]="PAD_L - 8" [attr.y]="g.y + 4"
+              text-anchor="end" font-size="10" font-family="Inter, sans-serif" fill="#75767e">{{ g.label }}</text>
           }
 
-          <!-- Axe bas -->
-          <line
-            [attr.x1]="PAD_L" [attr.y1]="chartBaseY"
-            [attr.x2]="CW - PAD_R" [attr.y2]="chartBaseY"
-            stroke="#c6c6cd" stroke-width="1" opacity="0.8"
-          />
+          <line [attr.x1]="PAD_L" [attr.y1]="chartBaseY" [attr.x2]="CW - PAD_R" [attr.y2]="chartBaseY"
+            stroke="#c6c6cd" stroke-width="1"/>
 
-          <!-- Aires remplies -->
           <path [attr.d]="pathSortiesArea" fill="url(#grad-sorties)"/>
           <path [attr.d]="pathEntreesArea" fill="url(#grad-entrees)"/>
+          <path [attr.d]="pathSortiesLine" fill="none" stroke="#c6c6cd" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="5 3"/>
+          <path [attr.d]="pathEntreesLine" fill="none" stroke="#45464d" stroke-width="2" stroke-linejoin="round"/>
 
-          <!-- Courbes -->
-          <path [attr.d]="pathSortiesLine" fill="none" stroke="#ba1a1a" stroke-width="2" stroke-linejoin="round"/>
-          <path [attr.d]="pathEntreesLine" fill="none" stroke="#006a61" stroke-width="2.5" stroke-linejoin="round"/>
-
-          <!-- Points + zones de survol par mois -->
           @for (pt of chartPoints; track pt.periode) {
-
-            <!-- Ligne verticale au survol -->
             @if (hoveredPoint?.periode === pt.periode) {
-              <line
-                [attr.x1]="pt.x" [attr.y1]="PAD_T"
-                [attr.x2]="pt.x" [attr.y2]="chartBaseY"
-                stroke="#0b1c30" stroke-width="1" stroke-dasharray="4 3" opacity="0.3"
-              />
+              <line [attr.x1]="pt.x" [attr.y1]="PAD_T" [attr.x2]="pt.x" [attr.y2]="chartBaseY"
+                stroke="#45464d" stroke-width="1" stroke-dasharray="3 3" opacity="0.25"/>
             }
-
-            <!-- Zone de survol invisible (toute la hauteur) -->
-            <rect
-              [attr.x]="pt.x - hoverZoneWidth / 2"
-              [attr.y]="PAD_T"
-              [attr.width]="hoverZoneWidth"
-              [attr.height]="chartPlotH"
-              fill="transparent"
-              class="cursor-crosshair"
-              (mouseenter)="hoveredPoint = pt"
-            />
-
-            <!-- Point entrées -->
-            <circle
-              [attr.cx]="pt.x" [attr.cy]="pt.yE" r="4"
-              fill="#006a61" stroke="white" stroke-width="2"
-              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"
-              style="transition: opacity 0.15s"
-            />
-            <!-- Point dépenses -->
-            <circle
-              [attr.cx]="pt.x" [attr.cy]="pt.yS" r="4"
-              fill="#ba1a1a" stroke="white" stroke-width="2"
-              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"
-              style="transition: opacity 0.15s"
-            />
-
-            <!-- Label mois sur l'axe X -->
-            <text
-              [attr.x]="pt.x" [attr.y]="chartBaseY + 20"
+            <rect [attr.x]="pt.x - hoverZoneWidth / 2" [attr.y]="PAD_T"
+              [attr.width]="hoverZoneWidth" [attr.height]="chartPlotH"
+              fill="transparent" class="cursor-crosshair" (mouseenter)="hoveredPoint = pt"/>
+            <circle [attr.cx]="pt.x" [attr.cy]="pt.yE" r="4"
+              fill="#45464d" stroke="white" stroke-width="2"
+              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"/>
+            <circle [attr.cx]="pt.x" [attr.cy]="pt.yS" r="4"
+              fill="#c6c6cd" stroke="white" stroke-width="2"
+              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"/>
+            <text [attr.x]="pt.x" [attr.y]="chartBaseY + 20"
               text-anchor="middle" font-size="11" font-family="Inter, sans-serif"
-              [attr.fill]="hoveredPoint?.periode === pt.periode ? '#006a61' : '#45464d'"
-              [attr.font-weight]="hoveredPoint?.periode === pt.periode ? '700' : '400'"
-            >{{ pt.label }}</text>
+              [attr.fill]="hoveredPoint?.periode === pt.periode ? '#0b1c30' : '#75767e'"
+              [attr.font-weight]="hoveredPoint?.periode === pt.periode ? '700' : '400'">{{ pt.label }}</text>
           }
 
-          <!-- Tooltip au survol -->
           @if (hoveredPoint) {
             <g [attr.transform]="'translate(' + tooltipX(hoveredPoint) + ',' + tooltipY(hoveredPoint) + ')'">
-              <rect width="148" height="78" rx="8" fill="#0b1c30" opacity="0.92"/>
-              <!-- Titre mois -->
-              <text x="12" y="22" font-size="12" font-weight="700" font-family="Inter, sans-serif" fill="white">
-                {{ hoveredPoint.label }}
-              </text>
-              <!-- Entrées -->
-              <circle cx="12" cy="37" r="4" fill="#006a61"/>
-              <text x="22" y="41" font-size="10" font-family="Inter, sans-serif" fill="#9defe3">
-                +{{ formatMontant(hoveredPoint.montantE) }}
-              </text>
-              <!-- Dépenses -->
-              <circle cx="12" cy="54" r="4" fill="#ba1a1a"/>
-              <text x="22" y="58" font-size="10" font-family="Inter, sans-serif" fill="#ffdad6">
-                −{{ formatMontant(hoveredPoint.montantS) }}
-              </text>
-              <!-- Bilan -->
-              <line x1="12" y1="64" x2="136" y2="64" stroke="white" stroke-width="0.5" opacity="0.3"/>
-              <text x="12" y="76" font-size="10" font-weight="600" font-family="Inter, sans-serif"
-                [attr.fill]="hoveredPoint.solde >= 0 ? '#a0f1e6' : '#ffdad6'">
-                Bilan : {{ hoveredPoint.solde >= 0 ? '+' : '' }}{{ formatMontant(hoveredPoint.solde) }}
-              </text>
+              <rect width="152" height="82" rx="8" fill="#1b1c1e" opacity="0.9"/>
+              <text x="12" y="22" font-size="11" font-weight="700" font-family="Inter, sans-serif" fill="white">{{ hoveredPoint.label }}</text>
+              <text x="12" y="41" font-size="10" font-family="Inter, sans-serif" fill="#c6c6cd">↑ {{ formatMontant(hoveredPoint.montantE) }}</text>
+              <text x="12" y="58" font-size="10" font-family="Inter, sans-serif" fill="#9e9fa6">↓ {{ formatMontant(hoveredPoint.montantS) }}</text>
+              <line x1="12" y1="65" x2="140" y2="65" stroke="white" stroke-width="0.4" opacity="0.2"/>
+              <text x="12" y="78" font-size="10" font-weight="600" font-family="Inter, sans-serif" fill="white">= {{ formatMontant(hoveredPoint.solde) }}</text>
             </g>
           }
-
         </svg>
       }
     </div>
 
-    <!-- Dernières transactions : Entrées | Sorties -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Dernières transactions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-      <!-- Dernières entrées -->
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
-        <div class="p-5 border-b border-outline-variant/20 flex justify-between items-center">
-          <h4 class="font-bold text-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary">arrow_circle_down</span>
-            Dernières entrées
-          </h4>
-          <a routerLink="/cotisations" class="text-xs font-bold text-secondary uppercase hover:underline">
-            Voir tout
+      <!-- Entrées -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+        <div class="px-5 py-4 border-b border-outline-variant/15 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_down</span>
+            <h4 class="text-sm font-bold text-on-surface">Dernières entrées</h4>
+          </div>
+          <a routerLink="/cotisations" class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors">
+            Voir tout →
           </a>
         </div>
         <div class="divide-y divide-outline-variant/10">
           @if (dernieresEntrees.length === 0) {
-            <div class="p-8 text-center text-on-surface-muted text-sm">
-              <span class="material-symbols-outlined text-3xl block mb-1 text-outline">inbox</span>
-              Aucune entrée enregistrée
+            <div class="p-10 text-center">
+              <span class="material-symbols-outlined text-3xl text-outline block mb-2">inbox</span>
+              <p class="text-sm text-on-surface-variant">Aucune entrée enregistrée</p>
             </div>
           }
           @for (t of dernieresEntrees; track t.id) {
-            <div class="px-5 py-4 flex items-center justify-between hover:bg-surface-container-low/50 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-                  <span class="material-symbols-outlined text-lg">{{ entreeIcon(t) }}</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">{{ t.membre_nom ?? t.description }}</p>
-                  <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="text-xs text-on-surface-muted">{{ formatDate(t.date) }}</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                      [class]="modePaiementClass(t.mode_paiement)">
-                      <span class="material-symbols-outlined" style="font-size: 10px;">{{ modePaiementIcon(t.mode_paiement) }}</span>
-                      {{ modePaiementLabel(t.mode_paiement) }}
-                    </span>
-                  </div>
+            <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
+              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
+                {{ (t.membre_nom ?? t.description ?? '?')[0].toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-on-surface truncate">{{ t.membre_nom ?? t.description }}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-xs text-on-surface-variant/60">{{ formatDate(t.date) }}</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant/50"></span>
+                  <span class="text-xs text-on-surface-variant/60">{{ modePaiementLabel(t.mode_paiement) }}</span>
                 </div>
               </div>
-              <div class="text-right flex-shrink-0 ml-3">
-                <p class="font-bold text-secondary text-sm">+{{ formatMontant(t.montant) }}</p>
-                <span class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full uppercase font-bold">Validé</span>
-              </div>
+              <p class="text-sm font-bold text-on-surface shrink-0">{{ formatMontant(t.montant) }}</p>
             </div>
           }
         </div>
       </div>
 
-      <!-- Dernières dépenses -->
-      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
-        <div class="p-5 border-b border-outline-variant/20 flex justify-between items-center">
-          <h4 class="font-bold text-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-error">arrow_circle_up</span>
-            Dernières dépenses
-          </h4>
-          <a routerLink="/depenses" class="text-xs font-bold text-error uppercase hover:underline">
-            Voir tout
+      <!-- Dépenses -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+        <div class="px-5 py-4 border-b border-outline-variant/15 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_up</span>
+            <h4 class="text-sm font-bold text-on-surface">Dernières dépenses</h4>
+          </div>
+          <a routerLink="/depenses" class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors">
+            Voir tout →
           </a>
         </div>
         <div class="divide-y divide-outline-variant/10">
           @if (dernieresSorties.length === 0) {
-            <div class="p-8 text-center text-on-surface-muted text-sm">
-              <span class="material-symbols-outlined text-3xl block mb-1 text-outline">receipt_long</span>
-              Aucune dépense enregistrée
+            <div class="p-10 text-center">
+              <span class="material-symbols-outlined text-3xl text-outline block mb-2">receipt_long</span>
+              <p class="text-sm text-on-surface-variant">Aucune dépense enregistrée</p>
             </div>
           }
           @for (t of dernieresSorties; track t.id) {
-            <div class="px-5 py-4 flex items-center justify-between hover:bg-surface-container-low/50 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error flex-shrink-0">
-                  <span class="material-symbols-outlined text-lg">{{ sortieIcon(t) }}</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">{{ t.description }}</p>
-                  <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="text-xs text-on-surface-muted">{{ formatDate(t.date) }}</span>
-                    <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
-                    <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                      [class]="modePaiementClass(t.mode_paiement)">
-                      <span class="material-symbols-outlined" style="font-size: 10px;">{{ modePaiementIcon(t.mode_paiement) }}</span>
-                      {{ modePaiementLabel(t.mode_paiement) }}
-                    </span>
-                  </div>
+            <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
+              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
+                {{ (t.description ?? '?')[0].toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-on-surface truncate">{{ t.description }}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-xs text-on-surface-variant/60">{{ formatDate(t.date) }}</span>
+                  <span class="w-1 h-1 rounded-full bg-outline-variant/50"></span>
+                  <span class="text-xs text-on-surface-variant/60">{{ modePaiementLabel(t.mode_paiement) }}</span>
                 </div>
               </div>
-              <div class="text-right flex-shrink-0 ml-3">
-                <p class="font-bold text-error text-sm">−{{ formatMontant(t.montant) }}</p>
-                <span class="text-[10px] bg-error/10 text-error px-2 py-0.5 rounded-full uppercase font-bold">Validé</span>
-              </div>
+              <p class="text-sm font-bold text-on-surface shrink-0">{{ formatMontant(t.montant) }}</p>
             </div>
           }
         </div>

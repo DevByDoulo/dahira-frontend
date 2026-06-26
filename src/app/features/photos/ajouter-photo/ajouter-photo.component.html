@@ -7,7 +7,7 @@
     </a>
     <div>
       <h1 class="text-2xl font-bold text-on-surface">Ajouter des photos</h1>
-      <p class="text-sm text-on-surface-variant mt-0.5">Maximum 20 photos par upload</p>
+      <p class="text-sm text-on-surface-variant mt-0.5">Glissez ou parcourez vos photos</p>
     </div>
   </div>
 
@@ -27,7 +27,7 @@
       </label>
       <select
         [(ngModel)]="selectedEvenementId"
-        class="w-full px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-primary transition-all appearance-none"
+        [class]="'w-full px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none ' + (selectedEvenementId === null ? 'text-on-surface-variant' : 'text-on-surface')"
       >
         <option [ngValue]="null">— Aucun événement —</option>
         @for (e of evenements; track e.id) {
@@ -45,7 +45,7 @@
         type="text"
         [(ngModel)]="titre"
         placeholder="Ex : Séance du 15 juin"
-        class="w-full px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-primary transition-all"
+        class="w-full px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-xl text-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all"
       />
     </div>
 
