@@ -1,9 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
-import { MembresService, Membre } from '../../core/services/membres.service';
 import { environment } from '../../../environments/environment';
 
 type Onglet = 'informations' | 'securite';
@@ -19,7 +17,6 @@ export class ProfilComponent implements OnInit {
 
   isLoading = true;
   user: UserProfile | null = null;
-  membre: Membre | null = null;
   errorMessage = '';
 
   ongletActif: Onglet = 'informations';
@@ -47,22 +44,13 @@ export class ProfilComponent implements OnInit {
   passwordSuccess = '';
   passwordError = '';
 
-  constructor(
-    private authService: AuthService,
-    private membresService: MembresService,
-    private http: HttpClient,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.authService.getMe().subscribe({
       next: (res) => {
         if (res.success) {
           this.user = res.data;
-          if (res.data.membre_id) {
-            this.membresService.getMembre(res.data.membre_id).subscribe({
-              next: (r) => { if (r.success) this.membre = r.data; },
-            });
-          }
         }
         this.isLoading = false;
       },
@@ -103,16 +91,10 @@ export class ProfilComponent implements OnInit {
     const formData = new FormData();
     formData.append('photo', file);
 
-    const url = this.user?.membre_id
-      ? `${environment.apiUrl}/photos/membres/me`
-      : `${environment.apiUrl}/photos/me`;
-
-    this.http.post<{ success: boolean; data: { photo_url: string } }>(url, formData).subscribe({
+    this.authService.updatePhoto(formData).subscribe({
       next: (res) => {
-        if (res.success) {
-          const photoUrl = res.data.photo_url;
-          if (this.membre) this.membre = { ...this.membre, photo_url: photoUrl };
-          this.authService.setPhotoUrl(photoUrl);
+        if (res.success && this.user) {
+          this.user = { ...this.user, photo_url: res.data.photo_url, thumbnail_url: res.data.thumbnail_url };
         }
         this.photoSuccess = 'Photo mise à jour avec succès.';
         this.isUploadingPhoto = false;
@@ -166,7 +148,7 @@ export class ProfilComponent implements OnInit {
   }
 
   get avatarSrc(): string | null {
-    const url = this.membre?.photo_url ?? this.user?.photo_url;
+    const url = this.user?.photo_url;
     if (!url) return null;
     return url.startsWith('http') ? url : `${this.backendUrl}${url}`;
   }

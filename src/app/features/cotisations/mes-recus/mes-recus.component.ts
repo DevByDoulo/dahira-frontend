@@ -28,14 +28,13 @@ export class MesRecusComponent implements OnInit {
 
   private readonly apiUrl = environment.apiUrl;
   private readonly membreId: number | null =
-    (JSON.parse(localStorage.getItem('user') ?? 'null') as { membre_id?: number } | null)
-      ?.membre_id ?? null;
+    (JSON.parse(localStorage.getItem('user') ?? 'null') as { id?: number } | null)?.id ?? null;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     if (!this.membreId) {
-      this.errorMessage = "Votre compte n'est pas lié à un membre.";
+      this.errorMessage = 'Impossible de charger vos reçus.';
       this.isLoading = false;
       return;
     }

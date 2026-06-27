@@ -67,20 +67,6 @@
             />
           </div>
 
-          <!-- Responsabilités -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="responsabilites">
-              Responsabilités
-            </label>
-            <input
-              id="responsabilites"
-              type="text"
-              formControlName="responsabilites"
-              placeholder="Ex : Trésorier, Secrétaire..."
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface"
-            />
-          </div>
-
         </div>
 
         <!-- ── Colonne droite : contact & photo ── -->
@@ -180,16 +166,27 @@
     </form>
   </div>
 
-  <!-- Conseil -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!-- Conseils -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="bg-secondary-container p-5 rounded-xl flex items-center gap-4">
       <div class="w-10 h-10 rounded-full bg-on-secondary-container/10 flex items-center justify-center text-on-secondary-container flex-shrink-0">
-        <span class="material-symbols-outlined">info</span>
+        <span class="material-symbols-outlined">mail</span>
       </div>
       <div>
-        <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Conseil</p>
+        <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Invitation</p>
         <p class="text-xs text-on-secondary-container mt-0.5">
-          Le membre recevra un email d'invitation pour créer son mot de passe et accéder à l'application.
+          Un email d'invitation sera envoyé pour que le membre crée son mot de passe et accède à l'application.
+        </p>
+      </div>
+    </div>
+    <div class="bg-surface-container p-5 rounded-xl flex items-center gap-4">
+      <div class="w-10 h-10 rounded-full bg-outline-variant/20 flex items-center justify-center text-on-surface-variant flex-shrink-0">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+      </div>
+      <div>
+        <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Rôle</p>
+        <p class="text-xs text-on-surface-variant mt-0.5">
+          Le rôle définit les accès dans l'application. Les responsabilités (titre dans le dahira) sont modifiables depuis la fiche membre.
         </p>
       </div>
     </div>

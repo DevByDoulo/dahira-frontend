@@ -1,23 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { MembresService, Membre } from '../../../core/services/membres.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { environment } from '../../../../environments/environment';
-
-interface UserAccount {
-  id: number;
-  nom: string;
-  telephone: string;
-  email: string | null;
-  role: 'bureau' | 'tresorier' | 'membre';
-  actif: boolean;
-  membre_id: number | null;
-  created_at: string;
-}
 
 @Component({
   selector: 'app-modifier-membre',
@@ -25,7 +12,7 @@ interface UserAccount {
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
   templateUrl: './modifier-membre.component.html',
 })
-export class ModifierMembreComponent implements OnInit, OnDestroy {
+export class ModifierMembreComponent implements OnInit {
   form: FormGroup;
   membreId!: number;
   membre: Membre | null = null;
@@ -35,24 +22,15 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
   errorMessage = '';
   phoneErrorMessage = '';
 
-  readonly apiUrl = environment.apiUrl;
+  // Changement de rôle
+  showRoleModal = false;
+  selectedRole: 'bureau' | 'tresorier' | 'responsable_org' | 'membre' = 'membre';
+  isSavingRole = false;
+  roleError = '';
 
-  // Compte utilisateur
-  userAccount: UserAccount | null = null;
-  isLoadingAccount = false;
-  showAccountModal = false;
-  accountModalMode: 'creer' | 'modifier' = 'creer';
-  isSavingAccount = false;
-  accountError = '';
+  // Activation / désactivation
   showToggleConfirm = false;
   isToggling = false;
-
-  // Champs formulaire compte
-  accountNom = '';
-  accountTelephone = '';
-  accountEmail = '';
-  accountRole: 'bureau' | 'tresorier' | 'membre' = 'membre';
-  accountPassword = '';
 
   get isBureau(): boolean {
     return this.authService.getUser()?.role === 'bureau';
@@ -62,7 +40,6 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private membresService: MembresService,
     private authService: AuthService,
-    private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
   ) {
@@ -89,7 +66,6 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
           responsabilites: res.data.responsabilites ?? '',
         });
         this.isLoading = false;
-        if (this.isBureau) this.chargerCompte();
       },
       error: () => {
         this.errorMessage = 'Impossible de charger les données du membre.';
@@ -98,82 +74,69 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
     });
   }
 
-  chargerCompte(): void {
-    this.isLoadingAccount = true;
-    this.http.get<{ success: boolean; data: UserAccount | null }>(`${this.apiUrl}/users/by-membre/${this.membreId}`).subscribe({
-      next: (res) => { this.userAccount = res.data; this.isLoadingAccount = false; },
-      error: () => { this.isLoadingAccount = false; },
+  // --- Rôle ---
+
+  ouvrirRoleModal(): void {
+    this.selectedRole = this.membre?.role ?? 'membre';
+    this.roleError = '';
+    this.showRoleModal = true;
+  }
+
+  fermerRoleModal(): void {
+    this.showRoleModal = false;
+    this.roleError = '';
+  }
+
+  sauvegarderRole(): void {
+    this.isSavingRole = true;
+    this.roleError = '';
+    this.membresService.updateRole(this.membreId, this.selectedRole).subscribe({
+      next: (res) => {
+        if (res.success && this.membre) {
+          this.membre = { ...this.membre, role: res.data.role };
+        }
+        this.fermerRoleModal();
+        this.isSavingRole = false;
+      },
+      error: (err) => {
+        this.roleError = err?.error?.message ?? 'Erreur lors de la mise à jour du rôle.';
+        this.isSavingRole = false;
+      },
     });
   }
 
-  ouvrirCreerCompte(): void {
-    this.accountModalMode = 'creer';
-    this.accountNom = `${this.membre?.prenom ?? ''} ${this.membre?.nom ?? ''}`.trim();
-    this.accountTelephone = this.membre?.telephone ?? '';
-    this.accountEmail = '';
-    this.accountRole = 'membre';
-    this.accountPassword = '';
-    this.accountError = '';
-    this.showAccountModal = true;
-  }
-
-  ouvrirModifierCompte(): void {
-    if (!this.userAccount) return;
-    this.accountModalMode = 'modifier';
-    this.accountNom = this.userAccount.nom;
-    this.accountTelephone = this.userAccount.telephone;
-    this.accountEmail = this.userAccount.email ?? '';
-    this.accountRole = this.userAccount.role;
-    this.accountPassword = '';
-    this.accountError = '';
-    this.showAccountModal = true;
-  }
-
-  fermerAccountModal(): void {
-    this.showAccountModal = false;
-    this.accountError = '';
-  }
-
-  sauvegarderCompte(): void {
-    if (!this.accountNom.trim()) { this.accountError = 'Le nom est requis.'; return; }
-    if (this.accountModalMode === 'creer' && !this.accountTelephone.trim()) { this.accountError = 'Le téléphone est requis.'; return; }
-    if (this.accountModalMode === 'creer' && !this.accountPassword.trim()) { this.accountError = 'Le mot de passe est requis.'; return; }
-
-    this.isSavingAccount = true;
-    this.accountError = '';
-
-    if (this.accountModalMode === 'creer') {
-      const body = { nom: this.accountNom.trim(), telephone: this.accountTelephone.trim(), email: this.accountEmail || null, role: this.accountRole, password: this.accountPassword, membre_id: this.membreId };
-      this.http.post<{ success: boolean; data: UserAccount }>(`${this.apiUrl}/users`, body).subscribe({
-        next: (res) => { if (res.success) { this.userAccount = res.data; this.fermerAccountModal(); } this.isSavingAccount = false; },
-        error: (err) => { this.accountError = err?.error?.message ?? 'Erreur lors de la création.'; this.isSavingAccount = false; },
-      });
-    } else if (this.userAccount) {
-      const body = { nom: this.accountNom.trim(), email: this.accountEmail || null, role: this.accountRole, membre_id: this.membreId };
-      this.http.put<{ success: boolean; data: UserAccount }>(`${this.apiUrl}/users/${this.userAccount.id}`, body).subscribe({
-        next: (res) => { if (res.success) { this.userAccount = res.data; this.fermerAccountModal(); } this.isSavingAccount = false; },
-        error: (err) => { this.accountError = err?.error?.message ?? 'Erreur lors de la modification.'; this.isSavingAccount = false; },
-      });
-    }
-  }
+  // --- Activation ---
 
   demanderToggle(): void { this.showToggleConfirm = true; }
   annulerToggle(): void { this.showToggleConfirm = false; }
 
   confirmerToggle(): void {
-    if (!this.userAccount) return;
+    if (!this.membre) return;
     this.isToggling = true;
-    const endpoint = this.userAccount.actif ? 'desactiver' : 'activer';
-    this.http.patch<{ success: boolean; data: UserAccount }>(`${this.apiUrl}/users/${this.userAccount.id}/${endpoint}`, {}).subscribe({
-      next: (res) => { if (res.success) this.userAccount = res.data; this.isToggling = false; this.showToggleConfirm = false; },
-      error: () => { this.isToggling = false; this.showToggleConfirm = false; },
+    const action$ = this.membre.actif
+      ? this.membresService.desactiverMembre(this.membreId)
+      : this.membresService.activerMembre(this.membreId);
+
+    action$.subscribe({
+      next: (res) => {
+        if (res.success) this.membre = res.data;
+        this.isToggling = false;
+        this.showToggleConfirm = false;
+      },
+      error: () => {
+        this.isToggling = false;
+        this.showToggleConfirm = false;
+      },
     });
   }
+
+  // --- Badges ---
 
   roleBadge(role: string): string {
     switch (role) {
       case 'bureau': return 'bg-primary text-on-primary';
       case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
+      case 'responsable_org': return 'bg-tertiary-container text-on-tertiary-container';
       default: return 'bg-surface-container text-on-surface-variant';
     }
   }
@@ -182,9 +145,12 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
     switch (role) {
       case 'bureau': return 'Administrateur';
       case 'tresorier': return 'Trésorier';
+      case 'responsable_org': return 'Resp. Organisation';
       default: return 'Membre';
     }
   }
+
+  // --- Formulaire info ---
 
   onPhoneInput(event: Event): void {
     this.phoneErrorMessage = '';
@@ -231,8 +197,6 @@ export class ModifierMembreComponent implements OnInit, OnDestroy {
   }
 
   annuler(): void { this.router.navigate(['/membres']); }
-
-  ngOnDestroy(): void {}
 
   private formatTel(tel: string | null | undefined): string {
     if (!tel) return '';

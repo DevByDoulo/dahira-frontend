@@ -182,7 +182,7 @@ export class MembresComponent implements OnInit {
   // ── Affichage ─────────────────────────────────────────────────────────────────
 
   getInitiales(m: Membre): string {
-    return `${(m.prenom[0] ?? '').toUpperCase()}${(m.nom[0] ?? '').toUpperCase()}`;
+    return `${((m.prenom ?? m.nom)[0] ?? '').toUpperCase()}${(m.nom[0] ?? '').toUpperCase()}`;
   }
 
   private readonly AVATAR_PALETTES = [

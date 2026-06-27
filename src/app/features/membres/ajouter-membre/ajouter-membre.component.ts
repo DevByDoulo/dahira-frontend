@@ -34,12 +34,11 @@ export class AjouterMembreComponent implements OnDestroy {
     private router: Router,
   ) {
     this.form = this.fb.group({
-      nom_complet:    ['', [Validators.required, Validators.minLength(2)]],
-      email:          ['', [Validators.required, Validators.email]],
-      role:           ['membre', Validators.required],
-      telephone:      [''],
-      date_adhesion:  [''],
-      responsabilites:[''],
+      nom_complet:   ['', [Validators.required, Validators.minLength(2)]],
+      email:         ['', [Validators.required, Validators.email]],
+      role:          ['membre', Validators.required],
+      telephone:     [''],
+      date_adhesion: [''],
     });
   }
 

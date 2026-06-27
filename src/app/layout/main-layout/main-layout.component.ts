@@ -36,7 +36,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     // Admin uniquement
     { label: 'Membres',              icon: 'group',           route: '/membres',              roles: ['bureau'] },
     { label: 'Invitations',          icon: 'mail',            route: '/invitation',           roles: ['bureau'] },
-    { label: 'Utilisateurs',         icon: 'manage_accounts', route: '/users',                roles: ['bureau'] },
     // Finance (Admin + Trésorier)
     { label: 'Cotisations',          icon: 'payments',        route: '/cotisations',          roles: ['bureau', 'tresorier'] },
     { label: 'Reçus',                icon: 'receipt',         route: '/recus',                roles: ['bureau', 'tresorier'] },

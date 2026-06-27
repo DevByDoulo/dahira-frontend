@@ -98,7 +98,7 @@
                       <button type="button" (mousedown)="selectionnerMembre(m)"
                         class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container text-left transition-colors">
                         <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container text-xs font-bold shrink-0">
-                          {{ m.prenom[0] }}{{ m.nom[0] }}
+                          {{ (m.prenom ?? m.nom)[0] }}{{ m.nom[0] }}
                         </div>
                         <div>
                           <p class="text-sm font-semibold text-on-surface">{{ m.prenom }} {{ m.nom }}</p>
