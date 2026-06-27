@@ -1,195 +1,172 @@
-<div class="p-10 max-w-4xl mx-auto space-y-6">
+<div class="p-6 md:p-10 max-w-3xl mx-auto space-y-6">
 
   <!-- En-tête -->
   <div class="flex items-center gap-4">
-    <a
-      routerLink="/membres"
-      class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors flex-shrink-0"
-      title="Retour à la liste"
-    >
-      <span class="material-symbols-outlined">arrow_back</span>
+    <a routerLink="/membres"
+       class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors flex-shrink-0">
+      <span class="material-symbols-outlined text-xl">arrow_back</span>
     </a>
     <div>
-      <h2 class="text-3xl font-bold text-on-surface">Ajouter un membre</h2>
-      <p class="text-sm text-on-surface-muted mt-0.5">Créez une nouvelle fiche pour un membre de votre Dahira.</p>
+      <h2 class="text-2xl font-bold text-on-surface">Ajouter un membre</h2>
+      <p class="text-sm text-on-surface-variant mt-0.5">Créez une fiche et envoyez l'invitation par email.</p>
     </div>
   </div>
 
-  <!-- Message d'erreur global -->
+  <!-- Erreur globale -->
   @if (errorMessage) {
     <div class="flex items-center gap-3 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
-      <span class="material-symbols-outlined text-xl flex-shrink-0">error</span>
+      <span class="material-symbols-outlined text-lg flex-shrink-0">error</span>
       {{ errorMessage }}
     </div>
   }
 
-  <!-- Carte formulaire -->
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/30">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="p-10">
+  <!-- Formulaire -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 overflow-hidden">
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
 
-        <!-- ── Colonne gauche : infos personnelles ── -->
-        <div class="space-y-6">
-
-          <!-- Prénom et Nom -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="nom_complet">
-              Prénom et Nom <span class="text-error">*</span>
-            </label>
-            <input
-              id="nom_complet"
-              type="text"
-              formControlName="nom_complet"
-              placeholder="Ex : Moussa Diop"
-              [class]="nom_complet.invalid && nom_complet.touched
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
-            />
-            @if (nom_complet.invalid && nom_complet.touched) {
-              <p class="text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">error</span>
-                {{ nom_complet.hasError('required') ? 'Le nom est obligatoire.' : 'Minimum 2 caractères.' }}
-              </p>
-            }
-          </div>
-
-          <!-- Date d'adhésion -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="date_adhesion">
-              Date d'adhésion
-            </label>
-            <input
-              id="date_adhesion"
-              type="date"
-              formControlName="date_adhesion"
-              class="w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface [placeholder]:text-outline-variant"
-            />
-          </div>
-
+        <!-- Prénom -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="prenom">Prénom</label>
+          <input id="prenom" type="text" formControlName="prenom" placeholder="Ex : Moussa"
+            class="w-full h-11 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
         </div>
 
-        <!-- ── Colonne droite : contact & photo ── -->
-        <div class="space-y-6">
+        <!-- Nom -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="nom">
+            Nom <span class="text-error">*</span>
+          </label>
+          <input id="nom" type="text" formControlName="nom" placeholder="Ex : Diop"
+            [class]="nom.invalid && nom.touched
+              ? 'w-full h-11 px-4 rounded-xl border border-error bg-surface-container-lowest text-on-surface text-sm outline-none focus:ring-2 focus:ring-error/20 transition-all'
+              : 'w-full h-11 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all'" />
+          @if (nom.invalid && nom.touched) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span>
+              {{ nom.hasError('required') ? 'Le nom est obligatoire.' : 'Minimum 2 caractères.' }}
+            </p>
+          }
+        </div>
 
-          <!-- Email -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="email">
-              Email <span class="text-error">*</span>
-            </label>
-            <input
-              id="email"
-              type="email"
-              formControlName="email"
-              placeholder="Ex : moussa.diop@email.com"
-              [class]="email.invalid && email.touched
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
-            />
-            @if (email.invalid && email.touched) {
-              <p class="text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">error</span>
-                {{ email.hasError('required') ? "L'email est obligatoire." : "L'adresse email n'est pas valide." }}
-              </p>
-            }
-          </div>
+        <!-- Email -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="email">
+            Email <span class="text-error">*</span>
+          </label>
+          <input id="email" type="email" formControlName="email" placeholder="m.diop@exemple.com"
+            [class]="email.invalid && email.touched
+              ? 'w-full h-11 px-4 rounded-xl border border-error bg-surface-container-lowest text-on-surface text-sm outline-none focus:ring-2 focus:ring-error/20 transition-all'
+              : 'w-full h-11 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all'" />
+          @if (email.invalid && email.touched) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span>
+              {{ email.hasError('required') ? "L'email est obligatoire." : "Adresse email invalide." }}
+            </p>
+          }
+        </div>
 
-          <!-- Rôle -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant">Rôle attribué</label>
-            <div class="flex gap-2">
-              @for (r of roles; track r.value) {
-                <button
-                  type="button"
-                  (click)="form.get('role')!.setValue(r.value)"
-                  [class]="form.get('role')!.value === r.value
-                    ? 'flex-1 py-2.5 rounded-xl border-2 border-secondary bg-secondary/5 text-sm font-semibold text-secondary transition-all'
-                    : 'flex-1 py-2.5 rounded-xl border border-outline-variant/50 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'"
-                >
-                  {{ r.label }}
-                </button>
-              }
-            </div>
-          </div>
-
-          <!-- Téléphone principal -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-on-surface-variant" for="telephone">
-              Téléphone
-            </label>
-            <input
-              id="telephone"
-              type="tel"
-              formControlName="telephone"
-              placeholder="77 123 45 67"
+        <!-- Téléphone -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="telephone">Téléphone</label>
+          <div class="flex">
+            <span class="inline-flex items-center px-3 h-11 rounded-l-xl border border-r-0 border-outline-variant bg-surface-container text-sm font-medium text-on-surface-variant select-none">
+              +221
+            </span>
+            <input id="telephone" type="tel" formControlName="telephone" placeholder="77 123 45 67"
               (input)="onPhoneInput($event)"
               [class]="phoneErrorMessage
-                ? 'w-full h-12 px-4 rounded-xl border border-error focus:ring-2 focus:ring-error/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'
-                : 'w-full h-12 px-4 rounded-xl border border-outline-variant focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-sm bg-surface-container-lowest text-on-surface'"
-            />
-            @if (phoneErrorMessage) {
-              <p class="text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">error</span>
-                {{ phoneErrorMessage }}
-              </p>
+                ? 'flex-1 h-11 px-4 rounded-r-xl border border-error bg-surface-container-lowest text-on-surface text-sm outline-none transition-all'
+                : 'flex-1 h-11 px-4 rounded-r-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all'" />
+          </div>
+          @if (phoneErrorMessage) {
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span>
+              {{ phoneErrorMessage }}
+            </p>
+          }
+        </div>
+
+        <!-- Date d'adhésion -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant" for="date_adhesion">Date d'adhésion</label>
+          <input id="date_adhesion" type="date" formControlName="date_adhesion"
+            class="w-full h-11 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
+        </div>
+
+        <!-- Sexe -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-on-surface-variant">Sexe</label>
+          <div class="flex gap-2 h-11">
+            @for (s of sexes; track s.value) {
+              <button type="button" (click)="form.get('sexe')!.setValue(s.value)"
+                [class]="form.get('sexe')!.value === s.value
+                  ? 'flex-1 rounded-xl border-2 border-primary bg-primary/5 text-sm font-semibold text-primary transition-all'
+                  : 'flex-1 rounded-xl border border-outline-variant/60 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'">
+                {{ s.label }}
+              </button>
             }
           </div>
+        </div>
 
+        <!-- Adresse -->
+        <div class="flex flex-col gap-1.5 md:col-span-2">
+          <label class="text-sm font-medium text-on-surface-variant" for="adresse">Adresse</label>
+          <input id="adresse" type="text" formControlName="adresse" placeholder="Quartier, Rue, N° de porte"
+            class="w-full h-11 px-4 rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
+        </div>
+
+        <!-- Rôle -->
+        <div class="flex flex-col gap-1.5 md:col-span-2">
+          <label class="text-sm font-medium text-on-surface-variant">Rôle attribué</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            @for (r of roles; track r.value) {
+              <button type="button" (click)="form.get('role')!.setValue(r.value)"
+                [class]="form.get('role')!.value === r.value
+                  ? 'py-2.5 rounded-xl border-2 border-primary bg-primary/5 text-sm font-semibold text-primary transition-all'
+                  : 'py-2.5 rounded-xl border border-outline-variant/60 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'">
+                {{ r.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between gap-3 px-6 md:px-8 py-4 bg-surface-container/40 border-t border-outline-variant/20">
+        <p class="text-xs text-on-surface-variant hidden md:block">
+          <span class="text-error">*</span> Champs obligatoires
+        </p>
+        <div class="flex items-center gap-3 ml-auto">
+          <button type="button" (click)="annuler()" [disabled]="isSubmitting"
+            class="px-5 py-2.5 text-sm font-semibold text-on-surface-variant hover:bg-surface-container rounded-xl transition-all disabled:opacity-50">
+            Annuler
+          </button>
+          <button type="submit" [disabled]="isSubmitting"
+            class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary text-sm font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60">
+            @if (isSubmitting) {
+              <span class="material-symbols-outlined text-lg animate-spin">refresh</span>
+              Création en cours…
+            } @else {
+              <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">send</span>
+              Créer et inviter
+            }
+          </button>
         </div>
       </div>
 
-      <!-- Boutons d'action -->
-      <div class="mt-10 flex items-center justify-end gap-4 pt-8 border-t border-outline-variant/30">
-        <button
-          type="button"
-          (click)="annuler()"
-          [disabled]="isSubmitting"
-          class="px-6 py-3 text-sm font-semibold text-secondary hover:bg-secondary/5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
-        >
-          Annuler
-        </button>
-        <button
-          type="submit"
-          [disabled]="isSubmitting"
-          class="px-8 py-3 bg-primary text-on-primary text-sm font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all disabled:opacity-60 flex items-center gap-2"
-        >
-          @if (isSubmitting) {
-            <span class="material-symbols-outlined text-xl animate-spin">refresh</span>
-            Création en cours…
-          } @else {
-            <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">send</span>
-            Créer et inviter
-          }
-        </button>
-      </div>
-
-    </form>
-  </div>
-
-  <!-- Conseils -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-secondary-container p-5 rounded-xl flex items-center gap-4">
-      <div class="w-10 h-10 rounded-full bg-on-secondary-container/10 flex items-center justify-center text-on-secondary-container flex-shrink-0">
-        <span class="material-symbols-outlined">mail</span>
-      </div>
-      <div>
-        <p class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Invitation</p>
-        <p class="text-xs text-on-secondary-container mt-0.5">
-          Un email d'invitation sera envoyé pour que le membre crée son mot de passe et accède à l'application.
-        </p>
-      </div>
     </div>
-    <div class="bg-surface-container p-5 rounded-xl flex items-center gap-4">
-      <div class="w-10 h-10 rounded-full bg-outline-variant/20 flex items-center justify-center text-on-surface-variant flex-shrink-0">
-        <span class="material-symbols-outlined">admin_panel_settings</span>
-      </div>
-      <div>
-        <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Rôle</p>
-        <p class="text-xs text-on-surface-variant mt-0.5">
-          Le rôle définit les accès dans l'application. Les responsabilités (titre dans le dahira) sont modifiables depuis la fiche membre.
-        </p>
-      </div>
-    </div>
+  </form>
+
+  <!-- Conseil -->
+  <div class="flex items-start gap-3 px-4 py-3.5 bg-secondary-container/50 rounded-xl">
+    <span class="material-symbols-outlined text-base text-on-secondary-container mt-0.5 flex-shrink-0">info</span>
+    <p class="text-xs text-on-secondary-container leading-relaxed">
+      Un email d'invitation sera envoyé au membre pour qu'il crée son mot de passe.
+      Le <strong>rôle</strong> détermine ses droits d'accès dans l'application.
+    </p>
   </div>
 
 </div>
