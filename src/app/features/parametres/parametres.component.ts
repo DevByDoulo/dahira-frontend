@@ -69,19 +69,26 @@ export class ParametresComponent implements OnInit {
     return new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+  get isSuperAdmin(): boolean {
+    return this.user?.role === 'super_admin';
+  }
+
   get roleLabel(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'Administrateur';
-      case 'tresorier': return 'Trésorier';
-      default: return 'Membre';
+      case 'super_admin':     return 'Super Administrateur';
+      case 'bureau':          return 'Administrateur Général';
+      case 'tresorier':       return 'Trésorier';
+      case 'responsable_org': return 'Resp. Organisation';
+      default:                return 'Membre';
     }
   }
 
   get roleBadgeClass(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'bg-primary text-on-primary';
-      case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
-      default: return 'bg-surface-container text-on-surface-variant';
+      case 'super_admin': return 'bg-error/15 text-error';
+      case 'bureau':      return 'bg-primary text-on-primary';
+      case 'tresorier':   return 'bg-secondary-container text-on-secondary-container';
+      default:            return 'bg-surface-container text-on-surface-variant';
     }
   }
 

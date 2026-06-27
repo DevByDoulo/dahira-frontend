@@ -25,7 +25,7 @@ export class InvitationComponent implements OnInit {
 
   // Formulaire
   email = '';
-  role: 'membre' | 'tresorier' | 'bureau' = 'membre';
+  role: 'membre' | 'responsable_org' | 'tresorier' | 'bureau' = 'membre';
 
   // États
   isSending = false;
@@ -106,7 +106,7 @@ export class InvitationComponent implements OnInit {
     this.selectedMembre = null;
     this.recherche = '';
     this.email = '';
-    this.role = 'membre';
+    this.role = 'membre' as 'membre' | 'responsable_org' | 'tresorier' | 'bureau';
     this.formError = '';
     this.sentEmail = '';
   }

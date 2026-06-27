@@ -2,10 +2,16 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { superAdminGuard } from './core/guards/super-admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  {
+    path: 'inscription',
+    loadComponent: () =>
+      import('./features/auth/inscription/inscription.component').then(m => m.InscriptionComponent),
+  },
   {
     path: 'accepter-invitation',
     loadComponent: () =>
@@ -26,6 +32,29 @@ export const routes: Routes = [
       import('./features/auth/nouveau-mot-de-passe/nouveau-mot-de-passe.component').then(
         m => m.NouveauMotDePasseComponent,
       ),
+  },
+  {
+    path: 'super-admin',
+    canActivate: [superAdminGuard],
+    loadComponent: () =>
+      import('./layout/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/super-admin/super-admin.component').then(m => m.SuperAdminComponent),
+      },
+      {
+        path: 'parametres',
+        loadComponent: () =>
+          import('./features/parametres/parametres.component').then(m => m.ParametresComponent),
+      },
+      {
+        path: 'profil',
+        loadComponent: () =>
+          import('./features/profil/profil.component').then(m => m.ProfilComponent),
+      },
+    ],
   },
   {
     path: '',
@@ -56,6 +85,8 @@ export const routes: Routes = [
       },
       {
         path: 'seances',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'tresorier', 'responsable_org'] },
         loadComponent: () =>
           import('./features/seances/seances.component').then(m => m.SeancesComponent),
       },
@@ -80,21 +111,21 @@ export const routes: Routes = [
       {
         path: 'seances/creer',
         canActivate: [roleGuard],
-        data: { roles: ['bureau', 'tresorier'] },
+        data: { roles: ['bureau', 'responsable_org'] },
         loadComponent: () =>
           import('./features/seances/creer-seance/creer-seance.component').then(m => m.CreerSeanceComponent),
       },
       {
         path: 'seances/:id',
         canActivate: [roleGuard],
-        data: { roles: ['bureau', 'tresorier'] },
+        data: { roles: ['bureau', 'tresorier', 'responsable_org'] },
         loadComponent: () =>
           import('./features/seances/detail-seance/detail-seance.component').then(m => m.DetailSeanceComponent),
       },
       {
         path: 'seances/:id/modifier',
         canActivate: [roleGuard],
-        data: { roles: ['bureau', 'tresorier'] },
+        data: { roles: ['bureau', 'responsable_org'] },
         loadComponent: () =>
           import('./features/seances/modifier-seance/modifier-seance.component').then(
             m => m.ModifierSeanceComponent,
@@ -181,7 +212,7 @@ export const routes: Routes = [
       {
         path: 'annonces/creer',
         canActivate: [roleGuard],
-        data: { roles: ['bureau'] },
+        data: { roles: ['bureau', 'responsable_org'] },
         loadComponent: () =>
           import('./features/annonces/creer-annonce/creer-annonce.component').then(
             m => m.CreerAnnonceComponent,
@@ -195,7 +226,7 @@ export const routes: Routes = [
       {
         path: 'evenements/creer',
         canActivate: [roleGuard],
-        data: { roles: ['bureau'] },
+        data: { roles: ['bureau', 'responsable_org'] },
         loadComponent: () =>
           import('./features/evenements/creer-evenement/creer-evenement.component').then(
             m => m.CreerEvenementComponent,

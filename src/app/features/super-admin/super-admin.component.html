@@ -1,0 +1,187 @@
+<div class="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+
+  <!-- Toast -->
+  @if (toast) {
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium transition-all"
+      [class]="toastType === 'success'
+        ? 'bg-tertiary-container text-on-tertiary-container'
+        : 'bg-error-container text-on-error-container'">
+      <span class="material-symbols-outlined text-[20px]">
+        {{ toastType === 'success' ? 'check_circle' : 'error' }}
+      </span>
+      {{ toast }}
+    </div>
+  }
+
+  <!-- En-tête -->
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-primary text-[26px]">admin_panel_settings</span>
+    </div>
+    <div>
+      <h1 class="text-2xl font-black text-on-surface">Tableau de bord Plateforme</h1>
+      <p class="text-sm text-on-surface-variant">Vue globale de toutes les associations inscrites</p>
+    </div>
+    <span class="ml-auto px-3 py-1 rounded-full text-xs font-bold bg-error/10 text-error tracking-wide">
+      SUPER ADMIN
+    </span>
+  </div>
+
+  <!-- Cartes de statistiques -->
+  @if (isLoadingStats) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="bg-surface-container rounded-2xl p-5 animate-pulse h-24"></div>
+      }
+    </div>
+  } @else if (stats) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
+        <span class="material-symbols-outlined text-primary text-[22px]">domain</span>
+        <span class="text-2xl font-black text-on-surface">{{ stats.total_dahiras }}</span>
+        <span class="text-xs text-on-surface-variant font-medium">Dahiras inscrits</span>
+      </div>
+      <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
+        <span class="material-symbols-outlined text-tertiary text-[22px]">check_circle</span>
+        <span class="text-2xl font-black text-on-surface">{{ stats.dahiras_actifs }}</span>
+        <span class="text-xs text-on-surface-variant font-medium">Actifs</span>
+      </div>
+      <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
+        <span class="material-symbols-outlined text-error text-[22px]">block</span>
+        <span class="text-2xl font-black text-on-surface">{{ stats.dahiras_inactifs }}</span>
+        <span class="text-xs text-on-surface-variant font-medium">Suspendus</span>
+      </div>
+      <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
+        <span class="material-symbols-outlined text-secondary text-[22px]">group</span>
+        <span class="text-2xl font-black text-on-surface">{{ stats.total_users }}</span>
+        <span class="text-xs text-on-surface-variant font-medium">Utilisateurs total</span>
+      </div>
+    </div>
+  }
+
+  <!-- Liste des dahiras -->
+  <div class="bg-surface-container rounded-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-outline-variant flex items-center gap-3">
+      <span class="material-symbols-outlined text-on-surface-variant text-[20px]">list_alt</span>
+      <h2 class="font-bold text-on-surface">Associations enregistrées</h2>
+      @if (!isLoadingDahiras) {
+        <span class="ml-auto text-xs text-on-surface-variant">{{ dahiras.length }} au total</span>
+      }
+    </div>
+
+    @if (isLoadingDahiras) {
+      <div class="p-8 flex justify-center">
+        <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    } @else if (dahiras.length === 0) {
+      <div class="p-12 text-center text-on-surface-variant">
+        <span class="material-symbols-outlined text-[48px] mb-3 block opacity-30">domain_disabled</span>
+        Aucune association enregistrée
+      </div>
+    } @else {
+
+      <!-- Desktop table -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-xs text-on-surface-variant border-b border-outline-variant">
+              <th class="px-6 py-3 font-semibold">Nom</th>
+              <th class="px-4 py-3 font-semibold">Contact</th>
+              <th class="px-4 py-3 font-semibold text-center">Membres</th>
+              <th class="px-4 py-3 font-semibold text-center">Utilisateurs</th>
+              <th class="px-4 py-3 font-semibold">Inscrit le</th>
+              <th class="px-4 py-3 font-semibold text-center">Statut</th>
+              <th class="px-4 py-3 font-semibold text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-outline-variant/40">
+            @for (d of dahiras; track d.id) {
+              <tr class="hover:bg-surface-container-high transition-colors">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-primary text-[18px]">mosque</span>
+                    </div>
+                    <span class="font-semibold text-on-surface">{{ d.nom }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-4 text-on-surface-variant">
+                  <div>{{ d.email ?? '—' }}</div>
+                  <div class="text-xs">{{ d.telephone ?? '' }}</div>
+                </td>
+                <td class="px-4 py-4 text-center font-semibold text-on-surface">{{ d.total_membres }}</td>
+                <td class="px-4 py-4 text-center font-semibold text-on-surface">{{ d.total_users }}</td>
+                <td class="px-4 py-4 text-on-surface-variant text-xs">{{ formatDate(d.created_at) }}</td>
+                <td class="px-4 py-4 text-center">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
+                    [class]="d.actif
+                      ? 'bg-tertiary/10 text-tertiary'
+                      : 'bg-error/10 text-error'">
+                    <span class="material-symbols-outlined text-[13px]">{{ d.actif ? 'check_circle' : 'block' }}</span>
+                    {{ d.actif ? 'Actif' : 'Suspendu' }}
+                  </span>
+                </td>
+                <td class="px-4 py-4 text-center">
+                  <button
+                    (click)="toggle(d)"
+                    [disabled]="togglingId === d.id"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all disabled:opacity-50"
+                    [class]="d.actif
+                      ? 'border-error/30 text-error hover:bg-error/5'
+                      : 'border-tertiary/30 text-tertiary hover:bg-tertiary/5'">
+                    @if (togglingId === d.id) {
+                      <span class="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin"></span>
+                    } @else {
+                      <span class="material-symbols-outlined text-[14px]">{{ d.actif ? 'pause_circle' : 'play_circle' }}</span>
+                    }
+                    {{ d.actif ? 'Suspendre' : 'Activer' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="md:hidden divide-y divide-outline-variant/40">
+        @for (d of dahiras; track d.id) {
+          <div class="p-4 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary text-[20px]">mosque</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-on-surface truncate">{{ d.nom }}</div>
+                <div class="text-xs text-on-surface-variant">{{ d.email ?? d.telephone ?? '—' }}</div>
+              </div>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold shrink-0"
+                [class]="d.actif ? 'bg-tertiary/10 text-tertiary' : 'bg-error/10 text-error'">
+                {{ d.actif ? 'Actif' : 'Suspendu' }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-on-surface-variant">
+              <span><span class="font-semibold text-on-surface">{{ d.total_membres }}</span> membres</span>
+              <span><span class="font-semibold text-on-surface">{{ d.total_users }}</span> utilisateurs</span>
+              <span>{{ formatDate(d.created_at) }}</span>
+            </div>
+            <button
+              (click)="toggle(d)"
+              [disabled]="togglingId === d.id"
+              class="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border transition-all disabled:opacity-50"
+              [class]="d.actif
+                ? 'border-error/30 text-error hover:bg-error/5'
+                : 'border-tertiary/30 text-tertiary hover:bg-tertiary/5'">
+              @if (togglingId === d.id) {
+                <span class="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin"></span>
+              } @else {
+                <span class="material-symbols-outlined text-[14px]">{{ d.actif ? 'pause_circle' : 'play_circle' }}</span>
+              }
+              {{ d.actif ? 'Suspendre ce dahira' : 'Activer ce dahira' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

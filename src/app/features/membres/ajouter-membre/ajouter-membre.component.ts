@@ -19,9 +19,10 @@ export class AjouterMembreComponent implements OnDestroy {
   phoneErrorMessage = '';
 
   readonly roles = [
-    { value: 'membre',    label: 'Membre' },
-    { value: 'tresorier', label: 'Trésorier' },
-    { value: 'bureau',    label: 'Bureau (Admin)' },
+    { value: 'membre',          label: 'Membre' },
+    { value: 'responsable_org', label: 'Resp. Organisation' },
+    { value: 'tresorier',       label: 'Trésorier' },
+    { value: 'bureau',          label: 'Administrateur' },
   ];
 
   private readonly apiUrl = environment.apiUrl;

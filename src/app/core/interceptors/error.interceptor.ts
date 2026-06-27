@@ -15,6 +15,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('user');
         router.navigate(['/login']);
       } else if (err.status >= 500) {
+        console.error('[500]', req.method, req.url, err?.error?.message ?? err);
         toast.error('Erreur serveur. Veuillez réessayer.');
       }
       return throwError(() => err);

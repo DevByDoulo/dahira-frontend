@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 
 export interface UserProfile {
   id: number;
-  dahira_id: number;
+  dahira_id: number | null;
   membre_id: number | null;
   nom: string;
   telephone: string | null;
@@ -97,6 +97,25 @@ export class AuthService {
       `${this.apiUrl}/auth/change-password`,
       { ancien_password, nouveau_password },
     );
+  }
+
+  registerDahira(payload: {
+    dahira: { nom: string; ville: string; telephone: string };
+    user: { nom: string; telephone: string; email: string; password: string };
+  }): Observable<{ success: boolean; data: { token: string; user: any } }> {
+    return this.http
+      .post<{ success: boolean; data: { token: string; user: any } }>(
+        `${this.apiUrl}/auth/register`,
+        payload,
+      )
+      .pipe(
+        tap(res => {
+          if (res.success) {
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+          }
+        }),
+      );
   }
 
   updateProfile(data: { nom: string; telephone: string; email: string }): Observable<{ success: boolean; data: UserProfile }> {

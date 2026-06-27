@@ -45,7 +45,8 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.router.navigate(['/dashboard']);
+          const role = this.authService.getUser()?.role;
+          this.router.navigate([role === 'super_admin' ? '/super-admin' : '/dashboard']);
         }
       },
       error: (err) => {

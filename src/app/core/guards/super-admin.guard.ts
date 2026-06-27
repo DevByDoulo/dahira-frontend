@@ -2,12 +2,10 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const superAdminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   if (!auth.isLoggedIn()) return inject(Router).createUrlTree(['/login']);
-  // Le super_admin n'a pas de contexte dahira — il ne doit pas accéder aux routes tenant
-  if (auth.getUser()?.role === 'super_admin') {
-    return inject(Router).createUrlTree(['/super-admin']);
-  }
-  return true;
+  const user = auth.getUser();
+  if (user?.role === 'super_admin') return true;
+  return inject(Router).createUrlTree(['/dashboard']);
 };

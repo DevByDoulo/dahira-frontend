@@ -140,30 +140,30 @@
             <!-- Rôle -->
             <div class="flex flex-col gap-1.5">
               <label class="text-sm font-medium text-on-surface-variant">Rôle attribué <span class="text-error">*</span></label>
-              <div class="grid grid-cols-3 gap-3">
-                <label
-                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'membre' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
-                >
+              <div class="grid grid-cols-2 gap-3">
+                <label class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'membre' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
                   <input type="radio" name="role" value="membre" [(ngModel)]="role" class="sr-only" />
                   <span class="material-symbols-outlined text-[22px]" [class]="role === 'membre' ? 'text-secondary' : 'text-outline'">person</span>
-                  <span class="text-xs font-semibold" [class]="role === 'membre' ? 'text-secondary' : 'text-on-surface-variant'">Membre</span>
+                  <span class="text-xs font-semibold text-center" [class]="role === 'membre' ? 'text-secondary' : 'text-on-surface-variant'">Membre</span>
                 </label>
-                <label
-                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'tresorier' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
-                >
+                <label class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'responsable_org' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
+                  <input type="radio" name="role" value="responsable_org" [(ngModel)]="role" class="sr-only" />
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'responsable_org' ? 'text-secondary' : 'text-outline'">event_note</span>
+                  <span class="text-xs font-semibold text-center" [class]="role === 'responsable_org' ? 'text-secondary' : 'text-on-surface-variant'">Resp. Organisation</span>
+                </label>
+                <label class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'tresorier' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
                   <input type="radio" name="role" value="tresorier" [(ngModel)]="role" class="sr-only" />
                   <span class="material-symbols-outlined text-[22px]" [class]="role === 'tresorier' ? 'text-secondary' : 'text-outline'">account_balance_wallet</span>
-                  <span class="text-xs font-semibold" [class]="role === 'tresorier' ? 'text-secondary' : 'text-on-surface-variant'">Trésorier</span>
+                  <span class="text-xs font-semibold text-center" [class]="role === 'tresorier' ? 'text-secondary' : 'text-on-surface-variant'">Trésorier</span>
                 </label>
-                <label
-                  class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'bureau' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'"
-                >
+                <label class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                  [class]="role === 'bureau' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
                   <input type="radio" name="role" value="bureau" [(ngModel)]="role" class="sr-only" />
                   <span class="material-symbols-outlined text-[22px]" [class]="role === 'bureau' ? 'text-secondary' : 'text-outline'">admin_panel_settings</span>
-                  <span class="text-xs font-semibold" [class]="role === 'bureau' ? 'text-secondary' : 'text-on-surface-variant'">Administrateur</span>
+                  <span class="text-xs font-semibold text-center" [class]="role === 'bureau' ? 'text-secondary' : 'text-on-surface-variant'">Administrateur</span>
                 </label>
               </div>
             </div>

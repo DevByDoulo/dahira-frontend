@@ -32,7 +32,7 @@
         <button
           (click)="setSection('profil')"
           [class]="activeSection === 'profil'
-            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
+            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary/15 text-secondary font-semibold text-sm text-left'
             : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
         >
           <span class="material-symbols-outlined text-[20px]">person</span>
@@ -41,21 +41,23 @@
         <button
           (click)="setSection('securite')"
           [class]="activeSection === 'securite'
-            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
+            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary/15 text-secondary font-semibold text-sm text-left'
             : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
         >
           <span class="material-symbols-outlined text-[20px]">lock</span>
           Sécurité
         </button>
-        <button
-          (click)="setSection('notifications')"
-          [class]="activeSection === 'notifications'
-            ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm text-left'
-            : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
-        >
-          <span class="material-symbols-outlined text-[20px]">notifications</span>
-          Notifications
-        </button>
+        @if (!isSuperAdmin) {
+          <button
+            (click)="setSection('notifications')"
+            [class]="activeSection === 'notifications'
+              ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary/15 text-secondary font-semibold text-sm text-left'
+              : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
+          >
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            Notifications
+          </button>
+        }
       </nav>
     </aside>
 

@@ -31,22 +31,38 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   showLogoutConfirm = false;
 
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard',    icon: 'dashboard',       route: '/dashboard' },
-    { label: 'Membres',      icon: 'group',           route: '/membres',    roles: ['bureau'] },
-    { label: 'Séances',      icon: 'event_repeat',    route: '/seances',    roles: ['bureau', 'tresorier'] },
-    { label: 'Cotisations',  icon: 'payments',        route: '/cotisations',roles: ['bureau', 'tresorier'] },
-    { label: 'Reçus',        icon: 'receipt',         route: '/recus',      roles: ['bureau', 'tresorier'] },
-    { label: 'Trésorerie',   icon: 'account_balance', route: '/tresorerie', roles: ['bureau', 'tresorier'] },
-    { label: 'Dépenses',     icon: 'receipt_long',    route: '/depenses',   roles: ['bureau', 'tresorier'] },
-    { label: 'Déclarer un paiement', icon: 'payments',  route: '/cotisations/declarer', roles: ['membre'] },
-    { label: 'Mes reçus',            icon: 'receipt',   route: '/mes-recus',            roles: ['membre'] },
-    { label: 'Événements',   icon: 'event',           route: '/evenements' },
-    { label: 'Photos',       icon: 'photo_library',   route: '/photos' },
-    { label: 'Annonces',     icon: 'campaign',        route: '/annonces' },
-    { label: 'Invitations',  icon: 'mail',            route: '/invitation', roles: ['bureau'] },
+    // Tous les rôles tenant
+    { label: 'Dashboard',            icon: 'dashboard',       route: '/dashboard' },
+    // Admin uniquement
+    { label: 'Membres',              icon: 'group',           route: '/membres',              roles: ['bureau'] },
+    { label: 'Invitations',          icon: 'mail',            route: '/invitation',           roles: ['bureau'] },
+    { label: 'Utilisateurs',         icon: 'manage_accounts', route: '/users',                roles: ['bureau'] },
+    // Finance (Admin + Trésorier)
+    { label: 'Cotisations',          icon: 'payments',        route: '/cotisations',          roles: ['bureau', 'tresorier'] },
+    { label: 'Reçus',                icon: 'receipt',         route: '/recus',                roles: ['bureau', 'tresorier'] },
+    { label: 'Trésorerie',           icon: 'account_balance', route: '/tresorerie',           roles: ['bureau', 'tresorier'] },
+    { label: 'Dépenses',             icon: 'receipt_long',    route: '/depenses',             roles: ['bureau', 'tresorier'] },
+    // Organisation (Admin + Responsable Org)
+    { label: 'Séances',              icon: 'event_repeat',    route: '/seances',              roles: ['bureau', 'responsable_org'] },
+    { label: 'Événements',           icon: 'event',           route: '/evenements',           roles: ['bureau', 'responsable_org', 'membre'] },
+    { label: 'Annonces',             icon: 'campaign',        route: '/annonces',             roles: ['bureau', 'responsable_org', 'membre'] },
+    { label: 'Photos',               icon: 'photo_library',   route: '/photos',               roles: ['bureau', 'responsable_org', 'membre'] },
+    // Membre uniquement
+    { label: 'Déclarer un paiement', icon: 'payments',        route: '/cotisations/declarer', roles: ['membre'] },
+    { label: 'Mes reçus',            icon: 'receipt',         route: '/mes-recus',            roles: ['membre'] },
   ];
 
+  readonly superAdminNavItems: NavItem[] = [
+    { label: 'Tableau de bord', icon: 'admin_panel_settings', route: '/super-admin' },
+    { label: 'Paramètres',      icon: 'settings',             route: '/super-admin/parametres' },
+  ];
+
+  get isSuperAdmin(): boolean {
+    return (this.profile?.role ?? this.user?.role) === 'super_admin';
+  }
+
   get visibleNavItems(): NavItem[] {
+    if (this.isSuperAdmin) return this.superAdminNavItems;
     const role = (this.profile?.role ?? this.user?.role ?? '') as string;
     return this.navItems.filter(item => !item.roles || item.roles.includes(role));
   }
@@ -67,9 +83,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     if (!this.profile) {
       this.authService.getMe().subscribe();
     }
-    this.notificationsService.getNotifications(1, 0).subscribe({
-      next: (res) => { if (res.success) this.unreadCount.set(res.data.unread); },
-    });
+    // Les notifications requièrent un dahira_id — non applicable au super_admin
+    if (this.user?.role !== 'super_admin') {
+      this.notificationsService.getNotifications(1, 0).subscribe({
+        next: (res) => { if (res.success) this.unreadCount.set(res.data.unread); },
+      });
+    }
   }
 
   @HostListener('document:keydown.escape')
@@ -111,5 +130,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   get isBureau(): boolean {
     return (this.profile?.role ?? this.user?.role) === 'bureau';
+  }
+
+  get roleLabelSidebar(): string {
+    const role = (this.profile?.role ?? this.user?.role ?? '') as string;
+    const labels: Record<string, string> = {
+      super_admin:     'Super Administrateur',
+      bureau:          'Administrateur Général',
+      tresorier:       'Trésorier',
+      responsable_org: 'Resp. Organisation',
+      membre:          'Membre',
+    };
+    return labels[role] ?? role;
   }
 }

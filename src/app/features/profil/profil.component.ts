@@ -30,6 +30,15 @@ export class ProfilComponent implements OnInit {
   photoSuccess = '';
   photoError = '';
 
+  // Edition profil
+  modeEdition = false;
+  editNom = '';
+  editEmail = '';
+  editTelephone = '';
+  isSavingProfile = false;
+  profileSuccess = '';
+  profileError = '';
+
   // Formulaire changement de mot de passe
   ancienPassword = '';
   nouveauPassword = '';
@@ -94,23 +103,66 @@ export class ProfilComponent implements OnInit {
     const formData = new FormData();
     formData.append('photo', file);
 
-    this.http.post<{ success: boolean; data: { photo_url: string } }>(
-      `${environment.apiUrl}/photos/membres/me`,
-      formData,
-    ).subscribe({
+    const url = this.user?.membre_id
+      ? `${environment.apiUrl}/photos/membres/me`
+      : `${environment.apiUrl}/photos/me`;
+
+    this.http.post<{ success: boolean; data: { photo_url: string } }>(url, formData).subscribe({
       next: (res) => {
-        if (res.success && this.membre) {
-          this.membre = { ...this.membre, photo_url: res.data.photo_url };
+        if (res.success) {
+          const photoUrl = res.data.photo_url;
+          if (this.membre) this.membre = { ...this.membre, photo_url: photoUrl };
+          this.authService.setPhotoUrl(photoUrl);
         }
         this.photoSuccess = 'Photo mise à jour avec succès.';
         this.isUploadingPhoto = false;
         if (this.photoInput) this.photoInput.nativeElement.value = '';
       },
       error: (err) => {
-        this.photoError = err?.error?.message ?? 'Erreur lors de l\'upload.';
+        this.photoError = err?.error?.message ?? "Erreur lors de l'upload.";
         this.isUploadingPhoto = false;
       },
     });
+  }
+
+  entrerEdition(): void {
+    if (!this.user) return;
+    const parts = this.user.nom.trim().split(' ');
+    this.editNom = parts[0] ?? '';
+    this.editEmail = this.user.email ?? '';
+    this.editTelephone = this.user.telephone ?? '';
+    this.profileError = '';
+    this.profileSuccess = '';
+    this.modeEdition = true;
+  }
+
+  annulerEdition(): void {
+    this.modeEdition = false;
+    this.profileError = '';
+    this.profileSuccess = '';
+  }
+
+  sauvegarderProfil(): void {
+    if (!this.editNom.trim()) {
+      this.profileError = 'Le nom est obligatoire.';
+      return;
+    }
+    this.isSavingProfile = true;
+    this.profileError = '';
+    this.authService
+      .updateProfile({ nom: this.editNom.trim(), email: this.editEmail, telephone: this.editTelephone })
+      .subscribe({
+        next: (res) => {
+          if (res.success) this.user = res.data;
+          this.profileSuccess = 'Profil mis à jour avec succès.';
+          this.modeEdition = false;
+          this.isSavingProfile = false;
+        },
+        error: (err) => {
+          this.profileError = err?.error?.message ?? 'Erreur lors de la mise à jour.';
+          this.isSavingProfile = false;
+        },
+      });
   }
 
   get avatarSrc(): string | null {
@@ -131,9 +183,10 @@ export class ProfilComponent implements OnInit {
 
   get roleLabel(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'Administrateur';
-      case 'tresorier': return 'Trésorier';
-      default: return 'Membre';
+      case 'bureau':          return 'Administrateur Général';
+      case 'tresorier':       return 'Trésorier';
+      case 'responsable_org': return 'Resp. Organisation';
+      default:                return 'Membre';
     }
   }
 

@@ -39,13 +39,13 @@
           (change)="onPhotoSelected($event)"
         />
 
-        <!-- Avatar cliquable si membre_id existe -->
+        <!-- Avatar cliquable -->
         <button
           type="button"
           (click)="ouvrirChoixPhoto()"
-          [disabled]="!user.membre_id || isUploadingPhoto"
-          class="group relative w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none overflow-hidden disabled:cursor-default"
-          [title]="user.membre_id ? 'Changer la photo de profil' : ''"
+          [disabled]="isUploadingPhoto"
+          class="group relative w-28 h-28 rounded-full bg-secondary-container border-4 border-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-3xl select-none overflow-hidden"
+          title="Changer la photo de profil"
         >
           @if (avatarSrc) {
             <img [src]="avatarSrc" alt="Photo de profil" class="w-full h-full object-cover" />
@@ -53,16 +53,13 @@
             {{ initiales }}
           }
 
-          <!-- Overlay caméra au survol (seulement si membre) -->
-          @if (user.membre_id) {
-            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-              @if (isUploadingPhoto) {
-                <span class="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin block"></span>
-              } @else {
-                <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
-              }
-            </div>
-          }
+          <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+            @if (isUploadingPhoto) {
+              <span class="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin block"></span>
+            } @else {
+              <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+            }
+          </div>
         </button>
 
         @if (user.actif) {
@@ -141,33 +138,90 @@
 
         <!-- Mon compte -->
         <div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/20 custom-shadow">
-          <h3 class="text-base font-bold text-on-surface mb-5">Mon compte</h3>
-          <div class="space-y-3">
-            <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-              <span class="text-sm text-on-surface-variant">Nom complet</span>
-              <span class="text-sm font-semibold text-on-surface">{{ user.nom }}</span>
-            </div>
-            <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-              <span class="text-sm text-on-surface-variant">Rôle</span>
-              <span class="text-sm font-semibold text-on-surface">{{ roleLabel }}</span>
-            </div>
-            @if (user.telephone) {
-              <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-                <span class="text-sm text-on-surface-variant">Téléphone</span>
-                <span class="text-sm font-semibold text-on-surface">{{ user.telephone }}</span>
-              </div>
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-bold text-on-surface">Mon compte</h3>
+            @if (!modeEdition) {
+              <button (click)="entrerEdition()" class="flex items-center gap-1.5 text-xs font-semibold text-secondary hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+                Modifier
+              </button>
             }
-            @if (user.email) {
-              <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-                <span class="text-sm text-on-surface-variant">Email</span>
-                <span class="text-sm font-semibold text-on-surface">{{ user.email }}</span>
-              </div>
-            }
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-on-surface-variant">Membre depuis</span>
-              <span class="text-sm font-semibold text-on-surface">{{ formatDate(user.created_at) }}</span>
-            </div>
           </div>
+
+          @if (profileSuccess) {
+            <div class="p-3 bg-secondary-container text-on-secondary-container rounded-xl text-xs flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined text-[16px]">check_circle</span>
+              {{ profileSuccess }}
+            </div>
+          }
+
+          @if (!modeEdition) {
+            <div class="space-y-3">
+              <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
+                <span class="text-sm text-on-surface-variant">Nom complet</span>
+                <span class="text-sm font-semibold text-on-surface">{{ user.nom }}</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
+                <span class="text-sm text-on-surface-variant">Rôle</span>
+                <span class="text-sm font-semibold text-on-surface">{{ roleLabel }}</span>
+              </div>
+              @if (user.telephone) {
+                <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
+                  <span class="text-sm text-on-surface-variant">Téléphone</span>
+                  <span class="text-sm font-semibold text-on-surface">{{ user.telephone }}</span>
+                </div>
+              }
+              @if (user.email) {
+                <div class="flex justify-between items-center border-b border-outline-variant/20 pb-3">
+                  <span class="text-sm text-on-surface-variant">Email</span>
+                  <span class="text-sm font-semibold text-on-surface">{{ user.email }}</span>
+                </div>
+              }
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-on-surface-variant">Membre depuis</span>
+                <span class="text-sm font-semibold text-on-surface">{{ formatDate(user.created_at) }}</span>
+              </div>
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @if (profileError) {
+                <div class="p-3 bg-error-container text-on-error-container rounded-xl text-xs flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">error</span>
+                  {{ profileError }}
+                </div>
+              }
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5">Nom complet</label>
+                <input type="text" [(ngModel)]="editNom" placeholder="Votre nom"
+                  class="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5">Téléphone</label>
+                <input type="tel" [(ngModel)]="editTelephone" placeholder="Ex : 221771234567"
+                  class="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-on-surface-variant mb-1.5">Email</label>
+                <input type="email" [(ngModel)]="editEmail" placeholder="votre@email.com"
+                  class="w-full px-3.5 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" />
+              </div>
+              <div class="flex gap-3 pt-1">
+                <button (click)="annulerEdition()" [disabled]="isSavingProfile"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container disabled:opacity-50 transition-colors">
+                  Annuler
+                </button>
+                <button (click)="sauvegarderProfil()" [disabled]="isSavingProfile"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-on-primary disabled:opacity-50 hover:shadow-md transition-all flex items-center justify-center gap-2">
+                  @if (isSavingProfile) {
+                    <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                  } @else {
+                    <span class="material-symbols-outlined text-[16px]">save</span>
+                    Enregistrer
+                  }
+                </button>
+              </div>
+            </div>
+          }
         </div>
 
         <!-- Informations Dahira (depuis le membre si disponible) -->
