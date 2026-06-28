@@ -21,6 +21,8 @@ export class CotisationsComponent implements OnInit {
   activeTab: ActiveTab = 'toutes';
   searchQuery = '';
   statutFilter = '';
+  modePaiementFilter = '';
+  periodeFilter = '';
 
   page = 1;
   readonly pageSize = 10;
@@ -44,7 +46,12 @@ export class CotisationsComponent implements OnInit {
 
   // Menu contextuel (⋮)
   menuOpenId: number | null = null;
+  filterPanelOpen = false;
   generatingRecuId: number | null = null;
+
+  isExporting = false;
+  isRelancing = false;
+  modalRelanceVisible = false;
 
   // Toast
   toast: { message: string; type: 'success' | 'error' } | null = null;
@@ -59,6 +66,12 @@ export class CotisationsComponent implements OnInit {
   @HostListener('document:click')
   onDocumentClick(): void {
     this.menuOpenId = null;
+    this.filterPanelOpen = false;
+  }
+
+  toggleFilterPanel(event: Event): void {
+    event.stopPropagation();
+    this.filterPanelOpen = !this.filterPanelOpen;
   }
 
   charger(): void {
@@ -82,9 +95,27 @@ export class CotisationsComponent implements OnInit {
     let result = this.cotisations;
     if (this.activeTab === 'en_attente') result = result.filter((c) => c.statut === 'pending');
     if (this.statutFilter) result = result.filter((c) => c.statut === this.statutFilter);
+    if (this.modePaiementFilter) result = result.filter((c) => c.mode_paiement === this.modePaiementFilter);
+    if (this.periodeFilter) result = result.filter((c) => (c.date_seance ?? c.created_at ?? '').startsWith(this.periodeFilter));
     const q = this.searchQuery.trim().toLowerCase();
     if (q) result = result.filter((c) => `${c.prenom ?? ''} ${c.nom ?? ''}`.toLowerCase().includes(q));
     return result;
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.statutFilter || this.modePaiementFilter || this.periodeFilter || this.searchQuery);
+  }
+
+  get activeFiltersCount(): number {
+    return [this.statutFilter, this.modePaiementFilter, this.periodeFilter, this.searchQuery].filter(Boolean).length;
+  }
+
+  clearFilters(): void {
+    this.statutFilter = '';
+    this.modePaiementFilter = '';
+    this.periodeFilter = '';
+    this.searchQuery = '';
+    this.page = 1;
   }
 
   get paginated(): Cotisation[] {
@@ -219,6 +250,51 @@ export class CotisationsComponent implements OnInit {
         this.showToast(err?.error?.message || 'Erreur lors de la génération du reçu.', 'error');
       },
     });
+  }
+
+  // ── Relances ────────────────────────────────────────────────────────────────
+
+  ouvrirModalRelance(): void { this.modalRelanceVisible = true; }
+  fermerModalRelance(): void { this.modalRelanceVisible = false; }
+
+  confirmerRelance(): void {
+    if (this.isRelancing) return;
+    this.isRelancing = true;
+    this.cotisationsService.relancer(3).subscribe({
+      next: (res) => {
+        this.isRelancing = false;
+        this.modalRelanceVisible = false;
+        const { envoyes, sansEmail, total } = res.data;
+        if (total === 0) {
+          this.showToast('Aucune cotisation en attente depuis plus de 3 jours.', 'success');
+        } else if (envoyes === 0) {
+          this.showToast(`${total} membre(s) concerné(s) mais aucun email renseigné.`, 'error');
+        } else {
+          this.showToast(
+            `${envoyes} email${envoyes > 1 ? 's' : ''} envoyé${envoyes > 1 ? 's' : ''}` +
+            (sansEmail > 0 ? ` · ${sansEmail} sans email` : ''),
+            'success',
+          );
+        }
+      },
+      error: () => {
+        this.isRelancing = false;
+        this.showToast('Erreur lors de l\'envoi des relances.', 'error');
+      },
+    });
+  }
+
+  // ── Export PDF ──────────────────────────────────────────────────────────────
+
+  exporterPdf(): void {
+    if (this.isExporting) return;
+    this.isExporting = true;
+    const statut = this.activeTab === 'en_attente' ? 'pending' : (this.statutFilter || undefined);
+    try {
+      this.cotisationsService.exportPdf(statut);
+    } finally {
+      setTimeout(() => (this.isExporting = false), 2000);
+    }
   }
 
   // ── Toast ───────────────────────────────────────────────────────────────────

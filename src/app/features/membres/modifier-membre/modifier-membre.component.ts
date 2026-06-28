@@ -145,7 +145,7 @@ export class ModifierMembreComponent implements OnInit {
     switch (role) {
       case 'bureau': return 'Administrateur';
       case 'tresorier': return 'Trésorier';
-      case 'responsable_org': return 'Resp. Organisation';
+      case 'responsable_org': return 'Communicateur';
       default: return 'Membre';
     }
   }

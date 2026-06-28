@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import {
@@ -24,13 +25,16 @@ interface ChartPoint {
 @Component({
   selector: 'app-tresorerie',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './tresorerie.component.html',
 })
 export class TresorerieComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   isExporting = false;
+  isExportingRapport = false;
+  moisRapport: string = new Date().toISOString().slice(0, 7);
+  menuExportOuvert = false;
 
   solde: SoldeTresorerie | null = null;
   dernieresEntrees: Transaction[] = [];
@@ -50,6 +54,11 @@ export class TresorerieComponent implements OnInit {
   readonly PAD_B = 44;
 
   constructor(private tresorerieService: TresorerieService) {}
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.menuExportOuvert = false;
+  }
 
   ngOnInit(): void {
     this.charger();
@@ -237,6 +246,18 @@ export class TresorerieComponent implements OnInit {
     if (mode === 'wave') return 'contactless';
     if (mode === 'orange_money') return 'phone_android';
     return 'payments';
+  }
+
+  // ── Export rapport mensuel PDF ───────────────────────────────────────────
+
+  exporterRapportMensuel(): void {
+    if (this.isExportingRapport) return;
+    this.isExportingRapport = true;
+    try {
+      this.tresorerieService.exportRapportMensuel(this.moisRapport);
+    } finally {
+      setTimeout(() => (this.isExportingRapport = false), 2000);
+    }
   }
 
   // ── Export CSV ───────────────────────────────────────────────────────────

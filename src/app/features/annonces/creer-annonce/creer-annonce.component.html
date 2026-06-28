@@ -48,7 +48,7 @@
           <label class="block text-sm font-medium text-on-surface-muted mb-1" for="categorie">Catégorie</label>
           <div class="relative">
             <select
-              class="w-full appearance-none border border-outline-soft rounded-xl px-4 py-3 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none text-base bg-transparent"
+              class="w-full appearance-none border border-outline-soft rounded-xl px-4 py-3 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none text-base"
               id="categorie"
               name="categorie"
               [(ngModel)]="categorie"
@@ -132,12 +132,16 @@
               type="button"
               (click)="cyclerCible()"
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
-              [class]="cible === 'tous'
-                ? 'bg-secondary-container text-on-secondary-container'
-                : 'bg-primary-container text-on-primary-container'"
+              [ngClass]="{
+                'bg-secondary-container text-on-secondary-container': cible === 'tous',
+                'bg-primary-container text-on-primary-container': cible === 'bureau',
+                'bg-tertiary-container text-on-tertiary-container': cible === 'responsable_org'
+              }"
             >
-              <span class="material-symbols-outlined text-[15px]">{{ cible === 'tous' ? 'group' : 'admin_panel_settings' }}</span>
-              {{ cible === 'tous' ? 'Tous les membres' : 'Le bureau' }}
+              <span class="material-symbols-outlined text-[15px]">
+                {{ cible === 'tous' ? 'group' : cible === 'bureau' ? 'admin_panel_settings' : 'campaign' }}
+              </span>
+              {{ cible === 'tous' ? 'Tous les membres' : cible === 'bureau' ? 'Le bureau' : 'Communicateur' }}
               <span class="material-symbols-outlined text-[15px]">sync</span>
             </button>
           </div>

@@ -303,8 +303,8 @@
                 type="button"
                 (click)="setMode(mode.value)"
                 [class]="form.get('mode_paiement')!.value === mode.value
-                  ? 'flex flex-col items-center gap-2 p-4 border-2 border-primary bg-surface-container-high rounded-xl transition-all text-primary'
-                  : 'flex flex-col items-center gap-2 p-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:border-primary/40 hover:bg-surface-container-low transition-all text-on-surface-variant'"
+                  ? 'flex flex-col items-center gap-2 p-4 border-2 border-secondary bg-secondary/10 rounded-xl transition-all text-secondary'
+                  : 'flex flex-col items-center gap-2 p-4 border border-outline-variant rounded-xl bg-surface-container-lowest hover:border-secondary/40 hover:bg-surface-container-low transition-all text-on-surface-variant'"
               >
                 <span class="material-symbols-outlined text-2xl">{{ mode.icon }}</span>
                 <span class="text-sm font-medium">{{ mode.label }}</span>

@@ -219,6 +219,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'annonces/:id/modifier',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'responsable_org'] },
+        loadComponent: () =>
+          import('./features/annonces/modifier-annonce/modifier-annonce.component').then(
+            m => m.ModifierAnnonceComponent,
+          ),
+      },
+      {
         path: 'evenements',
         loadComponent: () =>
           import('./features/evenements/evenements.component').then(m => m.EvenementsComponent),
@@ -230,6 +239,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/evenements/creer-evenement/creer-evenement.component').then(
             m => m.CreerEvenementComponent,
+          ),
+      },
+      {
+        path: 'evenements/:id/modifier',
+        canActivate: [roleGuard],
+        data: { roles: ['bureau', 'responsable_org'] },
+        loadComponent: () =>
+          import('./features/evenements/modifier-evenement/modifier-evenement.component').then(
+            m => m.ModifierEvenementComponent,
           ),
       },
       {

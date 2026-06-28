@@ -20,7 +20,7 @@ export class AjouterMembreComponent {
 
   readonly roles = [
     { value: 'membre',          label: 'Membre' },
-    { value: 'responsable_org', label: 'Resp. Org.' },
+    { value: 'responsable_org', label: 'Communicateur' },
     { value: 'tresorier',       label: 'Trésorier' },
     { value: 'bureau',          label: 'Administrateur' },
   ];
@@ -93,10 +93,16 @@ export class AjouterMembreComponent {
         this.http.post(`${this.apiUrl}/invitations`, { membre_id: membreId, email, role }).subscribe({
           next: () =>
             this.router.navigate(['/membres'], { state: { toast: 'Membre créé et invitation envoyée.' } }),
-          error: () =>
-            this.router.navigate(['/membres'], {
-              state: { toast: 'Membre créé. Invitation non envoyée (vérifiez la config email).' },
-            }),
+          error: (invErr) => {
+            if (invErr?.status === 409) {
+              this.isSubmitting = false;
+              this.errorMessage = `Membre créé, mais cet email est déjà utilisé dans ce dahira. Invitez-le avec un autre email depuis sa fiche.`;
+            } else {
+              this.router.navigate(['/membres'], {
+                state: { toast: 'Membre créé. Invitation non envoyée (vérifiez la config email).' },
+              });
+            }
+          },
         });
       },
       error: (err) => {

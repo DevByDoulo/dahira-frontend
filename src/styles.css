@@ -73,11 +73,19 @@ select option[value=""] {
   color: #45464d;
 }
 
+select:has(option[value=""]:checked) {
+  color: #45464d;
+}
+
 select:has(option[disabled]:checked) {
   color: var(--color-on-surface-variant);
 }
 
 html.dark ::placeholder {
+  color: #9b9caa !important;
+}
+
+html.dark select:has(option[value=""]:checked) {
   color: #9b9caa !important;
 }
 
@@ -89,6 +97,8 @@ html.dark input,
 html.dark select,
 html.dark textarea {
   color-scheme: dark;
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
 }
 
 html.dark input[type="date"],

@@ -251,13 +251,30 @@
         <h2 class="text-2xl font-black text-on-surface">Cotisations</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">Gérez et validez les paiements des membres</p>
       </div>
-      <a
-        routerLink="/cotisations/encaisser"
-        class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all self-start sm:self-auto"
-      >
-        <span class="material-symbols-outlined text-[20px]">add_card</span>
-        Enregistrer un paiement
-      </a>
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <button
+          (click)="exporterPdf()"
+          [disabled]="isExporting"
+          class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container-low active:scale-[0.98] transition-all disabled:opacity-50"
+        >
+          <span class="material-symbols-outlined text-[18px]">{{ isExporting ? 'hourglass_empty' : 'picture_as_pdf' }}</span>
+          {{ isExporting ? 'Export...' : 'Exporter PDF' }}
+        </button>
+        <button
+          (click)="ouvrirModalRelance()"
+          class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container-low active:scale-[0.98] transition-all"
+        >
+          <span class="material-symbols-outlined text-[18px]">send</span>
+          Relancer
+        </button>
+        <a
+          routerLink="/cotisations/encaisser"
+          class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all"
+        >
+          <span class="material-symbols-outlined text-[20px]">add_card</span>
+          Enregistrer un paiement
+        </a>
+      </div>
     </div>
 
     <!-- KPI Cards -->
@@ -307,55 +324,134 @@
     <!-- Filtres -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 
+      <!-- Onglets -->
+      <div class="flex bg-surface-container-low p-1 rounded-xl gap-0.5">
+        <button
+          (click)="setTab('toutes')"
+          [class]="activeTab === 'toutes'
+            ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all'
+            : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all'"
+        >Toutes</button>
+        <button
+          (click)="setTab('en_attente')"
+          [class]="activeTab === 'en_attente'
+            ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all flex items-center gap-2'
+            : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-2'"
+        >
+          En attente
+          @if (nombreEnAttente > 0) {
+            <span class="min-w-[18px] h-[18px] px-1 rounded-full bg-surface-container-highest text-on-surface text-[10px] font-bold flex items-center justify-center">
+              {{ nombreEnAttente }}
+            </span>
+          }
+        </button>
+      </div>
+
+      <!-- Recherche + Filtres -->
       <div class="flex items-center gap-2">
-        <div class="flex bg-surface-container-low p-1 rounded-xl gap-0.5">
+
+        <!-- Recherche -->
+        <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-3 py-2 w-52">
+          <span class="material-symbols-outlined text-on-surface-variant/40 text-[18px] shrink-0">search</span>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Rechercher…"
+            class="bg-transparent outline-none text-sm w-full placeholder:text-on-surface-variant/40 text-on-surface"
+          />
+          @if (searchQuery) {
+            <button (click)="searchQuery = ''; onFilterChange()" class="text-on-surface-variant/40 hover:text-on-surface-variant transition-colors">
+              <span class="material-symbols-outlined text-[15px]">close</span>
+            </button>
+          }
+        </div>
+
+        <!-- Bouton Filtres -->
+        <div class="relative" (click)="$event.stopPropagation()">
           <button
-            (click)="setTab('toutes')"
-            [class]="activeTab === 'toutes'
-              ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all'
-              : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all'"
-          >Toutes</button>
-          <button
-            (click)="setTab('en_attente')"
-            [class]="activeTab === 'en_attente'
-              ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all flex items-center gap-2'
-              : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-2'"
+            (click)="toggleFilterPanel($event)"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-colors text-xs font-medium"
+            [ngClass]="hasActiveFilters
+              ? 'bg-secondary/10 border-secondary/40 text-secondary'
+              : 'bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'"
           >
-            En attente
-            @if (nombreEnAttente > 0) {
-              <span class="min-w-[18px] h-[18px] px-1 rounded-full bg-surface-container-highest text-on-surface text-[10px] font-bold flex items-center justify-center">
-                {{ nombreEnAttente }}
+            <span class="material-symbols-outlined text-[17px]">tune</span>
+            Filtres
+            @if (activeFiltersCount > 0) {
+              <span class="min-w-[16px] h-4 px-1 bg-secondary text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                {{ activeFiltersCount }}
               </span>
             }
           </button>
+
+          <!-- Panneau déroulant -->
+          @if (filterPanelOpen) {
+            <div class="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-xl z-30 p-4 flex flex-col gap-4">
+
+              <!-- Statut -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</label>
+                <div class="relative">
+                  <select
+                    [(ngModel)]="statutFilter"
+                    (ngModelChange)="onFilterChange()"
+                    class="w-full appearance-none bg-surface-container-low border border-outline-variant/30 rounded-xl pl-3 pr-8 py-2 text-xs font-medium text-on-surface outline-none cursor-pointer"
+                  >
+                    <option value="">Tous</option>
+                    <option value="approved">Validé</option>
+                    <option value="pending">En attente</option>
+                    <option value="rejected">Refusé</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <!-- Mode de paiement -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Mode de paiement</label>
+                <div class="relative">
+                  <select
+                    [(ngModel)]="modePaiementFilter"
+                    (ngModelChange)="onFilterChange()"
+                    class="w-full appearance-none bg-surface-container-low border border-outline-variant/30 rounded-xl pl-3 pr-8 py-2 text-xs font-medium text-on-surface outline-none cursor-pointer"
+                  >
+                    <option value="">Tous</option>
+                    <option value="especes">Espèces</option>
+                    <option value="wave">Wave</option>
+                    <option value="orange_money">Orange Money</option>
+                  </select>
+                  <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <!-- Période -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Période</label>
+                <input
+                  type="month"
+                  [(ngModel)]="periodeFilter"
+                  (ngModelChange)="onFilterChange()"
+                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-xs font-medium text-on-surface outline-none cursor-pointer"
+                />
+              </div>
+
+              <!-- Réinitialiser -->
+              @if (hasActiveFilters) {
+                <button
+                  (click)="clearFilters()"
+                  class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-outline-variant/30 text-xs font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[15px]">filter_alt_off</span>
+                  Réinitialiser les filtres
+                </button>
+              }
+
+            </div>
+          }
         </div>
 
-        <div class="relative">
-          <select
-            [(ngModel)]="statutFilter"
-            (ngModelChange)="onFilterChange()"
-            class="appearance-none bg-surface-container-lowest border border-outline-variant/30 rounded-xl pl-4 pr-9 py-2 text-xs font-medium text-on-surface outline-none cursor-pointer"
-          >
-            <option value="">Tous les statuts</option>
-            <option value="approved">Validé</option>
-            <option value="pending">En attente</option>
-            <option value="rejected">Refusé</option>
-          </select>
-          <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[16px] pointer-events-none">expand_more</span>
-        </div>
       </div>
-
-      <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2 sm:w-64">
-        <span class="material-symbols-outlined text-on-surface-variant/40 text-[18px] shrink-0">search</span>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onFilterChange()"
-          placeholder="Rechercher un membre…"
-          class="bg-transparent outline-none text-sm w-full placeholder:text-on-surface-variant/40 text-on-surface"
-        />
-      </div>
-
     </div>
 
     <!-- Tableau -->
@@ -539,6 +635,39 @@
       </div>
     </div>
 
+  </div>
+}
+
+<!-- Modal relance -->
+@if (modalRelanceVisible) {
+  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModalRelance()">
+    <div class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl border border-outline-variant/20 p-8" (click)="$event.stopPropagation()">
+      <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">send</span>
+      </div>
+      <h3 class="text-base font-bold text-on-surface mb-2">Envoyer des relances</h3>
+      <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
+        Un email de rappel sera envoyé à tous les membres ayant une cotisation
+        <strong class="text-on-surface">en attente depuis plus de 3 jours</strong>.
+        Seuls les membres avec une adresse email enregistrée seront contactés.
+      </p>
+      <div class="flex gap-3 justify-end">
+        <button (click)="fermerModalRelance()"
+          class="px-5 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+          Annuler
+        </button>
+        <button
+          (click)="confirmerRelance()"
+          [disabled]="isRelancing"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-primary text-on-primary disabled:opacity-60 hover:opacity-90 transition-all"
+        >
+          @if (isRelancing) {
+            <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          }
+          {{ isRelancing ? 'Envoi…' : 'Envoyer les relances' }}
+        </button>
+      </div>
+    </div>
   </div>
 }
 

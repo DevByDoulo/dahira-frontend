@@ -44,8 +44,16 @@ export class AnnoncesService {
     return this.http.get<AnnoncesResponse>(`${this.apiUrl}/annonces`);
   }
 
+  getAnnonce(id: number): Observable<AnnonceResponse> {
+    return this.http.get<AnnonceResponse>(`${this.apiUrl}/annonces/${id}`);
+  }
+
   createAnnonce(payload: CreateAnnoncePayload): Observable<AnnonceResponse> {
     return this.http.post<AnnonceResponse>(`${this.apiUrl}/annonces`, payload);
+  }
+
+  updateAnnonce(id: number, payload: Partial<CreateAnnoncePayload>): Observable<AnnonceResponse> {
+    return this.http.put<AnnonceResponse>(`${this.apiUrl}/annonces/${id}`, payload);
   }
 
   deleteAnnonce(id: number): Observable<{ success: boolean }> {

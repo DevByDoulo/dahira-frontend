@@ -1,0 +1,179 @@
+<div class="max-w-5xl mx-auto px-6 py-8">
+
+  <!-- Skeleton -->
+  @if (isLoading) {
+    <div class="space-y-6 animate-pulse">
+      <div class="h-8 w-64 bg-surface-container rounded-xl"></div>
+      <div class="h-[480px] bg-surface-container rounded-xl"></div>
+    </div>
+  }
+
+  @if (!isLoading && errorMessage && !titre) {
+    <div class="p-4 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+      <span class="material-symbols-outlined text-[16px] align-middle mr-1">error</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (!isLoading && titre) {
+    <!-- En-tête -->
+    <div class="mb-8 flex items-center gap-4">
+      <button type="button" (click)="annuler()"
+        class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined text-2xl">arrow_back</span>
+      </button>
+      <div>
+        <h1 class="text-2xl font-black text-on-surface">Modifier l'événement</h1>
+        <p class="text-on-surface-variant text-sm mt-0.5">Mettez à jour les informations de l'événement.</p>
+      </div>
+    </div>
+
+    <!-- Erreur API -->
+    @if (errorMessage) {
+      <div class="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm font-medium">
+        <span class="material-symbols-outlined text-[16px] align-middle mr-1">error</span>
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Erreurs de validation -->
+    @if (validationErrors.length > 0) {
+      <div class="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm space-y-1">
+        @for (e of validationErrors; track $index) {
+          <p>• {{ e }}</p>
+        }
+      </div>
+    }
+
+    <!-- Formulaire -->
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm p-8 border border-outline-variant/20">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- Colonne gauche -->
+        <div class="space-y-5">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-semibold text-on-surface">Titre <span class="text-error">*</span></label>
+            <input
+              type="text"
+              [(ngModel)]="titre"
+              placeholder="Ex: Assemblée Générale Annuelle"
+              class="w-full px-4 py-3 rounded-xl border border-outline-variant/50 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-on-surface">Date <span class="text-error">*</span></label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">calendar_today</span>
+                <input
+                  type="date"
+                  [(ngModel)]="date_evenement"
+                  class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant/50 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-semibold text-on-surface">Heure</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">schedule</span>
+                <input
+                  type="time"
+                  [(ngModel)]="heure"
+                  class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant/50 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-semibold text-on-surface">Lieu</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">location_on</span>
+              <input
+                type="text"
+                [(ngModel)]="lieu"
+                placeholder="Adresse physique ou lien virtuel"
+                class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant/50 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-semibold text-on-surface">Description</label>
+            <textarea
+              [(ngModel)]="description"
+              rows="5"
+              placeholder="Décrivez l'objectif et l'ordre du jour..."
+              class="w-full px-4 py-3 rounded-xl border border-outline-variant/50 text-sm resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Colonne droite : image actuelle -->
+        <div class="space-y-5">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-semibold text-on-surface">Image de couverture</label>
+            @if (imagePreview) {
+              <div class="relative rounded-xl overflow-hidden border border-outline-variant/30 min-h-[280px]">
+                <img [src]="imagePreview" alt="Nouvelle image" class="w-full object-cover min-h-[280px]" />
+                <button type="button" (click)="resetImage()"
+                  class="absolute top-3 right-3 p-1.5 bg-white/90 rounded-lg text-error hover:bg-error hover:text-on-error transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">delete</span>
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 bg-secondary-container text-on-secondary-container px-4 py-2 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                  <span class="text-xs font-semibold truncate">{{ imageNom }}</span>
+                </div>
+              </div>
+            } @else if (imageActuelle) {
+              <div class="relative rounded-xl overflow-hidden border border-outline-variant/30 min-h-[280px]">
+                <img [src]="imageActuelle" alt="Image actuelle" class="w-full object-cover min-h-[280px]" />
+                <label class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                  <input type="file" accept="image/*" class="hidden" (change)="onFileChange($event)" />
+                  <span class="material-symbols-outlined text-white text-4xl">photo_camera</span>
+                  <span class="text-white text-xs font-semibold">Changer l'image</span>
+                </label>
+              </div>
+            } @else {
+              <label class="relative group cursor-pointer border-2 border-dashed border-outline-variant rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all hover:bg-surface-container-low min-h-[280px]">
+                <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" (change)="onFileChange($event)" />
+                <div class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined text-primary text-[32px]">cloud_upload</span>
+                </div>
+                <p class="text-sm font-semibold text-on-surface">Glissez-déposez une image</p>
+                <p class="text-xs text-on-surface-variant mt-1">PNG, JPG jusqu'à 5MB</p>
+              </label>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Séparateur -->
+      <div class="h-px bg-outline-variant/30 my-6"></div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-4">
+        <button type="button" (click)="annuler()"
+          class="px-6 py-3 rounded-xl text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-all active:scale-95">
+          Annuler
+        </button>
+        <button
+          type="button"
+          (click)="soumettre()"
+          [disabled]="isSubmitting"
+          [class]="isSubmitting
+            ? 'px-6 py-3 rounded-xl text-sm font-bold bg-primary/60 text-on-primary cursor-not-allowed flex items-center gap-2'
+            : 'px-6 py-3 rounded-xl text-sm font-bold bg-primary text-on-primary shadow-md hover:shadow-lg hover:-translate-y-px transition-all active:scale-[0.98] flex items-center gap-2'"
+        >
+          @if (isSubmitting) {
+            <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          }
+          {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

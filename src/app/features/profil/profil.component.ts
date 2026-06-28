@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 
-type Onglet = 'informations' | 'securite';
+type Onglet = 'informations' | 'securite' | 'notifications';
 
 @Component({
   selector: 'app-profil',
@@ -44,6 +44,14 @@ export class ProfilComponent implements OnInit {
   passwordSuccess = '';
   passwordError = '';
 
+  // Préférences de notification
+  prefEmailCotisation = false;
+  prefEmailSeance = false;
+  prefEmailRelance = false;
+  isSavingPrefs = false;
+  prefsSuccess = '';
+  prefsError = '';
+
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -51,6 +59,7 @@ export class ProfilComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.user = res.data;
+          this.syncPrefs(res.data);
         }
         this.isLoading = false;
       },
@@ -167,14 +176,14 @@ export class ProfilComponent implements OnInit {
     switch (this.user?.role) {
       case 'bureau':          return 'Administrateur Général';
       case 'tresorier':       return 'Trésorier';
-      case 'responsable_org': return 'Resp. Organisation';
+      case 'responsable_org': return 'Communicateur';
       default:                return 'Membre';
     }
   }
 
   get roleBadgeClass(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'bg-primary text-on-primary';
+      case 'bureau': return 'bg-secondary text-on-secondary';
       case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
       default: return 'bg-surface-container text-on-surface-variant';
     }
@@ -182,6 +191,35 @@ export class ProfilComponent implements OnInit {
 
   formatDate(d: string): string {
     return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  syncPrefs(user: typeof this.user): void {
+    if (!user) return;
+    const p = user.notification_prefs ?? {};
+    this.prefEmailCotisation = p.notif_email_cotisation ?? false;
+    this.prefEmailSeance = p.notif_email_seance ?? false;
+    this.prefEmailRelance = p.notif_email_relance ?? false;
+  }
+
+  sauvegarderPrefs(): void {
+    this.isSavingPrefs = true;
+    this.prefsSuccess = '';
+    this.prefsError = '';
+    this.authService.updateNotificationPrefs({
+      notif_email_cotisation: this.prefEmailCotisation,
+      notif_email_seance: this.prefEmailSeance,
+      notif_email_relance: this.prefEmailRelance,
+    }).subscribe({
+      next: (res) => {
+        if (res.success) this.user = res.data;
+        this.prefsSuccess = 'Préférences enregistrées.';
+        this.isSavingPrefs = false;
+      },
+      error: (err) => {
+        this.prefsError = err?.error?.message ?? 'Erreur lors de la sauvegarde.';
+        this.isSavingPrefs = false;
+      },
+    });
   }
 
   changerMotDePasse(): void {

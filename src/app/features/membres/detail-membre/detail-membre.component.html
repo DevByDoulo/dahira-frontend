@@ -31,19 +31,29 @@
   <div class="p-10 max-w-4xl mx-auto space-y-6">
 
     <!-- Bouton retour + fil d'ariane -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <button
+          (click)="retour()"
+          class="flex items-center justify-center w-9 h-9 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-all"
+          title="Retour"
+        >
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <nav class="flex items-center gap-2 text-sm text-on-surface-variant">
+          <a routerLink="/membres" class="hover:text-secondary transition-colors">Membres</a>
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span class="text-on-surface font-medium">{{ membre.prenom }} {{ membre.nom }}</span>
+        </nav>
+      </div>
       <button
-        (click)="retour()"
-        class="flex items-center justify-center w-9 h-9 rounded-xl border border-outline-variant/40 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-all"
-        title="Retour"
+        (click)="exporterFiche()"
+        [disabled]="isExportingFiche"
+        class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all disabled:opacity-50"
       >
-        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        <span class="material-symbols-outlined text-[18px]">{{ isExportingFiche ? 'hourglass_empty' : 'picture_as_pdf' }}</span>
+        {{ isExportingFiche ? 'Export…' : 'Fiche PDF' }}
       </button>
-      <nav class="flex items-center gap-2 text-sm text-on-surface-variant">
-        <a routerLink="/membres" class="hover:text-secondary transition-colors">Membres</a>
-        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-        <span class="text-on-surface font-medium">{{ membre.prenom }} {{ membre.nom }}</span>
-      </nav>
     </div>
 
     <!-- Card profil -->
@@ -124,8 +134,8 @@
         </div>
       </div>
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-5 flex items-center gap-4 ambient-card">
-        <div class="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+        <div class="w-11 h-11 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
         </div>
         <div>
           <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total versé</p>
@@ -140,7 +150,7 @@
         <button
           (click)="setTab('infos')"
           [class]="activeTab === 'infos'
-            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all'
+            ? 'px-5 py-3 text-sm font-bold text-secondary border-b-2 border-secondary -mb-px transition-all'
             : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all'"
         >
           Informations
@@ -148,18 +158,18 @@
         <button
           (click)="setTab('cotisations')"
           [class]="activeTab === 'cotisations'
-            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all flex items-center gap-2'
+            ? 'px-5 py-3 text-sm font-bold text-secondary border-b-2 border-secondary -mb-px transition-all flex items-center gap-2'
             : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all flex items-center gap-2'"
         >
           Cotisations
           @if (cotisations.length > 0) {
-            <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">{{ cotisations.length }}</span>
+            <span class="bg-secondary/15 text-secondary text-xs font-bold px-2 py-0.5 rounded-full">{{ cotisations.length }}</span>
           }
         </button>
         <button
           (click)="setTab('presences')"
           [class]="activeTab === 'presences'
-            ? 'px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary -mb-px transition-all'
+            ? 'px-5 py-3 text-sm font-bold text-secondary border-b-2 border-secondary -mb-px transition-all'
             : 'px-5 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-all'"
         >
           Présences

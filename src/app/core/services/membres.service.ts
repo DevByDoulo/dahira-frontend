@@ -20,6 +20,8 @@ export interface Membre {
   a_compte: boolean;
   created_at: string;
   statut_cotisation?: 'a_jour' | 'en_retard';
+  total_cotise?: number;
+  cotise_ce_mois?: number;
 }
 
 export interface CreateMembrePayload {

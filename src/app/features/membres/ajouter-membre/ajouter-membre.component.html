@@ -102,7 +102,7 @@
             @for (s of sexes; track s.value) {
               <button type="button" (click)="form.get('sexe')!.setValue(s.value)"
                 [class]="form.get('sexe')!.value === s.value
-                  ? 'flex-1 rounded-xl border-2 border-primary bg-primary/5 text-sm font-semibold text-primary transition-all'
+                  ? 'flex-1 rounded-xl border-2 border-secondary bg-secondary/10 text-sm font-semibold text-secondary transition-all'
                   : 'flex-1 rounded-xl border border-outline-variant/60 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'">
                 {{ s.label }}
               </button>
@@ -124,7 +124,7 @@
             @for (r of roles; track r.value) {
               <button type="button" (click)="form.get('role')!.setValue(r.value)"
                 [class]="form.get('role')!.value === r.value
-                  ? 'py-2.5 rounded-xl border-2 border-primary bg-primary/5 text-sm font-semibold text-primary transition-all'
+                  ? 'py-2.5 rounded-xl border-2 border-secondary bg-secondary/10 text-sm font-semibold text-secondary transition-all'
                   : 'py-2.5 rounded-xl border border-outline-variant/60 text-sm font-medium text-on-surface-variant hover:border-outline-variant hover:bg-surface-container-low transition-all'">
                 {{ r.label }}
               </button>

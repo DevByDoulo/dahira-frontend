@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, of } from 'rxjs';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
 import { NotificationsService } from '../../core/services/notifications.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { SearchService, SearchResult } from '../../core/services/search.service';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { environment } from '../../../environments/environment';
 
@@ -18,7 +21,7 @@ interface NavItem {
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent],
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent],
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
@@ -29,6 +32,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   sidebarOpen = false;
   unreadCount = signal(0);
   showLogoutConfirm = false;
+
+  // Recherche globale
+  searchQuery = '';
+  searchResults: SearchResult[] = [];
+  searchOpen = false;
+  isSearching = false;
+  private searchInput$ = new Subject<string>();
+  private searchSub?: Subscription;
 
   readonly navItems: NavItem[] = [
     // Tous les rôles tenant
@@ -74,6 +85,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     private router: Router,
     private notificationsService: NotificationsService,
     public themeService: ThemeService,
+    private searchService: SearchService,
   ) {}
 
   ngOnInit(): void {
@@ -88,13 +100,59 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         next: (res) => { if (res.success) this.unreadCount.set(res.data.unread); },
       });
     }
+
+    this.searchSub = this.searchInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((q) => {
+        if (q.length < 2) { this.searchResults = []; this.isSearching = false; return of(null); }
+        this.isSearching = true;
+        return this.searchService.search(q).pipe(catchError(() => of(null)));
+      }),
+    ).subscribe((res) => {
+      this.isSearching = false;
+      if (res?.success) this.searchResults = res.data;
+    });
   }
 
   @HostListener('document:keydown.escape')
-  closeSidebar(): void { this.sidebarOpen = false; }
+  onEscape(): void {
+    this.sidebarOpen = false;
+    this.searchOpen = false;
+    this.searchQuery = '';
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void { this.searchOpen = false; }
 
   ngOnDestroy(): void {
     this.profileSub?.unsubscribe();
+    this.searchSub?.unsubscribe();
+  }
+
+  onSearchInput(): void {
+    this.searchOpen = true;
+    this.searchInput$.next(this.searchQuery);
+  }
+
+  navigateToResult(result: SearchResult, event: Event): void {
+    event.stopPropagation();
+    this.searchOpen = false;
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.router.navigate([result.route]);
+  }
+
+  searchIcon(type: string): string {
+    if (type === 'membre') return 'person';
+    if (type === 'seance') return 'event_repeat';
+    return 'campaign';
+  }
+
+  searchTypeLabel(type: string): string {
+    if (type === 'membre') return 'Membre';
+    if (type === 'seance') return 'Séance';
+    return 'Annonce';
   }
 
   logout(): void {
@@ -137,7 +195,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       super_admin:     'Super Administrateur',
       bureau:          'Administrateur Général',
       tresorier:       'Trésorier',
-      responsable_org: 'Resp. Organisation',
+      responsable_org: 'Communicateur',
       membre:          'Membre',
     };
     return labels[role] ?? role;

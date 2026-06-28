@@ -50,13 +50,13 @@ export class DetailEvenementComponent implements OnInit {
     if (!this.evenement) return 'passe';
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return new Date(this.evenement.date_evenement) >= today ? 'a_venir' : 'passe';
+    return new Date(this.evenement.date_debut) >= today ? 'a_venir' : 'passe';
   }
 
   photoUrl(): string {
-    if (!this.evenement?.photo_url) return '';
-    if (this.evenement.photo_url.startsWith('http')) return this.evenement.photo_url;
-    return `${environment.backendUrl}${this.evenement.photo_url}`;
+    if (!this.evenement?.image_url) return '';
+    if (this.evenement.image_url.startsWith('http')) return this.evenement.image_url;
+    return `${environment.backendUrl}${this.evenement.image_url}`;
   }
 
   formatDate(d: string): string {

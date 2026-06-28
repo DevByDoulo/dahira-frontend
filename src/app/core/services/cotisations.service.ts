@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
 export interface EncaisserCotisationPayload {
@@ -65,7 +66,7 @@ export interface CotisationStatsResponse {
 export class CotisationsService {
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getCotisations(statut?: string): Observable<CotisationsResponse> {
     const params = statut ? `?statut=${statut}` : '';
@@ -107,5 +108,27 @@ export class CotisationsService {
       `${this.apiUrl}/recus`,
       { cotisation_id: cotisationId },
     );
+  }
+
+  relancer(jours = 3): Observable<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }> {
+    return this.http.post<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }>(
+      `${this.apiUrl}/cotisations/relancer`,
+      { jours },
+    );
+  }
+
+  exportPdf(statut?: string): void {
+    const token = this.authService.getToken();
+    const params = statut ? `?statut=${statut}` : '';
+    const url = `${this.apiUrl}/cotisations/export-pdf${params}`;
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `cotisations-${new Date().toISOString().slice(0, 10)}.pdf`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
   }
 }

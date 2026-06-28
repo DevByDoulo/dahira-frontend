@@ -16,9 +16,9 @@ export class CreerSeanceComponent {
   errorMessage = '';
 
   readonly types = [
-    { value: 'dahira', label: 'Dahira',        icon: 'menu_book' },
-    { value: 'mensuelle',    label: 'Mensuelle',    icon: 'calendar_month' },
-    { value: 'autre',        label: 'Autre',        icon: 'groups_3' },
+    { value: 'dahira',    label: 'Dahira',     icon: 'menu_book' },
+    { value: 'mensuelle', label: 'Mensuelle',  icon: 'calendar_month' },
+    { value: 'autre',     label: 'Autre',      icon: 'groups_3' },
   ];
 
   constructor(
@@ -53,7 +53,6 @@ export class CreerSeanceComponent {
 
     const raw = this.form.value as Record<string, string>;
 
-    // Si type = autre et précision renseignée, on l'intègre dans le thème
     if (raw['type'] === 'autre' && raw['precision']) {
       raw['theme'] = `${raw['theme']} — ${raw['precision']}`;
     }

@@ -26,9 +26,8 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly categories = [
-    { value: '', label: 'Tout' },
-    { value: 'bureau', label: 'Administrateur' },
-    { value: 'tresorier', label: 'Trésoriers' },
+    { value: '', label: 'Toutes' },
+    { value: 'responsable_org', label: 'Communicateur' },
   ];
 
   constructor(

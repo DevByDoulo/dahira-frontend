@@ -2,22 +2,22 @@
 
   <!-- Fil d'Ariane -->
   <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
-    <a routerLink="/depenses" class="hover:text-primary transition-colors">Dépenses</a>
+    <a routerLink="/depenses" class="hover:text-secondary transition-colors">Dépenses</a>
     <span class="material-symbols-outlined text-sm">chevron_right</span>
-    <span class="text-primary font-semibold">Ajouter une dépense</span>
+    <span class="text-on-surface font-semibold">Ajouter une dépense</span>
   </nav>
 
   <!-- En-tête -->
   <div class="mb-8 flex items-center gap-4">
     <a
       routerLink="/depenses"
-      class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary"
+      class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-secondary"
       title="Retour"
     >
       <span class="material-symbols-outlined text-2xl">arrow_back</span>
     </a>
     <div>
-      <h1 class="text-3xl font-bold text-primary">Ajouter une dépense</h1>
+      <h1 class="text-3xl font-bold text-on-surface">Ajouter une dépense</h1>
       <p class="text-sm text-on-surface-variant mt-1">Enregistrez les détails de la nouvelle transaction financière.</p>
     </div>
   </div>
@@ -196,19 +196,17 @@
             <label
               for="justificatif"
               class="flex flex-col items-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all text-center select-none"
-              [class.border-primary]="isDragging"
-              [class.bg-primary-container-lowest]="isDragging"
+              [class.border-secondary]="isDragging"
+              [class.bg-secondary-container]="isDragging"
               [class.border-outline-variant]="!isDragging"
-              [class.hover:border-primary]="!isDragging"
-              [class.hover:bg-primary-container-lowest]="!isDragging"
               (dragover)="onDragOver($event)"
               (dragleave)="onDragLeave($event)"
               (drop)="onDrop($event)"
             >
-              <span class="material-symbols-outlined text-4xl" [class.text-primary]="isDragging" [class.text-on-surface-variant]="!isDragging">upload_file</span>
+              <span class="material-symbols-outlined text-4xl" [class.text-secondary]="isDragging" [class.text-on-surface-variant]="!isDragging">upload_file</span>
               <div>
                 <p class="text-sm font-medium text-on-surface">
-                  Glisser-déposer ou <span class="text-primary">parcourir</span>
+                  Glisser-déposer ou <span class="text-secondary">parcourir</span>
                 </p>
                 <p class="text-xs text-on-surface-variant mt-0.5">PNG, JPG, PDF — jusqu'à 10 Mo</p>
               </div>
@@ -224,7 +222,7 @@
 
           @if (isUploadingJustificatif) {
             <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
-              <span class="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+              <span class="material-symbols-outlined animate-spin text-secondary">progress_activity</span>
               <span class="text-sm text-on-surface-variant">Envoi en cours…</span>
             </div>
           }
@@ -303,7 +301,7 @@
       </button>
       <a
         routerLink="/depenses"
-        class="bg-transparent text-primary font-semibold px-10 py-3 rounded-full hover:bg-surface-container-high transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm"
+        class="bg-transparent text-secondary font-semibold px-10 py-3 rounded-full hover:bg-surface-container-high transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm"
       >
         Annuler
       </a>

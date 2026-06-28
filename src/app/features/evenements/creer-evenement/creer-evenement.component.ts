@@ -60,7 +60,7 @@ export class CreerEvenementComponent implements OnInit {
     this.errorMessage = '';
     const payload: CreateEvenementPayload = {
       titre: this.titre.trim(),
-      date_evenement: this.date_evenement,
+      date_debut: this.date_evenement,
     };
     if (this.description.trim()) payload.description = this.description.trim();
     if (this.heure) payload.heure = this.heure;

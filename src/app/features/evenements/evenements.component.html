@@ -138,7 +138,7 @@
           >
             <!-- Image -->
             <div class="h-44 relative overflow-hidden shrink-0">
-              @if (ev.photo_url) {
+              @if (ev.image_url) {
                 <img
                   [src]="photoUrl(ev)"
                   [alt]="ev.titre"
@@ -162,7 +162,7 @@
             <!-- Contenu -->
             <div class="p-4 flex flex-col flex-1">
               <p class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1">
-                {{ formatDate(ev.date_evenement) }}
+                {{ formatDate(ev.date_debut) }}
               </p>
               <h3 class="font-bold text-sm text-on-surface mb-3 line-clamp-2 flex-1">{{ ev.titre }}</h3>
 

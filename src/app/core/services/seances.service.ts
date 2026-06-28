@@ -11,6 +11,7 @@ export interface Seance {
   theme: string | null;
   heure: string | null;
   lieu: string | null;
+  photo_url: string | null;
   cloturee: boolean;
   created_at: string;
 }
@@ -57,6 +58,12 @@ export class SeancesService {
 
   updateSeance(id: number, payload: CreateSeancePayload): Observable<SeanceResponse> {
     return this.http.patch<SeanceResponse>(`${this.apiUrl}/seances/${id}`, payload);
+  }
+
+  uploadPhoto(id: number, file: File): Observable<SeanceResponse> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    return this.http.post<SeanceResponse>(`${this.apiUrl}/seances/${id}/photo`, formData);
   }
 
   cloturerSeance(id: number): Observable<SeanceResponse> {

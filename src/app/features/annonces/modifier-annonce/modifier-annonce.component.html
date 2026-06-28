@@ -1,0 +1,117 @@
+<section class="flex-1 px-6 py-10 flex flex-col items-center">
+
+  <!-- Skeleton -->
+  @if (isLoading) {
+    <div class="w-full max-w-4xl space-y-6 animate-pulse">
+      <div class="h-8 w-56 bg-surface-container rounded-xl"></div>
+      <div class="h-[480px] bg-surface-container rounded-xl"></div>
+    </div>
+  }
+
+  @if (!isLoading) {
+    <div class="w-full max-w-4xl mb-6">
+      <button type="button" (click)="annuler()"
+        class="flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface text-sm font-medium mb-4 transition-colors group">
+        <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+        Retour aux annonces
+      </button>
+      <h2 class="text-3xl font-bold leading-tight tracking-tight text-on-surface mb-1">Modifier l'annonce</h2>
+      <p class="text-base text-on-surface-muted">Mettez à jour les informations de cette annonce.</p>
+    </div>
+
+    <div class="w-full max-w-4xl bg-surface-container-lowest rounded-xl p-10 custom-shadow border border-outline-variant/20">
+
+      @if (errorMessage) {
+        <div class="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm font-medium flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">error</span>
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (validationErrors.length > 0) {
+        <div class="mb-6 p-4 bg-error-container text-on-error-container rounded-xl text-sm space-y-1">
+          @for (e of validationErrors; track $index) {
+            <p>• {{ e }}</p>
+          }
+        </div>
+      }
+
+      <form class="space-y-6">
+
+        <!-- Titre -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-muted mb-1">Titre de l'annonce</label>
+          <input
+            type="text"
+            [(ngModel)]="titre"
+            name="titre"
+            placeholder="Ex: Rappel pour la contribution mensuelle"
+            class="w-full border border-outline-soft rounded-xl px-4 py-3 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none text-base"
+          />
+        </div>
+
+        <!-- Contenu -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-muted mb-1">Contenu du message</label>
+          <textarea
+            [(ngModel)]="contenu"
+            name="contenu"
+            placeholder="Écrivez les détails de votre annonce ici..."
+            rows="8"
+            class="w-full border border-outline-soft rounded-xl px-4 py-3 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none text-base resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Notifications (cible) -->
+        <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-on-surface">Destinataires</span>
+            <span class="text-xs text-on-surface-muted">À qui s'adresse cette annonce</span>
+          </div>
+          <button
+            type="button"
+            (click)="cyclerCible()"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
+            [ngClass]="{
+              'bg-secondary-container text-on-secondary-container': cible === 'tous',
+              'bg-primary-container text-on-primary-container': cible === 'bureau',
+              'bg-tertiary-container text-on-tertiary-container': cible === 'responsable_org'
+            }"
+          >
+            <span class="material-symbols-outlined text-[15px]">
+              {{ cible === 'tous' ? 'group' : cible === 'bureau' ? 'admin_panel_settings' : 'campaign' }}
+            </span>
+            {{ cible === 'tous' ? 'Tous les membres' : cible === 'bureau' ? 'Le bureau' : 'Communicateur' }}
+            <span class="material-symbols-outlined text-[15px]">sync</span>
+          </button>
+        </div>
+
+        <!-- Séparateur -->
+        <div class="h-px bg-outline-variant/30 w-full"></div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-6 pt-3">
+          <button type="button" (click)="annuler()"
+            class="px-16 py-3 text-secondary text-sm font-bold hover:bg-surface-container-high rounded-xl transition-all active:scale-95">
+            Annuler
+          </button>
+          <button
+            type="button"
+            (click)="soumettre()"
+            [disabled]="isSubmitting"
+            [class]="isSubmitting
+              ? 'px-16 py-3 bg-primary/60 text-on-primary rounded-xl text-sm font-bold cursor-not-allowed flex items-center gap-2'
+              : 'px-16 py-3 bg-primary text-on-primary rounded-xl text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-px transition-all active:scale-[0.98] flex items-center gap-2'"
+          >
+            @if (isSubmitting) {
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            }
+            {{ isSubmitting ? 'Enregistrement...' : "Enregistrer" }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  }
+
+</section>

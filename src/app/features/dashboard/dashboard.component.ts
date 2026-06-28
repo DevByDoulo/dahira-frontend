@@ -3,7 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { DashboardService, TopContributeur } from '../../core/services/dashboard.service';
+import {
+  DashboardService,
+  TopContributeur,
+  ComparativeStats,
+  ActivityItem,
+} from '../../core/services/dashboard.service';
 import { AnnoncesService, Annonce } from '../../core/services/annonces.service';
 import { environment } from '../../../environments/environment';
 
@@ -108,6 +113,15 @@ export class DashboardComponent implements OnInit {
   annonces: Annonce[] = [];
   topContributeurs: TopContributeur[] = [];
 
+  // Comparatif mois en cours vs précédent
+  comparative: ComparativeStats | null = null;
+
+  // Activité récente
+  recentActivity: ActivityItem[] = [];
+
+  // Répartition paiements
+  repartitionPaiements: Array<{ mode: string; nombre: number; montant: number; pct: number }> = [];
+
   constructor(
     private dashboardService: DashboardService,
     private annoncesService: AnnoncesService,
@@ -119,8 +133,10 @@ export class DashboardComponent implements OnInit {
       stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
       charts: this.dashboardService.getCharts().pipe(catchError(() => of(null))),
       annonces: this.annoncesService.getAnnonces().pipe(catchError(() => of(null))),
+      comparative: this.dashboardService.getComparative().pipe(catchError(() => of(null))),
+      activity: this.dashboardService.getActivity().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ stats, charts, annonces }) => {
+      next: ({ stats, charts, annonces, comparative, activity }) => {
         if (stats?.success) {
           const d = stats.data;
           this.totalMembres         = d.membres.total ?? 0;
@@ -137,12 +153,12 @@ export class DashboardComponent implements OnInit {
           this.evenementsCount      = d.evenements_a_venir?.length ?? 0;
           this.events = (d.evenements_a_venir ?? []).map((e: any) => ({
             id: e.id,
-            ...this.parseEventDate(e.date_evenement),
+            ...this.parseEventDate(e.date_debut),
             title: e.titre,
-            time: this.parseEventTime(e.date_evenement),
+            time: this.parseEventTime(e.date_debut),
             place: e.lieu ?? '',
             type: e.type ?? 'autre',
-            daysUntil: this.daysUntil(e.date_evenement),
+            daysUntil: this.daysUntil(e.date_debut),
             nbParticipants: Number(e.nb_participants ?? 0),
             maxParticipants: e.max_participants != null ? Number(e.max_participants) : null,
             inscriptionsOuvertes: e.inscriptions_ouvertes != null ? Boolean(e.inscriptions_ouvertes) : false,
@@ -156,10 +172,27 @@ export class DashboardComponent implements OnInit {
 
           const evoTres = charts.data.evolution_tresorerie;
           if (evoTres?.length) this.buildTresChart(evoTres);
+
+          const rep = charts.data.repartition_paiement ?? [];
+          const totalRep = rep.reduce((s: number, r: { montant: number }) => s + Number(r.montant), 0) || 1;
+          this.repartitionPaiements = rep.map((r: { mode_paiement: string; nombre: number; montant: number }) => ({
+            mode: r.mode_paiement,
+            nombre: Number(r.nombre),
+            montant: Number(r.montant),
+            pct: Math.round((Number(r.montant) / totalRep) * 100),
+          })).sort((a: { montant: number }, b: { montant: number }) => b.montant - a.montant);
         }
 
         if (annonces?.success) {
           this.annonces = (annonces.data ?? []).slice(0, 5);
+        }
+
+        if (comparative?.success) {
+          this.comparative = comparative.data;
+        }
+
+        if (activity?.success) {
+          this.recentActivity = activity.data ?? [];
         }
 
         this.isLoading = false;
@@ -329,5 +362,64 @@ export class DashboardComponent implements OnInit {
 
   navigateToPendingCotisations(): void {
     this.router.navigate(['/cotisations']);
+  }
+
+  // ── Comparatif ───────────────────────────────────────────────────────────────
+  evoMontant(): number {
+    return Number(this.comparative?.cotisations.montant.evolution ?? 0);
+  }
+
+  evoNouveauxMembres(): number {
+    return Number(this.comparative?.nouveaux_membres.evolution ?? 0);
+  }
+
+  evoBadgeClass(pct: number): string {
+    if (pct > 0) return 'bg-secondary/15 text-secondary';
+    if (pct < 0) return 'bg-error/15 text-error';
+    return 'bg-surface-container-high text-on-surface-variant';
+  }
+
+  evoBadgeLabel(pct: number): string {
+    if (pct > 0) return `+${pct}%`;
+    if (pct < 0) return `${pct}%`;
+    return '=';
+  }
+
+  // ── Activité récente ─────────────────────────────────────────────────────────
+  activityIcon(type: string): string {
+    if (type === 'cotisation') return 'payments';
+    if (type === 'nouveau_membre') return 'person_add';
+    return 'campaign';
+  }
+
+  activityLabel(item: ActivityItem): string {
+    if (item.type === 'cotisation')
+      return `${item.prenom ?? ''} ${item.nom} — ${this.formatFCFA(item.montant ?? 0)} FCFA`;
+    if (item.type === 'nouveau_membre') return `Nouveau membre : ${item.prenom ?? ''} ${item.nom}`;
+    return item.titre ?? 'Annonce';
+  }
+
+  activityTimeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const m = Math.floor(diff / 60_000);
+    if (m < 60) return `Il y a ${m} min`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `Il y a ${h} h`;
+    const d = Math.floor(h / 24);
+    return `Il y a ${d} j`;
+  }
+
+  // ── Mode de paiement ─────────────────────────────────────────────────────────
+  modeLabel(mode: string): string {
+    const labels: Record<string, string> = {
+      especes: 'Espèces', mobile_money: 'Mobile Money', virement: 'Virement',
+      cheque: 'Chèque', carte: 'Carte', autre: 'Autre',
+    };
+    return labels[mode] ?? mode;
+  }
+
+  modeColor(i: number): string {
+    const colors = ['#006a61', '#4a90d9', '#e07b39', '#76777d', '#ba1a1a'];
+    return colors[i % colors.length];
   }
 }

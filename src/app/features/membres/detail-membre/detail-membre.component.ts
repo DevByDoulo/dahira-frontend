@@ -57,6 +57,7 @@ export class DetailMembreComponent implements OnInit {
   activeTab: 'infos' | 'cotisations' | 'presences' = 'infos';
   presencesStats: PresencesStats | null = null;
 
+  isExportingFiche = false;
   private readonly apiUrl = environment.apiUrl;
   readonly backendUrl = environment.apiUrl.replace('/api', '');
 
@@ -126,6 +127,25 @@ export class DetailMembreComponent implements OnInit {
         },
         error: () => { this.isLoadingPresences = false; },
       });
+  }
+
+  exporterFiche(): void {
+    if (this.isExportingFiche || !this.membreId) return;
+    this.isExportingFiche = true;
+    const token = localStorage.getItem('token');
+    fetch(`${this.apiUrl}/membres/${this.membreId}/fiche-pdf`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `fiche-${this.membre?.prenom ?? 'membre'}-${this.membre?.nom ?? ''}.pdf`
+          .replace(/\s+/g, '-').toLowerCase();
+        a.click();
+        URL.revokeObjectURL(a.href);
+      })
+      .finally(() => setTimeout(() => (this.isExportingFiche = false), 1500));
   }
 
   get initiales(): string {

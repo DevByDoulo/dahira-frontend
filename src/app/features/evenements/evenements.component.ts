@@ -71,7 +71,7 @@ export class EvenementsComponent implements OnInit, OnDestroy {
   statutCalcule(e: Evenement): 'a_venir' | 'passe' {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return new Date(e.date_evenement) >= today ? 'a_venir' : 'passe';
+    return new Date(e.date_debut) >= today ? 'a_venir' : 'passe';
   }
 
   get filtres(): Evenement[] {
@@ -162,9 +162,9 @@ export class EvenementsComponent implements OnInit, OnDestroy {
   }
 
   photoUrl(ev: Evenement): string {
-    if (!ev.photo_url) return '';
-    if (ev.photo_url.startsWith('http')) return ev.photo_url;
-    return `${environment.backendUrl}${ev.photo_url}`;
+    if (!ev.image_url) return '';
+    if (ev.image_url.startsWith('http')) return ev.image_url;
+    return `${environment.backendUrl}${ev.image_url}`;
   }
 
   showToast(message: string, type: 'success' | 'error'): void {

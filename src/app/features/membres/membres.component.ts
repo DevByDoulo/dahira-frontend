@@ -179,6 +179,22 @@ export class MembresComponent implements OnInit {
     return this.membres.filter((m) => m.actif && m.statut_cotisation === 'en_retard').length;
   }
 
+  get maxCotise(): number {
+    return Math.max(...this.membres.map((m) => m.total_cotise ?? 0), 1);
+  }
+
+  barreProgression(m: Membre): number {
+    const max = this.maxCotise;
+    return max > 0 ? Math.round(((m.total_cotise ?? 0) / max) * 100) : 0;
+  }
+
+  formatMontant(n: number): string {
+    if (n === 0) return '—';
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + ' M FCFA';
+    if (n >= 1_000) return Math.round(n / 1_000) + ' k FCFA';
+    return n + ' FCFA';
+  }
+
   // ── Affichage ─────────────────────────────────────────────────────────────────
 
   getInitiales(m: Membre): string {

@@ -78,7 +78,7 @@ export class ParametresComponent implements OnInit {
       case 'super_admin':     return 'Super Administrateur';
       case 'bureau':          return 'Administrateur Général';
       case 'tresorier':       return 'Trésorier';
-      case 'responsable_org': return 'Resp. Organisation';
+      case 'responsable_org': return 'Communicateur';
       default:                return 'Membre';
     }
   }

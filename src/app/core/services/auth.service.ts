@@ -25,6 +25,11 @@ export interface UserProfile {
   email_notifications: boolean;
   last_login: string | null;
   created_at: string;
+  notification_prefs?: {
+    notif_email_cotisation?: boolean;
+    notif_email_seance?: boolean;
+    notif_email_relance?: boolean;
+  };
 }
 
 export interface LoginRequest {
@@ -141,6 +146,23 @@ export class AuthService {
       `${this.apiUrl}/auth/change-password`,
       { ancien_password, nouveau_password },
     );
+  }
+
+  updateNotificationPrefs(prefs: {
+    notif_email_cotisation?: boolean;
+    notif_email_seance?: boolean;
+    notif_email_relance?: boolean;
+  }): Observable<{ success: boolean; data: UserProfile }> {
+    return this.http
+      .patch<{ success: boolean; data: UserProfile }>(`${this.apiUrl}/users/me/preferences`, prefs)
+      .pipe(
+        tap((res) => {
+          if (res.success) {
+            this.profileSubject.next(res.data);
+            localStorage.setItem('user', JSON.stringify(res.data));
+          }
+        }),
+      );
   }
 
   registerDahira(payload: {

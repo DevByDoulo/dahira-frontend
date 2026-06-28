@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 export interface SoldeTresorerie {
   solde_global: number;
@@ -37,7 +38,7 @@ export interface Alerte {
 export class TresorerieService {
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getSolde(): Observable<{ success: boolean; data: SoldeTresorerie }> {
     return this.http.get<{ success: boolean; data: SoldeTresorerie }>(
@@ -66,5 +67,19 @@ export class TresorerieService {
     return this.http.get<{ success: boolean; data: Alerte[] }>(
       `${this.apiUrl}/tresorerie/alertes`,
     );
+  }
+
+  exportRapportMensuel(mois: string): void {
+    const token = this.authService.getToken();
+    const url = `${this.apiUrl}/tresorerie/rapport-mensuel?mois=${mois}`;
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `rapport-${mois}.pdf`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
   }
 }

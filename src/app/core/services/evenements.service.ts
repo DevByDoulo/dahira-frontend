@@ -8,11 +8,11 @@ export interface Evenement {
   dahira_id: number;
   titre: string;
   description: string | null;
-  date_evenement: string;
+  date_debut: string;
   heure: string | null;
   lieu: string | null;
   capacite_max: number | null;
-  photo_url: string | null;
+  image_url: string | null;
   statut?: 'a_venir' | 'en_cours' | 'passe' | 'annule';
   participants_count?: number;
   mon_inscription?: boolean;
@@ -45,7 +45,7 @@ export interface EvenementsResponse {
 export interface CreateEvenementPayload {
   titre: string;
   description?: string;
-  date_evenement: string;
+  date_debut: string;
   heure?: string;
   lieu?: string;
   capacite_max?: number;
@@ -72,6 +72,10 @@ export class EvenementsService {
 
   getEvenement(id: number): Observable<EvenementResponse> {
     return this.http.get<EvenementResponse>(`${this.apiUrl}/evenements/${id}`);
+  }
+
+  updateEvenement(id: number, payload: Partial<CreateEvenementPayload>): Observable<EvenementResponse> {
+    return this.http.put<EvenementResponse>(`${this.apiUrl}/evenements/${id}`, payload);
   }
 
   deleteEvenement(id: number): Observable<{ success: boolean }> {

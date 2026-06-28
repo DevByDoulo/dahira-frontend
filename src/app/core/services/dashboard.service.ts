@@ -41,7 +41,7 @@ export interface DashboardStatsData {
   evenements_a_venir: Array<{
     id: number;
     titre: string;
-    date_evenement: string;
+    date_debut: string;
     lieu: string;
   }>;
   top_contributeurs?: TopContributeur[];
@@ -50,6 +50,26 @@ export interface DashboardStatsData {
 export interface DashboardChartsData {
   evolution_cotisations: Array<{ mois: string; nombre: number; montant: number }>;
   evolution_tresorerie: Array<{ periode: string; solde: number; entrees: number; sorties: number }>;
+  repartition_paiement: Array<{ mode_paiement: string; nombre: number; montant: number }>;
+}
+
+export interface ComparativeStats {
+  cotisations: {
+    nombre: { actuel: number; precedent: number; evolution: number };
+    montant: { actuel: number; precedent: number; evolution: number };
+  };
+  nouveaux_membres: { actuel: number; precedent: number; evolution: number };
+}
+
+export interface ActivityItem {
+  type: 'cotisation' | 'nouveau_membre' | 'annonce';
+  id: number;
+  created_at: string;
+  montant?: number;
+  nom: string;
+  prenom?: string;
+  photo_url?: string | null;
+  titre?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -64,5 +84,13 @@ export class DashboardService {
 
   getCharts(): Observable<ApiResponse<DashboardChartsData>> {
     return this.http.get<ApiResponse<DashboardChartsData>>(`${this.apiUrl}/dashboard/charts`);
+  }
+
+  getComparative(): Observable<ApiResponse<ComparativeStats>> {
+    return this.http.get<ApiResponse<ComparativeStats>>(`${this.apiUrl}/dashboard/comparative`);
+  }
+
+  getActivity(): Observable<ApiResponse<ActivityItem[]>> {
+    return this.http.get<ApiResponse<ActivityItem[]>>(`${this.apiUrl}/dashboard/activity?limit=8`);
   }
 }

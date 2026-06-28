@@ -15,7 +15,7 @@ export class CreerAnnonceComponent {
   contenu = '';
   categorie = '';
   epingler = false;
-  cible: 'tous' | 'bureau' = 'tous';
+  cible: 'tous' | 'bureau' | 'responsable_org' = 'tous';
   selectedFile: File | null = null;
   selectedFileName = '';
 
@@ -41,6 +41,7 @@ export class CreerAnnonceComponent {
     const payload: CreateAnnoncePayload = {
       titre: this.titre.trim(),
       contenu: this.contenu.trim(),
+      cible_groupe: this.cible !== 'tous' ? this.cible : undefined,
     };
     if (this.categorie) payload.categorie = this.categorie;
 
@@ -56,7 +57,8 @@ export class CreerAnnonceComponent {
   }
 
   cyclerCible(): void {
-    this.cible = this.cible === 'tous' ? 'bureau' : 'tous';
+    const cycle: typeof this.cible[] = ['tous', 'bureau', 'responsable_org'];
+    this.cible = cycle[(cycle.indexOf(this.cible) + 1) % cycle.length];
   }
 
   onFileSelected(event: Event): void {

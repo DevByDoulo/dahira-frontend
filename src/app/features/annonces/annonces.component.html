@@ -129,7 +129,8 @@
 
               @if (isBureau) {
                 <div class="flex gap-1">
-                  <button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors">
+                  <button [routerLink]="['/annonces', annonce.id, 'modifier']"
+                    class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-[18px]">edit</span>
                   </button>
                   <button

@@ -237,17 +237,29 @@
 
                 <!-- Cotisation -->
                 <td class="px-6 py-3.5">
-                  @if (membre.statut_cotisation === 'a_jour') {
-                    <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
-                      <span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
-                      À jour
-                    </span>
-                  } @else {
-                    <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
-                      <span class="w-1.5 h-1.5 rounded-full bg-error shrink-0"></span>
-                      En retard
-                    </span>
-                  }
+                  <div class="flex flex-col gap-1.5 min-w-[130px]">
+                    <!-- Statut ce mois -->
+                    @if (membre.statut_cotisation === 'a_jour') {
+                      <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
+                        À jour ce mois
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center gap-1.5 text-xs text-on-surface-variant">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error shrink-0"></span>
+                        En retard
+                      </span>
+                    }
+                    <!-- Total cotisé + barre -->
+                    <p class="text-xs font-semibold text-on-surface">{{ formatMontant(membre.total_cotise ?? 0) }}</p>
+                    <div class="h-1 w-full bg-surface-container-high rounded-full overflow-hidden">
+                      <div
+                        class="h-full rounded-full transition-all duration-500"
+                        [class]="membre.statut_cotisation === 'a_jour' ? 'bg-secondary/60' : 'bg-outline-variant'"
+                        [style.width.%]="barreProgression(membre)"
+                      ></div>
+                    </div>
+                  </div>
                 </td>
 
                 <!-- Statut membre -->

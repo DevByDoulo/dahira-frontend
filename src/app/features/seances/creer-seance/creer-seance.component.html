@@ -152,7 +152,7 @@
         <!-- ── Colonne droite ── -->
         <div class="flex flex-col gap-6 h-full">
 
-          <!-- Illustration / Résumé -->
+          <!-- Illustration -->
           <div class="flex-1 rounded-xl bg-surface-container-low border border-outline-variant/30 p-8 flex flex-col items-center justify-center text-center gap-4 min-h-64">
             <span class="material-symbols-outlined text-6xl text-outline/40">diversity_3</span>
             <div>
@@ -176,7 +176,7 @@
               @if (form.get('date_seance')!.value) {
                 <div class="flex items-center gap-2 text-sm">
                   <span class="material-symbols-outlined text-base text-secondary">calendar_today</span>
-                  <span class="text-on-surface-variant">{{ form.get('date_seance')!.value | date:'dd MMM yyyy':'':'fr' }}</span>
+                  <span class="text-on-surface-variant">{{ form.get('date_seance')!.value | date:'dd MMM yyyy' }}</span>
                   @if (form.get('heure')!.value) {
                     <span class="text-on-surface-muted">à {{ form.get('heure')!.value }}</span>
                   }
