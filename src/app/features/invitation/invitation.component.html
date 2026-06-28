@@ -1,4 +1,4 @@
-<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6 relative overflow-hidden bg-background">
+﻿<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-6 relative overflow-hidden bg-background">
 
   <!-- Décoration atmosphérique -->
   <div class="absolute inset-0 pointer-events-none opacity-20">
@@ -160,10 +160,10 @@
                   <span class="text-xs font-semibold text-center" [class]="role === 'tresorier' ? 'text-secondary' : 'text-on-surface-variant'">Trésorier</span>
                 </label>
                 <label class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                  [class]="role === 'bureau' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
-                  <input type="radio" name="role" value="bureau" [(ngModel)]="role" class="sr-only" />
-                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'bureau' ? 'text-secondary' : 'text-outline'">admin_panel_settings</span>
-                  <span class="text-xs font-semibold text-center" [class]="role === 'bureau' ? 'text-secondary' : 'text-on-surface-variant'">Administrateur</span>
+                  [class]="role === 'secretaire_general' || role === 'adjoint' ? 'border-secondary bg-secondary/5' : 'border-outline-variant hover:border-outline'">
+                  <input type="radio" name="role" value="secretaire_general" [(ngModel)]="role" class="sr-only" />
+                  <span class="material-symbols-outlined text-[22px]" [class]="role === 'secretaire_general' || role === 'adjoint' ? 'text-secondary' : 'text-outline'">admin_panel_settings</span>
+                  <span class="text-xs font-semibold text-center" [class]="role === 'secretaire_general' || role === 'adjoint' ? 'text-secondary' : 'text-on-surface-variant'">Administrateur</span>
                 </label>
               </div>
             </div>
@@ -196,3 +196,5 @@
 
   </main>
 </div>
+
+

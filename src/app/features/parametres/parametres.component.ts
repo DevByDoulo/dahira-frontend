@@ -76,7 +76,8 @@ export class ParametresComponent implements OnInit {
   get roleLabel(): string {
     switch (this.user?.role) {
       case 'super_admin':     return 'Super Administrateur';
-      case 'bureau':          return 'Administrateur Général';
+      case 'secretaire_general': return 'Secrétaire Général';
+      case 'adjoint':            return 'Adjoint';
       case 'tresorier':       return 'Trésorier';
       case 'responsable_org': return 'Communicateur';
       default:                return 'Membre';
@@ -86,7 +87,8 @@ export class ParametresComponent implements OnInit {
   get roleBadgeClass(): string {
     switch (this.user?.role) {
       case 'super_admin': return 'bg-error/15 text-error';
-      case 'bureau':      return 'bg-primary text-on-primary';
+      case 'secretaire_general': return 'bg-primary text-on-primary';
+      case 'adjoint':            return 'bg-primary text-on-primary';
       case 'tresorier':   return 'bg-secondary-container text-on-secondary-container';
       default:            return 'bg-surface-container text-on-surface-variant';
     }

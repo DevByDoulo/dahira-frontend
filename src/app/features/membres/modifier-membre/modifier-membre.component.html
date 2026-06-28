@@ -1,4 +1,4 @@
-<!-- Skeleton -->
+﻿<!-- Skeleton -->
 @if (isLoading) {
   <div class="p-10 max-w-4xl mx-auto space-y-4">
     <div class="h-10 w-72 bg-surface-container rounded-xl animate-pulse"></div>
@@ -147,7 +147,7 @@
       </form>
     </div>
 
-    <!-- Section rôle & statut (bureau uniquement) -->
+    <!-- Section rôle & statut (admin uniquement) -->
     @if (isBureau && membre) {
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
         <div class="px-8 py-5 border-b border-outline-variant/20 flex items-center justify-between">
@@ -242,7 +242,7 @@
           <option value="membre">Membre</option>
           <option value="tresorier">Trésorier</option>
           <option value="responsable_org">Resp. Organisation</option>
-          <option value="bureau">Administrateur</option>
+          <option value="secretaire_general">Secrétaire Général</option>
         </select>
       </div>
 
@@ -303,3 +303,5 @@
     </div>
   </div>
 }
+
+

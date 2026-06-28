@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -53,7 +53,7 @@ export class DashboardComponent implements OnInit {
   readonly backendUrl = environment.apiUrl.replace('/api', '');
 
   get isFinancier(): boolean {
-    return this.role === 'bureau' || this.role === 'tresorier';
+    return (this.role === 'secretaire_general' || this.role === 'adjoint') || this.role === 'tresorier';
   }
 
   get userName(): string {
@@ -334,7 +334,7 @@ export class DashboardComponent implements OnInit {
 
   formatFCFA(value: number): string {
     const n = Math.round(value);
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
   formatFCFAShort(value: number): string {
@@ -423,3 +423,4 @@ export class DashboardComponent implements OnInit {
     return colors[i % colors.length];
   }
 }
+

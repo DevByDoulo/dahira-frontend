@@ -9,7 +9,7 @@ interface User {
   nom: string;
   telephone: string;
   email: string | null;
-  role: 'bureau' | 'tresorier' | 'membre';
+  role: 'secretaire_general' | 'adjoint' | 'tresorier' | 'responsable_org' | 'membre';
   actif: boolean;
   membre_id: number | null;
   created_at: string;
@@ -41,7 +41,7 @@ export class UsersComponent implements OnInit {
   formNom = '';
   formTelephone = '';
   formEmail = '';
-  formRole: 'bureau' | 'tresorier' | 'membre' = 'membre';
+  formRole: 'secretaire_general' | 'adjoint' | 'tresorier' | 'responsable_org' | 'membre' = 'membre';
   formPassword = '';
 
   // Confirmation désactivation
@@ -70,7 +70,7 @@ export class UsersComponent implements OnInit {
   }
 
   get totalActifs(): number { return this.users.filter(u => u.actif).length; }
-  get totalBureau(): number { return this.users.filter(u => u.role === 'bureau').length; }
+  get totalAdmins(): number { return this.users.filter(u => u.role === 'secretaire_general' || u.role === 'adjoint').length; }
   get totalMembres(): number { return this.users.filter(u => u.role === 'membre').length; }
 
   ouvrirCreer(): void {
@@ -161,7 +161,8 @@ export class UsersComponent implements OnInit {
 
   roleBadge(role: string): string {
     switch (role) {
-      case 'bureau': return 'bg-primary text-on-primary';
+      case 'secretaire_general': return 'bg-primary text-on-primary';
+      case 'adjoint': return 'bg-primary/80 text-on-primary';
       case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
       default: return 'bg-surface-container text-on-surface-variant';
     }
@@ -169,8 +170,10 @@ export class UsersComponent implements OnInit {
 
   roleLabel(role: string): string {
     switch (role) {
-      case 'bureau': return 'Administrateur';
+      case 'secretaire_general': return 'Secrétaire Général';
+      case 'adjoint': return 'Adjoint';
       case 'tresorier': return 'Trésorier';
+      case 'responsable_org': return 'Communicateur';
       default: return 'Membre';
     }
   }

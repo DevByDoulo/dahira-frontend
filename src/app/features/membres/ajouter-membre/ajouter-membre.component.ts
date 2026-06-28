@@ -22,7 +22,8 @@ export class AjouterMembreComponent {
     { value: 'membre',          label: 'Membre' },
     { value: 'responsable_org', label: 'Communicateur' },
     { value: 'tresorier',       label: 'Trésorier' },
-    { value: 'bureau',          label: 'Administrateur' },
+    { value: 'adjoint',            label: 'Adjoint' },
+    { value: 'secretaire_general', label: 'Secrétaire Général' },
   ];
 
   readonly sexes = [

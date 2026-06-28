@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ export class CreerAnnonceComponent {
   contenu = '';
   categorie = '';
   epingler = false;
-  cible: 'tous' | 'bureau' | 'responsable_org' = 'tous';
+  cible: 'tous' | 'secretaire_general' | 'responsable_org' = 'tous';
   selectedFile: File | null = null;
   selectedFileName = '';
 
@@ -57,7 +57,7 @@ export class CreerAnnonceComponent {
   }
 
   cyclerCible(): void {
-    const cycle: typeof this.cible[] = ['tous', 'bureau', 'responsable_org'];
+    const cycle: typeof this.cible[] = ['tous', 'secretaire_general', 'responsable_org'];
     this.cible = cycle[(cycle.indexOf(this.cible) + 1) % cycle.length];
   }
 
@@ -73,3 +73,4 @@ export class CreerAnnonceComponent {
     this.router.navigate(['/annonces']);
   }
 }
+

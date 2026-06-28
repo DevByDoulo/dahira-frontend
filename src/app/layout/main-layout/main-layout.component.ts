@@ -45,18 +45,18 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     // Tous les rôles tenant
     { label: 'Dashboard',            icon: 'dashboard',       route: '/dashboard' },
     // Admin uniquement
-    { label: 'Membres',              icon: 'group',           route: '/membres',              roles: ['bureau'] },
-    { label: 'Invitations',          icon: 'mail',            route: '/invitation',           roles: ['bureau'] },
+    { label: 'Membres',              icon: 'group',           route: '/membres',              roles: ['secretaire_general', 'adjoint'] },
+    { label: 'Invitations',          icon: 'mail',            route: '/invitation',           roles: ['secretaire_general', 'adjoint'] },
     // Finance (Admin + Trésorier)
-    { label: 'Cotisations',          icon: 'payments',        route: '/cotisations',          roles: ['bureau', 'tresorier'] },
-    { label: 'Reçus',                icon: 'receipt',         route: '/recus',                roles: ['bureau', 'tresorier'] },
-    { label: 'Trésorerie',           icon: 'account_balance', route: '/tresorerie',           roles: ['bureau', 'tresorier'] },
-    { label: 'Dépenses',             icon: 'receipt_long',    route: '/depenses',             roles: ['bureau', 'tresorier'] },
+    { label: 'Cotisations',          icon: 'payments',        route: '/cotisations',          roles: ['secretaire_general', 'adjoint', 'tresorier'] },
+    { label: 'Reçus',                icon: 'receipt',         route: '/recus',                roles: ['secretaire_general', 'adjoint', 'tresorier'] },
+    { label: 'Trésorerie',           icon: 'account_balance', route: '/tresorerie',           roles: ['secretaire_general', 'adjoint', 'tresorier'] },
+    { label: 'Dépenses',             icon: 'receipt_long',    route: '/depenses',             roles: ['secretaire_general', 'adjoint', 'tresorier'] },
     // Organisation (Admin + Responsable Org)
-    { label: 'Séances',              icon: 'event_repeat',    route: '/seances',              roles: ['bureau', 'responsable_org'] },
-    { label: 'Événements',           icon: 'event',           route: '/evenements',           roles: ['bureau', 'responsable_org', 'membre'] },
-    { label: 'Annonces',             icon: 'campaign',        route: '/annonces',             roles: ['bureau', 'responsable_org', 'membre'] },
-    { label: 'Photos',               icon: 'photo_library',   route: '/photos',               roles: ['bureau', 'responsable_org', 'membre'] },
+    { label: 'Séances',              icon: 'event_repeat',    route: '/seances',              roles: ['secretaire_general', 'adjoint', 'responsable_org'] },
+    { label: 'Événements',           icon: 'event',           route: '/evenements',           roles: ['secretaire_general', 'adjoint', 'responsable_org', 'membre'] },
+    { label: 'Annonces',             icon: 'campaign',        route: '/annonces',             roles: ['secretaire_general', 'adjoint', 'responsable_org', 'membre'] },
+    { label: 'Photos',               icon: 'photo_library',   route: '/photos',               roles: ['secretaire_general', 'adjoint', 'responsable_org', 'membre'] },
     // Membre uniquement
     { label: 'Déclarer un paiement', icon: 'payments',        route: '/cotisations/declarer', roles: ['membre'] },
     { label: 'Mes reçus',            icon: 'receipt',         route: '/mes-recus',            roles: ['membre'] },
@@ -186,17 +186,19 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   get isBureau(): boolean {
-    return (this.profile?.role ?? this.user?.role) === 'bureau';
+    const role = this.profile?.role ?? this.user?.role;
+    return role === 'secretaire_general' || role === 'adjoint';
   }
 
   get roleLabelSidebar(): string {
     const role = (this.profile?.role ?? this.user?.role ?? '') as string;
     const labels: Record<string, string> = {
-      super_admin:     'Super Administrateur',
-      bureau:          'Administrateur Général',
-      tresorier:       'Trésorier',
-      responsable_org: 'Communicateur',
-      membre:          'Membre',
+      super_admin:        'Super Administrateur',
+      secretaire_general: 'Secrétaire Général',
+      adjoint:            'Adjoint',
+      tresorier:          'Trésorier',
+      responsable_org:    'Communicateur',
+      membre:             'Membre',
     };
     return labels[role] ?? role;
   }

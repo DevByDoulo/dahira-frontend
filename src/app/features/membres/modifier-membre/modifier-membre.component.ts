@@ -24,7 +24,7 @@ export class ModifierMembreComponent implements OnInit {
 
   // Changement de rôle
   showRoleModal = false;
-  selectedRole: 'bureau' | 'tresorier' | 'responsable_org' | 'membre' = 'membre';
+  selectedRole: 'secretaire_general' | 'adjoint' | 'tresorier' | 'responsable_org' | 'membre' = 'membre';
   isSavingRole = false;
   roleError = '';
 
@@ -33,7 +33,8 @@ export class ModifierMembreComponent implements OnInit {
   isToggling = false;
 
   get isBureau(): boolean {
-    return this.authService.getUser()?.role === 'bureau';
+    const role = this.authService.getUser()?.role;
+    return role === 'secretaire_general' || role === 'adjoint';
   }
 
   constructor(
@@ -134,7 +135,8 @@ export class ModifierMembreComponent implements OnInit {
 
   roleBadge(role: string): string {
     switch (role) {
-      case 'bureau': return 'bg-primary text-on-primary';
+      case 'secretaire_general': return 'bg-primary text-on-primary';
+      case 'adjoint': return 'bg-primary text-on-primary';
       case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
       case 'responsable_org': return 'bg-tertiary-container text-on-tertiary-container';
       default: return 'bg-surface-container text-on-surface-variant';
@@ -143,7 +145,8 @@ export class ModifierMembreComponent implements OnInit {
 
   roleLabel(role: string): string {
     switch (role) {
-      case 'bureau': return 'Administrateur';
+      case 'secretaire_general': return 'Secrétaire Général';
+      case 'adjoint': return 'Adjoint';
       case 'tresorier': return 'Trésorier';
       case 'responsable_org': return 'Communicateur';
       default: return 'Membre';

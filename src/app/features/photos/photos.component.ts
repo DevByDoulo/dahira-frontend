@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+﻿import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PhotosService, Photo } from '../../core/services/photos.service';
@@ -37,7 +37,7 @@ export class PhotosComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getUser();
-    this.isBureau = user?.role === 'bureau';
+    this.isBureau = (user?.role === 'secretaire_general' || user?.role === 'adjoint');
     this.charger();
   }
 
@@ -134,3 +134,4 @@ export class PhotosComponent implements OnInit {
     if (this.modalSupprimer) { this.modalSupprimer = null; }
   }
 }
+

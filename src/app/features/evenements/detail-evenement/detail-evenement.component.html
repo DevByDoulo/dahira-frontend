@@ -1,4 +1,4 @@
-<!-- Skeleton -->
+﻿<!-- Skeleton -->
 @if (isLoading) {
   <div class="p-6 lg:p-10 max-w-4xl mx-auto space-y-6 animate-pulse">
     <div class="h-5 w-36 bg-surface-container rounded-xl"></div>
@@ -129,7 +129,7 @@
 
     </div>
 
-    <!-- Actions bureau -->
+    <!-- Actions admin -->
     @if (isBureau) {
       <div class="flex justify-end pt-2">
         <a [routerLink]="['/evenements', evenement.id, 'modifier']"
@@ -142,3 +142,5 @@
 
   </div>
 }
+
+

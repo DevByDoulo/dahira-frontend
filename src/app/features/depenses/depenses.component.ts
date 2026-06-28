@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -56,7 +56,7 @@ export class DepensesComponent implements OnInit, OnDestroy {
     const nav = this.router.getCurrentNavigation();
     const toastMsg = nav?.extras?.state?.['toast'] as string | undefined;
     if (toastMsg) this.showToast(toastMsg, 'success');
-    this.isBureau = this.authService.getUser()?.role === 'bureau';
+    this.isBureau = ['secretaire_general', 'adjoint'].includes(this.authService.getUser()?.role ?? '');
     this.charger();
   }
 
@@ -314,3 +314,5 @@ export class DepensesComponent implements OnInit, OnDestroy {
     this.toastTimer = setTimeout(() => (this.toast = null), 3500);
   }
 }
+
+

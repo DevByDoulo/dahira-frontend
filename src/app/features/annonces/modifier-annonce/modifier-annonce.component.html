@@ -1,4 +1,4 @@
-<section class="flex-1 px-6 py-10 flex flex-col items-center">
+﻿<section class="flex-1 px-6 py-10 flex flex-col items-center">
 
   <!-- Skeleton -->
   @if (isLoading) {
@@ -74,14 +74,14 @@
             class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
             [ngClass]="{
               'bg-secondary-container text-on-secondary-container': cible === 'tous',
-              'bg-primary-container text-on-primary-container': cible === 'bureau',
+              'bg-primary-container text-on-primary-container': cible === 'secretaire_general',
               'bg-tertiary-container text-on-tertiary-container': cible === 'responsable_org'
             }"
           >
             <span class="material-symbols-outlined text-[15px]">
-              {{ cible === 'tous' ? 'group' : cible === 'bureau' ? 'admin_panel_settings' : 'campaign' }}
+              {{ cible === 'tous' ? 'group' : cible === 'secretaire_general' ? 'admin_panel_settings' : 'campaign' }}
             </span>
-            {{ cible === 'tous' ? 'Tous les membres' : cible === 'bureau' ? 'Le bureau' : 'Communicateur' }}
+            {{ cible === 'tous' ? 'Tous les membres' : cible === 'secretaire_general' ? 'Le Secrétaire Général' : 'Communicateur' }}
             <span class="material-symbols-outlined text-[15px]">sync</span>
           </button>
         </div>
@@ -115,3 +115,5 @@
   }
 
 </section>
+
+

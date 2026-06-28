@@ -14,7 +14,7 @@ export interface Membre {
   thumbnail_url: string | null;
   date_adhesion: string | null;
   responsabilites: string | null;
-  role: 'bureau' | 'tresorier' | 'responsable_org' | 'membre';
+  role: 'secretaire_general' | 'adjoint' | 'tresorier' | 'responsable_org' | 'membre';
   is_owner: boolean;
   actif: boolean;
   a_compte: boolean;
@@ -37,7 +37,7 @@ export interface CreateMembrePayload {
 }
 
 export interface UpdateRolePayload {
-  role: 'bureau' | 'tresorier' | 'responsable_org' | 'membre';
+  role: 'secretaire_general' | 'adjoint' | 'tresorier' | 'responsable_org' | 'membre';
 }
 
 export interface MembreResponse {

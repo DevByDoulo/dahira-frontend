@@ -1,4 +1,4 @@
-<!-- Skeleton -->
+﻿<!-- Skeleton -->
 @if (isLoading) {
   <div class="px-8 py-6 space-y-6">
     <div class="h-8 w-64 bg-surface-container rounded-xl animate-pulse"></div>
@@ -50,7 +50,7 @@
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/20">
         <p class="text-xs text-on-surface-variant mb-1">Administrateurs</p>
-        <p class="text-2xl font-bold text-primary">{{ totalBureau }}</p>
+        <p class="text-2xl font-bold text-primary">{{ totalAdmins }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/20">
         <p class="text-xs text-on-surface-variant mb-1">Membres</p>
@@ -221,7 +221,7 @@
           >
             <option value="membre">Membre</option>
             <option value="tresorier">Trésorier</option>
-            <option value="bureau">Administrateur</option>
+            <option value="secretaire_general">Secrétaire Général</option>
           </select>
         </div>
 
@@ -304,3 +304,5 @@
     </div>
   </div>
 }
+
+

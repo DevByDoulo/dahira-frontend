@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EvenementsService, Evenement } from '../../../core/services/evenements.service';
@@ -27,7 +27,7 @@ export class DetailEvenementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isBureau = this.authService.getUser()?.role === 'bureau';
+    this.isBureau = ['secretaire_general', 'adjoint'].includes(this.authService.getUser()?.role ?? '');
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.charger(id);
   }
@@ -71,3 +71,5 @@ export class DetailEvenementComponent implements OnInit {
     this.router.navigate(['/evenements']);
   }
 }
+
+

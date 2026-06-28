@@ -15,8 +15,8 @@
 
   <!-- En-tête -->
   <div class="flex items-center gap-4">
-    <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-      <span class="material-symbols-outlined text-primary text-[26px]">admin_panel_settings</span>
+    <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-secondary text-[26px]">admin_panel_settings</span>
     </div>
     <div>
       <h1 class="text-2xl font-black text-on-surface">Tableau de bord Plateforme</h1>
@@ -37,12 +37,12 @@
   } @else if (stats) {
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
-        <span class="material-symbols-outlined text-primary text-[22px]">domain</span>
+        <span class="material-symbols-outlined text-secondary text-[22px]">domain</span>
         <span class="text-2xl font-black text-on-surface">{{ stats.total_dahiras }}</span>
         <span class="text-xs text-on-surface-variant font-medium">Dahiras inscrits</span>
       </div>
       <div class="bg-surface-container rounded-2xl p-5 flex flex-col gap-1">
-        <span class="material-symbols-outlined text-tertiary text-[22px]">check_circle</span>
+        <span class="material-symbols-outlined text-secondary text-[22px]">check_circle</span>
         <span class="text-2xl font-black text-on-surface">{{ stats.dahiras_actifs }}</span>
         <span class="text-xs text-on-surface-variant font-medium">Actifs</span>
       </div>
@@ -71,7 +71,7 @@
 
     @if (isLoadingDahiras) {
       <div class="p-8 flex justify-center">
-        <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        <div class="w-8 h-8 border-2 border-secondary/30 border-t-secondary rounded-full animate-spin"></div>
       </div>
     } @else if (dahiras.length === 0) {
       <div class="p-12 text-center text-on-surface-variant">
@@ -99,8 +99,8 @@
               <tr class="hover:bg-surface-container-high transition-colors">
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined text-primary text-[18px]">mosque</span>
+                    <div class="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-secondary text-[18px]">mosque</span>
                     </div>
                     <span class="font-semibold text-on-surface">{{ d.nom }}</span>
                   </div>
@@ -115,7 +115,7 @@
                 <td class="px-4 py-4 text-center">
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
                     [class]="d.actif
-                      ? 'bg-tertiary/10 text-tertiary'
+                      ? 'bg-secondary/10 text-secondary'
                       : 'bg-error/10 text-error'">
                     <span class="material-symbols-outlined text-[13px]">{{ d.actif ? 'check_circle' : 'block' }}</span>
                     {{ d.actif ? 'Actif' : 'Suspendu' }}
@@ -128,7 +128,7 @@
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all disabled:opacity-50"
                     [class]="d.actif
                       ? 'border-error/30 text-error hover:bg-error/5'
-                      : 'border-tertiary/30 text-tertiary hover:bg-tertiary/5'">
+                      : 'border-secondary/30 text-secondary hover:bg-secondary/5'">
                     @if (togglingId === d.id) {
                       <span class="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin"></span>
                     } @else {
@@ -148,15 +148,15 @@
         @for (d of dahiras; track d.id) {
           <div class="p-4 space-y-3">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-primary text-[20px]">mosque</span>
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-secondary text-[20px]">mosque</span>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-semibold text-on-surface truncate">{{ d.nom }}</div>
                 <div class="text-xs text-on-surface-variant">{{ d.email ?? d.telephone ?? '—' }}</div>
               </div>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold shrink-0"
-                [class]="d.actif ? 'bg-tertiary/10 text-tertiary' : 'bg-error/10 text-error'">
+                [class]="d.actif ? 'bg-secondary/10 text-secondary' : 'bg-error/10 text-error'">
                 {{ d.actif ? 'Actif' : 'Suspendu' }}
               </span>
             </div>
@@ -171,7 +171,7 @@
               class="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border transition-all disabled:opacity-50"
               [class]="d.actif
                 ? 'border-error/30 text-error hover:bg-error/5'
-                : 'border-tertiary/30 text-tertiary hover:bg-tertiary/5'">
+                : 'border-secondary/30 text-secondary hover:bg-secondary/5'">
               @if (togglingId === d.id) {
                 <span class="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin"></span>
               } @else {

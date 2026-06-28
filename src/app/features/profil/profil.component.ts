@@ -43,6 +43,9 @@ export class ProfilComponent implements OnInit {
   isChangingPassword = false;
   passwordSuccess = '';
   passwordError = '';
+  showAncien = false;
+  showNouveau = false;
+  showConfirmer = false;
 
   // Préférences de notification
   prefEmailCotisation = false;
@@ -118,8 +121,7 @@ export class ProfilComponent implements OnInit {
 
   entrerEdition(): void {
     if (!this.user) return;
-    const parts = this.user.nom.trim().split(' ');
-    this.editNom = parts[0] ?? '';
+    this.editNom = this.user.nom ?? '';
     this.editEmail = this.user.email ?? '';
     this.editTelephone = this.user.telephone ?? '';
     this.profileError = '';
@@ -174,7 +176,8 @@ export class ProfilComponent implements OnInit {
 
   get roleLabel(): string {
     switch (this.user?.role) {
-      case 'bureau':          return 'Administrateur Général';
+      case 'secretaire_general': return 'Secrétaire Général';
+      case 'adjoint':            return 'Adjoint';
       case 'tresorier':       return 'Trésorier';
       case 'responsable_org': return 'Communicateur';
       default:                return 'Membre';
@@ -183,7 +186,8 @@ export class ProfilComponent implements OnInit {
 
   get roleBadgeClass(): string {
     switch (this.user?.role) {
-      case 'bureau': return 'bg-secondary text-on-secondary';
+      case 'secretaire_general': return 'bg-secondary text-on-secondary';
+      case 'adjoint':            return 'bg-secondary text-on-secondary';
       case 'tresorier': return 'bg-secondary-container text-on-secondary-container';
       default: return 'bg-surface-container text-on-surface-variant';
     }

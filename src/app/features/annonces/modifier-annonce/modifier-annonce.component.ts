@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +16,7 @@ export class ModifierAnnonceComponent implements OnInit {
   titre = '';
   contenu = '';
   categorie = '';
-  cible: 'tous' | 'bureau' | 'responsable_org' = 'tous';
+  cible: 'tous' | 'secretaire_general' | 'responsable_org' = 'tous';
 
   isLoading = true;
   isSubmitting = false;
@@ -37,7 +37,7 @@ export class ModifierAnnonceComponent implements OnInit {
         const a = res.data;
         this.titre = a.titre;
         this.contenu = a.contenu;
-        this.cible = (a.cible_groupe as 'tous' | 'bureau' | 'responsable_org') ?? 'tous';
+        this.cible = (a.cible_groupe as 'tous' | 'secretaire_general' | 'responsable_org') ?? 'tous';
         this.isLoading = false;
       },
       error: () => {
@@ -48,7 +48,7 @@ export class ModifierAnnonceComponent implements OnInit {
   }
 
   cyclerCible(): void {
-    const cycle: typeof this.cible[] = ['tous', 'bureau', 'responsable_org'];
+    const cycle: typeof this.cible[] = ['tous', 'secretaire_general', 'responsable_org'];
     this.cible = cycle[(cycle.indexOf(this.cible) + 1) % cycle.length];
   }
 
@@ -83,3 +83,4 @@ export class ModifierAnnonceComponent implements OnInit {
     this.router.navigate(['/annonces']);
   }
 }
+

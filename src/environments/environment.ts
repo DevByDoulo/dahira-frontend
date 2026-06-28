@@ -1,6 +1,6 @@
 // URL du tunnel Cloudflare pour le backend (port 3000)
 // Mettre à jour à chaque nouvelle session cloudflared
-const TUNNEL_BACKEND_URL = 'https://plymouth-exploring-waterproof-nova.trycloudflare.com';
+const TUNNEL_BACKEND_URL = 'https://patrol-everywhere-pod-listing.trycloudflare.com';
 
 const host = window.location.hostname;
 const isLocal = host === 'localhost' || /^(192\.168|10\.|172\.(1[6-9]|2\d|3[01]))/.test(host);

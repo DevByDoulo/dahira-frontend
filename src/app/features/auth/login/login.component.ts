@@ -51,7 +51,11 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Téléphone ou mot de passe incorrect';
+        if (err.status === 429) {
+          this.errorMessage = err.error?.message || 'Trop de tentatives. Réessayez dans 15 minutes.';
+        } else {
+          this.errorMessage = err.error?.message || 'Téléphone ou mot de passe incorrect';
+        }
       }
     });
   }

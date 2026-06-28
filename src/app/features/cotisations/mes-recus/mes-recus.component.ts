@@ -79,7 +79,7 @@ export class MesRecusComponent implements OnInit {
   formatMontant(n: number | string): string {
     return Math.round(Number(n))
       .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
   }
 
   formatDate(d: string): string {
