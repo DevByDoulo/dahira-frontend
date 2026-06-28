@@ -115,6 +115,49 @@
             <!-- Contenu -->
             <p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3">{{ annonce.contenu }}</p>
 
+            <!-- Lecteur audio -->
+            @if (annonce.audio_url) {
+              <div class="mt-4">
+                <audio
+                  #audioEl
+                  [src]="annonce.audio_url"
+                  preload="metadata"
+                  (loadedmetadata)="onAudioLoaded(audioEl, annonce.id)"
+                  (timeupdate)="onAudioTimeUpdate(audioEl, annonce.id)"
+                  (ended)="onAudioEnded(audioEl, annonce.id)"
+                ></audio>
+                <div class="flex items-center gap-3 bg-surface-container rounded-xl px-3 py-2.5">
+                  <button
+                    (click)="toggleAudio(audioEl, annonce.id)"
+                    class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 hover:opacity-90 active:scale-95 transition-all"
+                  >
+                    <span class="material-symbols-outlined text-on-primary text-[18px]" style="font-variation-settings:'FILL' 1">
+                      {{ getAudioState(annonce.id).playing ? 'pause' : 'play_arrow' }}
+                    </span>
+                  </button>
+                  <div class="flex-1 min-w-0">
+                    <div
+                      class="h-1 bg-surface-container-high rounded-full overflow-hidden cursor-pointer"
+                      (click)="seekAudio(audioEl, annonce.id, $event)"
+                    >
+                      <div
+                        class="h-full bg-primary rounded-full transition-all duration-100"
+                        [style.width.%]="getAudioState(annonce.id).progress"
+                      ></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-on-surface-variant/50 mt-1">
+                      <span>{{ formatAudioTime(getAudioState(annonce.id).currentTime) }}</span>
+                      <span>{{ formatAudioTime(getAudioState(annonce.id).duration) }}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <span class="material-symbols-outlined text-[13px] text-on-surface-variant/50" style="font-size:13px;line-height:1">mic</span>
+                    <span class="text-[10px] text-on-surface-variant/50 font-medium">Vocal</span>
+                  </div>
+                </div>
+              </div>
+            }
+
             <!-- Séparateur -->
             <div class="h-px bg-outline-variant/15 my-4"></div>
 

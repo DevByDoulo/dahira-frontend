@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -9,6 +9,7 @@ export interface Annonce {
   titre: string;
   contenu: string;
   image_url: string | null;
+  audio_url: string | null;
   cible_groupe: string | null;
   epinglee: boolean;
   publie_par: number;
@@ -30,6 +31,7 @@ export interface CreateAnnoncePayload {
   titre: string;
   contenu: string;
   image_url?: string;
+  audio_url?: string | null;
   cible_groupe?: string;
   categorie?: string;
 }
@@ -58,5 +60,12 @@ export class AnnoncesService {
 
   deleteAnnonce(id: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(`${this.apiUrl}/annonces/${id}`);
+  }
+
+  uploadAudio(formData: FormData): Observable<{ success: boolean; data: { url: string } }> {
+    return this.http.post<{ success: boolean; data: { url: string } }>(
+      `${this.apiUrl}/annonces/upload-audio`,
+      formData
+    );
   }
 }

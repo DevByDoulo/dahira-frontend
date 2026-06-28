@@ -1,9 +1,16 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AnnoncesService, Annonce } from '../../core/services/annonces.service';
 import { AuthService } from '../../core/services/auth.service';
+
+interface AudioState {
+  playing: boolean;
+  progress: number;
+  currentTime: number;
+  duration: number;
+}
 
 @Component({
   selector: 'app-annonces',
@@ -24,6 +31,10 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
 
   toast: { message: string; type: 'success' | 'error' } | null = null;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Lecteurs audio
+  private audioRefs = new Map<number, HTMLAudioElement>();
+  audioStates = new Map<number, AudioState>();
 
   readonly categories = [
     { value: '', label: 'Toutes' },
@@ -46,6 +57,8 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.toastTimer) clearTimeout(this.toastTimer);
+    // Arrêter tous les audios en cours
+    this.audioRefs.forEach((el) => el.pause());
   }
 
   charger(): void {
@@ -54,6 +67,8 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
     this.annoncesService.getAnnonces().subscribe({
       next: (res) => {
         this.annonces = res.success ? res.data : [];
+        this.audioStates.clear();
+        this.audioRefs.clear();
         this.isLoading = false;
       },
       error: () => {
@@ -113,6 +128,65 @@ export class AnnoncesComponent implements OnInit, OnDestroy {
     this.toast = { message, type };
     this.toastTimer = setTimeout(() => (this.toast = null), 3500);
   }
+
+  // ── Lecteur audio ─────────────────────────────────────────────────────────
+
+  getAudioState(id: number): AudioState {
+    if (!this.audioStates.has(id)) {
+      this.audioStates.set(id, { playing: false, progress: 0, currentTime: 0, duration: 0 });
+    }
+    return this.audioStates.get(id)!;
+  }
+
+  onAudioLoaded(el: HTMLAudioElement, id: number): void {
+    this.audioRefs.set(id, el);
+    const s = this.getAudioState(id);
+    s.duration = isNaN(el.duration) ? 0 : el.duration;
+  }
+
+  onAudioTimeUpdate(el: HTMLAudioElement, id: number): void {
+    const s = this.getAudioState(id);
+    s.currentTime = el.currentTime;
+    s.progress = el.duration ? (el.currentTime / el.duration) * 100 : 0;
+  }
+
+  onAudioEnded(el: HTMLAudioElement, id: number): void {
+    const s = this.getAudioState(id);
+    s.playing = false;
+    s.progress = 0;
+    s.currentTime = 0;
+    el.currentTime = 0;
+  }
+
+  toggleAudio(el: HTMLAudioElement, id: number): void {
+    const state = this.getAudioState(id);
+    if (state.playing) {
+      el.pause();
+      state.playing = false;
+    } else {
+      // Mettre en pause tous les autres
+      this.audioRefs.forEach((audioEl, otherId) => {
+        if (otherId !== id) {
+          audioEl.pause();
+          const s = this.audioStates.get(otherId);
+          if (s) s.playing = false;
+        }
+      });
+      el.play().catch(() => {});
+      state.playing = true;
+    }
+  }
+
+  seekAudio(el: HTMLAudioElement, id: number, event: MouseEvent): void {
+    if (!el.duration) return;
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    el.currentTime = ((event.clientX - rect.left) / rect.width) * el.duration;
+  }
+
+  formatAudioTime(seconds: number): string {
+    if (!seconds || isNaN(seconds) || !isFinite(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
 }
-
-
