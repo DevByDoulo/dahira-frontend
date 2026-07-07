@@ -42,7 +42,6 @@ export class DetailSeanceComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   isCloturing = false;
-  isDownloading = false;
 
   searchQuery = '';
 
@@ -131,31 +130,6 @@ export class DetailSeanceComponent implements OnInit {
         this.showToast(err?.error?.message ?? 'Erreur lors de la clôture.', 'error');
       },
     });
-  }
-
-  telechargerRecapitulatif(): void {
-    this.isDownloading = true;
-    this.http
-      .get(`${this.apiUrl}/recus/seance/${this.seanceId}`, { responseType: 'blob' })
-      .subscribe({
-        next: (blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `seance-${this.seanceId}.pdf`;
-          a.click();
-          URL.revokeObjectURL(url);
-          this.isDownloading = false;
-        },
-        error: async (err) => {
-          this.isDownloading = false;
-          let msg = 'Erreur lors de la génération du PDF.';
-          if (err.error instanceof Blob) {
-            try { const json = JSON.parse(await err.error.text()); msg = json.message ?? msg; } catch {}
-          }
-          this.showToast(msg, 'error');
-        },
-      });
   }
 
   typeLabel(type: string): string {

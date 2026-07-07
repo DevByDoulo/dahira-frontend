@@ -9,7 +9,6 @@ import {
   ComparativeStats,
   ActivityItem,
 } from '../../core/services/dashboard.service';
-import { AnnoncesService, Annonce } from '../../core/services/annonces.service';
 import { environment } from '../../../environments/environment';
 
 interface BarData {
@@ -17,20 +16,6 @@ interface BarData {
   active: boolean;
   montant: number;
   nombre: number;
-}
-
-interface EventItem {
-  id: number;
-  day: string;
-  month: string;
-  title: string;
-  time: string;
-  place: string;
-  type: string;
-  daysUntil: number;
-  nbParticipants: number;
-  maxParticipants: number | null;
-  inscriptionsOuvertes: boolean;
 }
 
 interface TresPoint {
@@ -75,7 +60,6 @@ export class DashboardComponent implements OnInit {
   soldeTresorerie = 0;
   entreesTotal = 0;
   sortiesTotal = 0;
-  evenementsCount = 0;
 
   // Graphiques — barres
   private allBarsData: BarData[] = [];
@@ -109,8 +93,6 @@ export class DashboardComponent implements OnInit {
     }));
   }
 
-  events: EventItem[] = [];
-  annonces: Annonce[] = [];
   topContributeurs: TopContributeur[] = [];
 
   // Comparatif mois en cours vs précédent
@@ -124,7 +106,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private annoncesService: AnnoncesService,
     private router: Router,
   ) {}
 
@@ -132,11 +113,10 @@ export class DashboardComponent implements OnInit {
     forkJoin({
       stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
       charts: this.dashboardService.getCharts().pipe(catchError(() => of(null))),
-      annonces: this.annoncesService.getAnnonces().pipe(catchError(() => of(null))),
       comparative: this.dashboardService.getComparative().pipe(catchError(() => of(null))),
       activity: this.dashboardService.getActivity().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ stats, charts, annonces, comparative, activity }) => {
+      next: ({ stats, charts, comparative, activity }) => {
         if (stats?.success) {
           const d = stats.data;
           this.totalMembres         = d.membres.total ?? 0;
@@ -150,19 +130,6 @@ export class DashboardComponent implements OnInit {
           this.soldeTresorerie      = Number(d.tresorerie.solde_global ?? 0);
           this.entreesTotal         = Number(d.tresorerie.entrees_total ?? 0);
           this.sortiesTotal         = Number(d.tresorerie.sorties_total ?? 0);
-          this.evenementsCount      = d.evenements_a_venir?.length ?? 0;
-          this.events = (d.evenements_a_venir ?? []).map((e: any) => ({
-            id: e.id,
-            ...this.parseEventDate(e.date_debut),
-            title: e.titre,
-            time: this.parseEventTime(e.date_debut),
-            place: e.lieu ?? '',
-            type: e.type ?? 'autre',
-            daysUntil: this.daysUntil(e.date_debut),
-            nbParticipants: Number(e.nb_participants ?? 0),
-            maxParticipants: e.max_participants != null ? Number(e.max_participants) : null,
-            inscriptionsOuvertes: e.inscriptions_ouvertes != null ? Boolean(e.inscriptions_ouvertes) : false,
-          }));
           this.topContributeurs = d.top_contributeurs ?? [];
         }
 
@@ -181,10 +148,6 @@ export class DashboardComponent implements OnInit {
             montant: Number(r.montant),
             pct: Math.round((Number(r.montant) / totalRep) * 100),
           })).sort((a: { montant: number }, b: { montant: number }) => b.montant - a.montant);
-        }
-
-        if (annonces?.success) {
-          this.annonces = (annonces.data ?? []).slice(0, 5);
         }
 
         if (comparative?.success) {
@@ -287,51 +250,6 @@ export class DashboardComponent implements OnInit {
     return new Date(+year, +month - 1).toLocaleDateString('fr-FR', { month: 'short' });
   }
 
-  private parseEventDate(dateStr: string): { day: string; month: string } {
-    const d = new Date(dateStr);
-    return {
-      day: d.getDate().toString().padStart(2, '0'),
-      month: d.toLocaleDateString('fr-FR', { month: 'short' }),
-    };
-  }
-
-  private parseEventTime(dateStr: string): string {
-    return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  daysUntil(dateStr: string): number {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const target = new Date(dateStr); target.setHours(0, 0, 0, 0);
-    return Math.round((target.getTime() - today.getTime()) / 86_400_000);
-  }
-
-  eventUrgencyLabel(days: number): string {
-    if (days === 0) return "Aujourd'hui";
-    if (days === 1) return 'Demain';
-    if (days <= 7) return `Dans ${days} jours`;
-    return '';
-  }
-
-  eventTypeLabel(type: string): string {
-    const labels: Record<string, string> = {
-      conference: 'Conférence', sortie: 'Sortie', ceremonie: 'Cérémonie',
-      formation: 'Formation', autre: 'Événement',
-    };
-    return labels[type] ?? 'Événement';
-  }
-
-  eventTypeColor(_type: string): string {
-    return 'bg-surface-container text-on-surface-variant border-outline-variant/30';
-  }
-
-  eventAccentColor(_type: string): string {
-    return 'bg-outline-variant/50';
-  }
-
-  participationPct(nb: number, max: number): number {
-    return Math.min(Math.round((nb / max) * 100), 100);
-  }
-
   formatFCFA(value: number): string {
     const n = Math.round(value);
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -343,10 +261,6 @@ export class DashboardComponent implements OnInit {
     return String(Math.round(value));
   }
 
-  formatAnnonceDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-  }
-
   avatarUrl(url: string | null): string | null {
     if (!url) return null;
     return url.startsWith('http') ? url : `${this.backendUrl}${url}`;
@@ -354,10 +268,6 @@ export class DashboardComponent implements OnInit {
 
   initiales(nom: string, prenom: string): string {
     return `${(prenom ?? '?')[0]}${(nom ?? '?')[0]}`.toUpperCase();
-  }
-
-  navigateToEvents(): void {
-    this.router.navigate(['/evenements']);
   }
 
   navigateToPendingCotisations(): void {
@@ -388,15 +298,13 @@ export class DashboardComponent implements OnInit {
   // ── Activité récente ─────────────────────────────────────────────────────────
   activityIcon(type: string): string {
     if (type === 'cotisation') return 'payments';
-    if (type === 'nouveau_membre') return 'person_add';
-    return 'campaign';
+    return 'person_add';
   }
 
   activityLabel(item: ActivityItem): string {
     if (item.type === 'cotisation')
       return `${item.prenom ?? ''} ${item.nom} — ${this.formatFCFA(item.montant ?? 0)} FCFA`;
-    if (item.type === 'nouveau_membre') return `Nouveau membre : ${item.prenom ?? ''} ${item.nom}`;
-    return item.titre ?? 'Annonce';
+    return `Nouveau membre : ${item.prenom ?? ''} ${item.nom}`;
   }
 
   activityTimeAgo(dateStr: string): string {

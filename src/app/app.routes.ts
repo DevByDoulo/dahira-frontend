@@ -139,22 +139,6 @@ export const routes: Routes = [
           import('./features/cotisations/cotisations.component').then(m => m.CotisationsComponent),
       },
       {
-        path: 'recus',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint', 'tresorier'] },
-        loadComponent: () =>
-          import('./features/cotisations/recus/recus.component').then(m => m.RecusComponent),
-      },
-      {
-        path: 'mes-recus',
-        canActivate: [roleGuard],
-        data: { roles: ['membre'] },
-        loadComponent: () =>
-          import('./features/cotisations/mes-recus/mes-recus.component').then(
-            m => m.MesRecusComponent,
-          ),
-      },
-      {
         path: 'cotisations/encaisser',
         canActivate: [roleGuard],
         data: { roles: ['secretaire_general', 'adjoint', 'tresorier'] },
@@ -205,83 +189,9 @@ export const routes: Routes = [
           import('./features/tresorerie/tresorerie.component').then(m => m.TresorerieComponent),
       },
       {
-        path: 'annonces',
-        loadComponent: () =>
-          import('./features/annonces/annonces.component').then(m => m.AnnoncesComponent),
-      },
-      {
-        path: 'annonces/creer',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint', 'responsable_org'] },
-        loadComponent: () =>
-          import('./features/annonces/creer-annonce/creer-annonce.component').then(
-            m => m.CreerAnnonceComponent,
-          ),
-      },
-      {
-        path: 'annonces/:id/modifier',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint', 'responsable_org'] },
-        loadComponent: () =>
-          import('./features/annonces/modifier-annonce/modifier-annonce.component').then(
-            m => m.ModifierAnnonceComponent,
-          ),
-      },
-      {
-        path: 'evenements',
-        loadComponent: () =>
-          import('./features/evenements/evenements.component').then(m => m.EvenementsComponent),
-      },
-      {
-        path: 'evenements/creer',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint', 'responsable_org'] },
-        loadComponent: () =>
-          import('./features/evenements/creer-evenement/creer-evenement.component').then(
-            m => m.CreerEvenementComponent,
-          ),
-      },
-      {
-        path: 'evenements/:id/modifier',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint', 'responsable_org'] },
-        loadComponent: () =>
-          import('./features/evenements/modifier-evenement/modifier-evenement.component').then(
-            m => m.ModifierEvenementComponent,
-          ),
-      },
-      {
-        path: 'evenements/:id',
-        loadComponent: () =>
-          import('./features/evenements/detail-evenement/detail-evenement.component').then(
-            m => m.DetailEvenementComponent,
-          ),
-      },
-      {
         path: 'profil',
         loadComponent: () =>
           import('./features/profil/profil.component').then(m => m.ProfilComponent),
-      },
-      {
-        path: 'notifications',
-        loadComponent: () =>
-          import('./features/notifications/notifications.component').then(
-            m => m.NotificationsComponent,
-          ),
-      },
-      {
-        path: 'photos/ajouter',
-        canActivate: [roleGuard],
-        data: { roles: ['secretaire_general', 'adjoint'] },
-        loadComponent: () =>
-          import('./features/photos/ajouter-photo/ajouter-photo.component').then(
-            m => m.AjouterPhotoComponent,
-          ),
-      },
-      {
-        path: 'photos',
-        loadComponent: () =>
-          import('./features/photos/photos.component').then(m => m.PhotosComponent),
       },
       {
         path: 'parametres',

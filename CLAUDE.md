@@ -8,6 +8,10 @@ Application Angular 21 + Tailwind v4 de gestion pour une association religieuse 
 Backend : Node.js/Express/MySQL sur le port 3000.
 Architecture multi-tenant via dahira_id.
 
+Périmètre volontairement réduit (juillet 2026) : annonces, événements, notifications in-app,
+galerie photos, reçus PDF et recherche globale ont été supprimés pour recentrer l'app sur
+la gestion des cotisations (code récupérable dans l'historique git).
+
 ## Stack
 - Frontend : Angular 21 standalone, Tailwind v4, Material Symbols Outlined
 - Backend : Node.js/Express/MySQL (port 3000)
@@ -44,17 +48,17 @@ src/app/
     guards/          # auth.guard.ts (CanActivateFn)
     interceptors/    # auth.interceptor.ts (HttpInterceptorFn)
   features/
-    auth/login/      # LoginComponent — seule feature implémentée
+    auth/login/      # LoginComponent
     dashboard/
     membres/
     seances/
     cotisations/
     depenses/
     tresorerie/
-    annonces/
-    evenements/
-    notifications/
+    invitation/
+    parametres/
     profil/
+    super-admin/
   layout/
     main-layout/     # shell après login (sidebar + navbar)
   shared/

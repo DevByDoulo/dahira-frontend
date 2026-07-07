@@ -47,17 +47,6 @@
           <span class="material-symbols-outlined text-[20px]">lock</span>
           Sécurité
         </button>
-        @if (!isSuperAdmin) {
-          <button
-            (click)="setSection('notifications')"
-            [class]="activeSection === 'notifications'
-              ? 'w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary/15 text-secondary font-semibold text-sm text-left'
-              : 'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container text-sm font-medium text-left transition-colors'"
-          >
-            <span class="material-symbols-outlined text-[20px]">notifications</span>
-            Notifications
-          </button>
-        }
       </nav>
     </aside>
 
@@ -296,82 +285,6 @@
         </div>
       }
 
-      <!-- ── Section Notifications ── -->
-      @if (activeSection === 'notifications') {
-        <div class="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
-          <h3 class="text-base font-bold text-on-surface mb-1">Préférences de notifications</h3>
-          <p class="text-xs text-on-surface-variant mb-6">Choisissez les notifications que vous souhaitez recevoir.</p>
-
-          <div class="space-y-3">
-
-            <!-- Toggle row -->
-            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary-container rounded-lg flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-on-secondary-container text-[18px]">payments</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">E-mails de contribution</p>
-                  <p class="text-xs text-on-surface-variant">Recevez un reçu pour chaque paiement.</p>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
-                <input [(ngModel)]="notifContributions" type="checkbox" class="sr-only peer" />
-                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-              </label>
-            </div>
-
-            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-secondary-container rounded-lg flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-on-secondary-container text-[18px]">event</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">Rappels d'événements</p>
-                  <p class="text-xs text-on-surface-variant">Notifications 24h avant une réunion.</p>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
-                <input [(ngModel)]="notifEvenements" type="checkbox" class="sr-only peer" />
-                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-              </label>
-            </div>
-
-            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-error-container rounded-lg flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-on-error-container text-[18px]">security</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">Alertes de sécurité</p>
-                  <p class="text-xs text-on-surface-variant">Connexions depuis de nouveaux appareils.</p>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
-                <input [(ngModel)]="notifSecurite" type="checkbox" class="sr-only peer" />
-                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-              </label>
-            </div>
-
-            <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-surface-container-high rounded-lg flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-on-surface-variant text-[18px]">campaign</span>
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-on-surface">Annonces dahira</p>
-                  <p class="text-xs text-on-surface-variant">Soyez informé des nouvelles annonces.</p>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
-                <input [(ngModel)]="notifAnnonces" type="checkbox" class="sr-only peer" />
-                <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-              </label>
-            </div>
-
-          </div>
-        </div>
-      }
 
     </div>
   </div>

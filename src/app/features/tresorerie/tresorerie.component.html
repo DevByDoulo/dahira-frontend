@@ -389,7 +389,7 @@
           @for (t of dernieresEntrees; track t.id) {
             <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
               <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
-                {{ (t.membre_nom ?? t.description ?? '?')[0].toUpperCase() }}
+                {{ (t.membre_nom ?? t.description)[0].toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold text-on-surface truncate">{{ t.membre_nom ?? t.description }}</p>
@@ -426,7 +426,7 @@
           @for (t of dernieresSorties; track t.id) {
             <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
               <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
-                {{ (t.description ?? '?')[0].toUpperCase() }}
+                {{ t.description[0].toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold text-on-surface truncate">{{ t.description }}</p>

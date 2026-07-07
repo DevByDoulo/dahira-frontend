@@ -47,7 +47,6 @@ export class CotisationsComponent implements OnInit {
   // Menu contextuel (⋮)
   menuOpenId: number | null = null;
   filterPanelOpen = false;
-  generatingRecuId: number | null = null;
 
   isExporting = false;
   isRelancing = false;
@@ -231,23 +230,6 @@ export class CotisationsComponent implements OnInit {
       error: (err) => {
         this.rejetError = err?.error?.message || 'Erreur lors du rejet.';
         this.isRejecting = false;
-      },
-    });
-  }
-
-  // ── Génération de reçu ──────────────────────────────────────────────────────
-
-  genererRecu(cotisation: Cotisation): void {
-    this.menuOpenId = null;
-    this.generatingRecuId = cotisation.id;
-    this.cotisationsService.genererRecu(cotisation.id).subscribe({
-      next: () => {
-        this.generatingRecuId = null;
-        this.showToast(`Reçu généré pour ${cotisation.prenom} ${cotisation.nom}.`, 'success');
-      },
-      error: (err) => {
-        this.generatingRecuId = null;
-        this.showToast(err?.error?.message || 'Erreur lors de la génération du reçu.', 'error');
       },
     });
   }

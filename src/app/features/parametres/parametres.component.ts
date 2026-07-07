@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AuthService, UserProfile } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 
-type Section = 'profil' | 'securite' | 'notifications';
+type Section = 'profil' | 'securite';
 
 @Component({
   selector: 'app-parametres',
@@ -32,11 +31,6 @@ export class ParametresComponent implements OnInit {
   nouveauMotDePasse = '';
   confirmerMotDePasse = '';
 
-  notifContributions = true;
-  notifEvenements = true;
-  notifSecurite = true;
-  notifAnnonces = false;
-
   isSavingProfile = false;
   isSavingPassword = false;
   profileSuccess = '';
@@ -44,7 +38,7 @@ export class ParametresComponent implements OnInit {
   passwordSuccess = '';
   passwordError = '';
 
-  constructor(private authService: AuthService, private http: HttpClient) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.authService.getMe().subscribe({
@@ -117,13 +111,10 @@ export class ParametresComponent implements OnInit {
     const fd = new FormData();
     fd.append('photo', file);
 
-    this.http.post<{ success: boolean; data: { photo_url: string } }>(
-      `${this.backendUrl}/api/photos/me`, fd
-    ).subscribe({
+    this.authService.updatePhoto(fd).subscribe({
       next: (res) => {
         if (res.success) {
           this.photoUrl = res.data.photo_url;
-          this.authService.setPhotoUrl(res.data.photo_url);
         }
         this.isUploadingPhoto = false;
         input.value = '';

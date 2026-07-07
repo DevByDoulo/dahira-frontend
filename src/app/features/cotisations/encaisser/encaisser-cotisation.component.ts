@@ -38,8 +38,6 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
   private clockTimer: ReturnType<typeof setInterval> | null = null;
 
   cotisationSuccessId: number | null = null;
-  generatingRecu = false;
-  recuGenere: string | null = null;
 
   toast: { message: string; type: 'success' | 'error' } | null = null;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
@@ -215,24 +213,7 @@ export class EncaisserCotisationComponent implements OnInit, OnDestroy {
     });
   }
 
-  genererRecu(): void {
-    if (!this.cotisationSuccessId) return;
-    this.generatingRecu = true;
-    this.cotisationsService.creerRecu(this.cotisationSuccessId!).subscribe({
-      next: (res) => {
-        this.recuGenere = res.data?.numero_recu ?? null;
-        this.generatingRecu = false;
-        this.showToast(`Reçu ${this.recuGenere} généré avec succès !`, 'success');
-        setTimeout(() => this.router.navigate(['/recus']), 1800);
-      },
-      error: (err) => {
-        this.showToast(err?.error?.message ?? 'Impossible de générer le reçu.', 'error');
-        this.generatingRecu = false;
-      },
-    });
-  }
-
-  continuerSansRecu(): void {
+  retournerAuxCotisations(): void {
     this.router.navigate(['/cotisations']);
   }
 

@@ -38,12 +38,6 @@ export interface DashboardStatsData {
     entrees_total: number;
     sorties_total: number;
   };
-  evenements_a_venir: Array<{
-    id: number;
-    titre: string;
-    date_debut: string;
-    lieu: string;
-  }>;
   top_contributeurs?: TopContributeur[];
 }
 
@@ -62,7 +56,7 @@ export interface ComparativeStats {
 }
 
 export interface ActivityItem {
-  type: 'cotisation' | 'nouveau_membre' | 'annonce';
+  type: 'cotisation' | 'nouveau_membre';
   id: number;
   created_at: string;
   montant?: number;

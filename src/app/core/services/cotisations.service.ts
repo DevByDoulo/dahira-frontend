@@ -96,20 +96,6 @@ export class CotisationsService {
     return this.http.get<CotisationStatsResponse>(`${this.apiUrl}/cotisations/dashboard`);
   }
 
-  genererRecu(cotisationId: number): Observable<{ success: boolean; data: unknown }> {
-    return this.http.post<{ success: boolean; data: unknown }>(
-      `${this.apiUrl}/recus/cotisation/${cotisationId}/generer`,
-      {},
-    );
-  }
-
-  creerRecu(cotisationId: number): Observable<{ success: boolean; data: { numero_recu: string } }> {
-    return this.http.post<{ success: boolean; data: { numero_recu: string } }>(
-      `${this.apiUrl}/recus`,
-      { cotisation_id: cotisationId },
-    );
-  }
-
   relancer(jours = 3): Observable<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }> {
     return this.http.post<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }>(
       `${this.apiUrl}/cotisations/relancer`,
