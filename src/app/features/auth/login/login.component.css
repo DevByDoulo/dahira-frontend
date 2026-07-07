@@ -77,19 +77,6 @@ button:hover::after {
   height: 200%;
 }
 
-/* Social button improvements */
-button[type="button"] {
-  transition: all 0.2s ease;
-}
-
-button[type="button"]:hover {
-  transform: translateY(-1px);
-}
-
-button[type="button"]:active {
-  transform: translateY(0);
-}
-
 /* Responsive improvements */
 @media (max-width: 640px) {
   .login-card {
