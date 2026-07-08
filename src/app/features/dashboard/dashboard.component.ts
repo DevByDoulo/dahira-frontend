@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -10,6 +10,7 @@ import {
   ActivityItem,
 } from '../../core/services/dashboard.service';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 
 interface BarData {
   label: string;
@@ -32,8 +33,9 @@ interface TresPoint {
 export class DashboardComponent implements OnInit {
   isLoading = true;
 
-  readonly role: string =
-    (JSON.parse(localStorage.getItem('user') ?? 'null') as { role?: string } | null)?.role ?? '';
+  private readonly auth = inject(AuthService);
+
+  readonly role: string = this.auth.getUser()?.role ?? '';
 
   readonly backendUrl = environment.apiUrl.replace('/api', '');
 
@@ -42,10 +44,7 @@ export class DashboardComponent implements OnInit {
   }
 
   get userName(): string {
-    return (
-      (JSON.parse(localStorage.getItem('user') ?? 'null') as { nom?: string } | null)?.nom ??
-      'Membre'
-    );
+    return this.auth.getUser()?.nom ?? 'Membre';
   }
 
   // KPIs principaux
@@ -110,6 +109,13 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // La vue membre/communicateur n'affiche aucune statistique : inutile
+    // d'appeler les endpoints dashboard (réservés au bureau côté backend).
+    if (!this.isFinancier) {
+      this.isLoading = false;
+      return;
+    }
+
     forkJoin({
       stats: this.dashboardService.getStats().pipe(catchError(() => of(null))),
       charts: this.dashboardService.getCharts().pipe(catchError(() => of(null))),

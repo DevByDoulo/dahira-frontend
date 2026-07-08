@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface Membre {
   id: number;
@@ -56,6 +57,7 @@ export class DetailMembreComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private location: Location,
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +106,7 @@ export class DetailMembreComponent implements OnInit {
   exporterFiche(): void {
     if (this.isExportingFiche || !this.membreId) return;
     this.isExportingFiche = true;
-    const token = localStorage.getItem('token');
+    const token = this.auth.getToken();
     fetch(`${this.apiUrl}/membres/${this.membreId}/fiche-pdf`, {
       headers: { Authorization: `Bearer ${token}` },
     })
