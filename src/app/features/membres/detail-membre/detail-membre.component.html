@@ -1,4 +1,4 @@
-﻿<!-- Squelette chargement -->
+<!-- Squelette chargement -->
 @if (isLoading) {
   <div class="p-10 max-w-4xl mx-auto space-y-6">
     <div class="h-10 w-48 bg-surface-container rounded-xl animate-pulse"></div>
@@ -11,7 +11,7 @@
   </div>
 }
 
-<!-- Ã‰tat d'erreur -->
+<!-- État d'erreur -->
 @if (!isLoading && errorMessage) {
   <div class="p-10 max-w-4xl mx-auto flex flex-col items-center justify-center py-24 gap-4 text-center">
     <span class="material-symbols-outlined text-6xl text-error">person_off</span>
@@ -21,7 +21,7 @@
       class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
     >
       <span class="material-symbols-outlined text-xl">refresh</span>
-      RÃ©essayer
+      Réessayer
     </button>
   </div>
 }
@@ -52,7 +52,7 @@
         class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all disabled:opacity-50"
       >
         <span class="material-symbols-outlined text-[18px]">{{ isExportingFiche ? 'hourglass_empty' : 'picture_as_pdf' }}</span>
-        {{ isExportingFiche ? 'Exportâ€¦' : 'Fiche PDF' }}
+        {{ isExportingFiche ? 'Export…' : 'Fiche PDF' }}
       </button>
     </div>
 
@@ -129,7 +129,7 @@
           <span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">payments</span>
         </div>
         <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cotisations validÃ©es</p>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Cotisations validées</p>
           <h3 class="text-2xl font-black text-on-surface mt-0.5">{{ nbApprouvees }}</h3>
         </div>
       </div>
@@ -138,7 +138,7 @@
           <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
         </div>
         <div>
-          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total versÃ©</p>
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total versé</p>
           <h3 class="text-xl font-black text-on-surface mt-0.5">{{ formatMontant(totalApprouvees) }}</h3>
         </div>
       </div>
@@ -181,12 +181,12 @@
           </div>
           <div class="space-y-3 text-sm">
             <div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
-              <span class="text-on-surface-variant">Date d'adhÃ©sion</span>
+              <span class="text-on-surface-variant">Date d'adhésion</span>
               <span class="font-medium text-on-surface">{{ formatDate(membre.date_adhesion) }}</span>
             </div>
             <div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
-              <span class="text-on-surface-variant">ResponsabilitÃ©s</span>
-              <span class="font-medium text-on-surface text-right max-w-[180px]">{{ membre.responsabilites || 'â€”' }}</span>
+              <span class="text-on-surface-variant">Responsabilités</span>
+              <span class="font-medium text-on-surface text-right max-w-[180px]">{{ membre.responsabilites || '—' }}</span>
             </div>
             <div class="flex justify-between items-center py-2">
               <span class="text-on-surface-variant">Statut</span>
@@ -211,7 +211,7 @@
             <div class="flex items-center gap-3 py-2 border-b border-outline-variant/20">
               <span class="material-symbols-outlined text-on-surface-variant text-[18px]">call</span>
               <div>
-                <p class="text-xs text-on-surface-variant">TÃ©lÃ©phone</p>
+                <p class="text-xs text-on-surface-variant">Téléphone</p>
                 <p class="font-medium text-on-surface mt-0.5">{{ formatTel(membre.telephone) }}</p>
               </div>
             </div>
@@ -238,8 +238,8 @@
         } @else if (cotisations.length === 0) {
           <div class="py-16 flex flex-col items-center gap-3 text-center text-on-surface-variant">
             <span class="material-symbols-outlined text-5xl text-outline">payments</span>
-            <p class="text-sm font-medium">Aucune cotisation enregistrÃ©e</p>
-            <p class="text-xs">Les cotisations de ce membre apparaÃ®tront ici.</p>
+            <p class="text-sm font-medium">Aucune cotisation enregistrée</p>
+            <p class="text-xs">Les cotisations de ce membre apparaîtront ici.</p>
           </div>
         } @else {
           <div class="overflow-x-auto">
@@ -247,7 +247,7 @@
               <thead>
                 <tr class="bg-surface-container-low/60">
                   <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date</th>
-                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">SÃ©ance</th>
+                  <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Séance</th>
                   <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
                   <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Mode</th>
                   <th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
