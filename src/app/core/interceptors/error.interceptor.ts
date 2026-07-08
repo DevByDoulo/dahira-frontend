@@ -11,8 +11,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 401 || err.status === 403) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        for (const s of [localStorage, sessionStorage]) {
+          s.removeItem('token');
+          s.removeItem('user');
+        }
         router.navigate(['/login']);
       } else if (err.status >= 500) {
         console.error('[500]', req.method, req.url, err?.error?.message ?? err);

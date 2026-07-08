@@ -51,33 +51,50 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  /** Storage actif : celui qui détient la session en cours (localStorage par défaut). */
+  private get storage(): Storage {
+    return sessionStorage.getItem('token') !== null ? sessionStorage : localStorage;
+  }
+
+  private persistSession(token: string, user: UserProfile, remember: boolean): void {
+    this.clearSession();
+    const storage = remember ? localStorage : sessionStorage;
+    storage.setItem('token', token);
+    storage.setItem('user', JSON.stringify(user));
+  }
+
+  private clearSession(): void {
+    for (const s of [localStorage, sessionStorage]) {
+      s.removeItem('token');
+      s.removeItem('user');
+    }
+  }
+
+  login(credentials: LoginRequest, rememberMe = true): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap((response) => {
         if (response.success) {
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
+          this.persistSession(response.data.token, response.data.user, rememberMe);
         }
       }),
     );
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    this.clearSession();
     this.profileSubject.next(null);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!this.getToken();
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.storage.getItem('token');
   }
 
   getUser(): UserProfile | null {
-    const user = localStorage.getItem('user');
+    const user = this.storage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
 
@@ -88,7 +105,7 @@ export class AuthService {
         tap((res) => {
           if (res.success) {
             this.profileSubject.next(res.data);
-            localStorage.setItem('user', JSON.stringify(res.data));
+            this.storage.setItem('user', JSON.stringify(res.data));
           }
         }),
       );
@@ -105,7 +122,7 @@ export class AuthService {
         tap((res) => {
           if (res.success) {
             this.profileSubject.next(res.data);
-            localStorage.setItem('user', JSON.stringify(res.data));
+            this.storage.setItem('user', JSON.stringify(res.data));
           }
         }),
       );
@@ -121,7 +138,7 @@ export class AuthService {
             if (current) {
               const updated = { ...current, photo_url: res.data.photo_url, thumbnail_url: res.data.thumbnail_url };
               this.profileSubject.next(updated);
-              localStorage.setItem('user', JSON.stringify(updated));
+              this.storage.setItem('user', JSON.stringify(updated));
             }
           }
         }),
@@ -155,8 +172,7 @@ export class AuthService {
       .pipe(
         tap((res) => {
           if (res.success) {
-            localStorage.setItem('token', res.data.token);
-            localStorage.setItem('user', JSON.stringify(res.data.user));
+            this.persistSession(res.data.token, res.data.user, true);
           }
         }),
       );

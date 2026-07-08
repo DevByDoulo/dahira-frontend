@@ -41,7 +41,9 @@ export class LoginComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService.login({ telephone: this.telephone, password: this.password }).subscribe({
+    this.authService
+      .login({ telephone: this.telephone, password: this.password }, this.rememberMe)
+      .subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
