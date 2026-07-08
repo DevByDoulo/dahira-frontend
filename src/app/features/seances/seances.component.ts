@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { SeancesService, Seance } from '../../core/services/seances.service';
+import { AuthService } from '../../core/services/auth.service';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 
 type StatutFilter = '' | 'a_venir' | 'en_cours' | 'termine';
@@ -29,19 +30,26 @@ export class SeancesComponent implements OnInit {
   private readonly today = new Date();
   private readonly todayStr = this.today.toISOString().split('T')[0];
 
+  // Création/modification/clôture réservées au bureau et au responsable d'organisation (cf. backend)
+  peutGerer = false;
+
   constructor(
     private seancesService: SeancesService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-  ) {}
+  ) {
+    const role = this.authService.getUser()?.role ?? '';
+    this.peutGerer = ['secretaire_general', 'adjoint', 'responsable_org'].includes(role);
+  }
 
   ngOnInit(): void {
     // Restaurer les filtres depuis l'URL, puis charger
     this.route.queryParams.pipe(take(1)).subscribe((params) => {
-      this.dateDebut    = params['debut']  ?? '';
-      this.dateFin      = params['fin']    ?? '';
+      this.dateDebut = params['debut'] ?? '';
+      this.dateFin = params['fin'] ?? '';
       this.statutFilter = (params['statut'] ?? '') as StatutFilter;
-      this.page         = parseInt(params['page'] ?? '1', 10) || 1;
+      this.page = parseInt(params['page'] ?? '1', 10) || 1;
       this.chargerSeances();
     });
   }
@@ -121,10 +129,10 @@ export class SeancesComponent implements OnInit {
 
   private syncUrl(): void {
     const queryParams: Record<string, string | number | null> = {};
-    if (this.dateDebut)    queryParams['debut']  = this.dateDebut;
-    if (this.dateFin)      queryParams['fin']    = this.dateFin;
+    if (this.dateDebut) queryParams['debut'] = this.dateDebut;
+    if (this.dateFin) queryParams['fin'] = this.dateFin;
     if (this.statutFilter) queryParams['statut'] = this.statutFilter;
-    if (this.page > 1)     queryParams['page']   = this.page;
+    if (this.page > 1) queryParams['page'] = this.page;
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -186,8 +194,8 @@ export class SeancesComponent implements OnInit {
   typeLabel(type: Seance['type']): string {
     const labels: Record<Seance['type'], string> = {
       dahira: 'Dahira',
-      mensuelle:    'Séance mensuelle',
-      autre:        'Autre séance',
+      mensuelle: 'Séance mensuelle',
+      autre: 'Autre séance',
     };
     return labels[type];
   }
@@ -195,8 +203,8 @@ export class SeancesComponent implements OnInit {
   typeIcon(type: Seance['type']): string {
     const icons: Record<Seance['type'], string> = {
       dahira: 'menu_book',
-      mensuelle:    'calendar_month',
-      autre:        'groups_3',
+      mensuelle: 'calendar_month',
+      autre: 'groups_3',
     };
     return icons[type];
   }

@@ -5,7 +5,9 @@
 
 <!-- Erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-16 gap-4 text-center">
+  <div
+    class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-16 gap-4 text-center"
+  >
     <span class="material-symbols-outlined text-5xl text-outline">cloud_off</span>
     <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
     <button
@@ -22,20 +24,34 @@
 
 <!-- Modal détail -->
 @if (detailVisible && detailCotisation) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="closeDetail()">
-    <div class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl" (click)="$event.stopPropagation()">
-
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    (click)="closeDetail()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
       <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/15">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-sm font-bold shrink-0">
+          <div
+            class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-sm font-bold shrink-0"
+          >
             {{ initiales(detailCotisation) }}
           </div>
           <div>
-            <p class="font-bold text-on-surface text-sm">{{ detailCotisation.prenom }} {{ detailCotisation.nom }}</p>
-            <p class="text-xs text-on-surface-variant capitalize">{{ detailCotisation.type ?? '—' }}</p>
+            <p class="font-bold text-on-surface text-sm">
+              {{ detailCotisation.prenom }} {{ detailCotisation.nom }}
+            </p>
+            <p class="text-xs text-on-surface-variant capitalize">
+              {{ detailCotisation.type ?? '—' }}
+            </p>
           </div>
         </div>
-        <button (click)="closeDetail()" class="p-1.5 hover:bg-surface-container-high rounded-lg transition-colors">
+        <button
+          (click)="closeDetail()"
+          class="p-1.5 hover:bg-surface-container-high rounded-lg transition-colors"
+        >
           <span class="material-symbols-outlined text-[20px] text-on-surface-variant">close</span>
         </button>
       </div>
@@ -44,41 +60,81 @@
         <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
           <span class="text-xs text-on-surface-variant">Statut</span>
           <span class="flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full shrink-0"
-              [class]="detailCotisation.statut === 'approved' ? 'bg-green-400' : detailCotisation.statut === 'pending' ? 'bg-yellow-400' : 'bg-red-400'"></span>
+            <span
+              class="w-1.5 h-1.5 rounded-full shrink-0"
+              [class]="
+                detailCotisation.statut === 'approved'
+                  ? 'bg-green-400'
+                  : detailCotisation.statut === 'pending'
+                    ? 'bg-yellow-400'
+                    : 'bg-red-400'
+              "
+            ></span>
             <span class="text-xs font-medium text-on-surface-variant">
-              {{ detailCotisation.statut === 'approved' ? 'Validé' : detailCotisation.statut === 'pending' ? 'En attente' : 'Refusé' }}
+              {{
+                detailCotisation.statut === 'approved'
+                  ? 'Validé'
+                  : detailCotisation.statut === 'pending'
+                    ? 'En attente'
+                    : 'Refusé'
+              }}
             </span>
           </span>
         </div>
         <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
           <span class="text-xs text-on-surface-variant">Montant</span>
-          <span class="text-sm font-bold text-on-surface">{{ formatMontant(detailCotisation.montant) }}</span>
+          <span class="text-sm font-bold text-on-surface">{{
+            formatMontant(detailCotisation.montant)
+          }}</span>
         </div>
         <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
           <span class="text-xs text-on-surface-variant">Mode de paiement</span>
           <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-on-surface-variant text-[16px]">{{ modeIcon(detailCotisation.mode_paiement) }}</span>
-            <span class="text-sm text-on-surface">{{ modeLabel(detailCotisation.mode_paiement) }}</span>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px]">{{
+              modeIcon(detailCotisation.mode_paiement)
+            }}</span>
+            <span class="text-sm text-on-surface">{{
+              modeLabel(detailCotisation.mode_paiement)
+            }}</span>
           </div>
         </div>
         <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
           <span class="text-xs text-on-surface-variant">Date de la séance</span>
-          <span class="text-sm text-on-surface">{{ formatDate(detailCotisation.date_seance) }}</span>
+          <span class="text-sm text-on-surface">{{
+            formatDate(detailCotisation.date_seance)
+          }}</span>
         </div>
-        <div class="flex justify-between items-center py-2" [class.border-b]="detailCotisation.valide_at || detailCotisation.note" [class.border-outline-variant]="detailCotisation.valide_at || detailCotisation.note" [class.border-opacity-10]="detailCotisation.valide_at || detailCotisation.note">
+        <div
+          class="flex justify-between items-center py-2"
+          [class.border-b]="detailCotisation.valide_at || detailCotisation.note"
+          [class.border-outline-variant]="detailCotisation.valide_at || detailCotisation.note"
+          [class.border-opacity-10]="detailCotisation.valide_at || detailCotisation.note"
+        >
           <span class="text-xs text-on-surface-variant">Enregistré le</span>
-          <span class="text-sm text-on-surface">{{ formatDatetime(detailCotisation.created_at) }}</span>
+          <span class="text-sm text-on-surface">{{
+            formatDatetime(detailCotisation.created_at)
+          }}</span>
         </div>
         @if (detailCotisation.valide_at) {
-          <div class="flex justify-between items-center py-2" [class.border-b]="detailCotisation.note" [class.border-outline-variant]="detailCotisation.note" [class.border-opacity-10]="detailCotisation.note">
+          <div
+            class="flex justify-between items-center py-2"
+            [class.border-b]="detailCotisation.note"
+            [class.border-outline-variant]="detailCotisation.note"
+            [class.border-opacity-10]="detailCotisation.note"
+          >
             <span class="text-xs text-on-surface-variant">Validé le</span>
-            <span class="text-sm text-on-surface">{{ formatDatetime(detailCotisation.valide_at) }}</span>
+            <span class="text-sm text-on-surface">{{
+              formatDatetime(detailCotisation.valide_at)
+            }}</span>
           </div>
         }
         @if (detailCotisation.note) {
           <div class="py-2">
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Note</p>
+            <p
+              class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5"
+            >
+              Note
+            </p>
             <p class="text-sm text-on-surface">{{ detailCotisation.note }}</p>
           </div>
         }
@@ -102,28 +158,40 @@
           </div>
         }
         @if (detailCotisation.statut !== 'pending') {
-          <button (click)="closeDetail()" class="w-full py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors">
+          <button
+            (click)="closeDetail()"
+            class="w-full py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors"
+          >
             Fermer
           </button>
         }
       </div>
-
     </div>
   </div>
 }
 
 <!-- Modal rejet -->
 @if (rejetVisible && rejetCotisation) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="closeRejet()">
-    <div class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl" (click)="$event.stopPropagation()">
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    (click)="closeRejet()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
       <div class="p-6 flex flex-col items-center text-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
+        <div
+          class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center"
+        >
           <span class="material-symbols-outlined text-on-surface-variant text-3xl">cancel</span>
         </div>
         <div class="w-full text-left">
           <h3 class="text-base font-bold text-on-surface text-center">Rejeter la cotisation ?</h3>
           <p class="text-sm text-on-surface-variant mt-1 text-center">
-            <span class="font-medium text-on-surface">{{ rejetCotisation.prenom }} {{ rejetCotisation.nom }}</span>
+            <span class="font-medium text-on-surface"
+              >{{ rejetCotisation.prenom }} {{ rejetCotisation.nom }}</span
+            >
             — {{ formatMontant(rejetCotisation.montant) }}
           </p>
           <div class="mt-4 space-y-1.5">
@@ -142,18 +210,26 @@
         </div>
       </div>
       @if (rejetError) {
-        <div class="mx-6 mb-3 flex items-center gap-2 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm">
+        <div
+          class="mx-6 mb-3 flex items-center gap-2 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm"
+        >
           <span class="material-symbols-outlined text-[16px] shrink-0">error</span>
           {{ rejetError }}
         </div>
       }
       <div class="px-6 pb-6 flex gap-3">
-        <button (click)="closeRejet()" [disabled]="isRejecting"
-          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+        <button
+          (click)="closeRejet()"
+          [disabled]="isRejecting"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50"
+        >
           Annuler
         </button>
-        <button (click)="confirmerRejet()" [disabled]="isRejecting"
-          class="flex-1 py-2.5 bg-error text-on-error rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+        <button
+          (click)="confirmerRejet()"
+          [disabled]="isRejecting"
+          class="flex-1 py-2.5 bg-error text-on-error rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+        >
           @if (isRejecting) {
             <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
           }
@@ -166,11 +242,21 @@
 
 <!-- Modal validation -->
 @if (modalVisible && modalCotisation) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="closeModal()">
-    <div class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl" (click)="$event.stopPropagation()">
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    (click)="closeModal()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
       <div class="p-6 flex flex-col items-center text-center gap-4">
-        <div class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center">
-          <span class="material-symbols-outlined text-on-surface-variant text-3xl">check_circle</span>
+        <div
+          class="w-14 h-14 rounded-2xl bg-surface-container-high flex items-center justify-center"
+        >
+          <span class="material-symbols-outlined text-on-surface-variant text-3xl"
+            >check_circle</span
+          >
         </div>
         <div>
           <h3 class="text-base font-bold text-on-surface">Valider la cotisation ?</h3>
@@ -183,38 +269,54 @@
       <div class="mx-6 mb-4 bg-surface-container-low rounded-xl divide-y divide-outline-variant/10">
         <div class="flex justify-between items-center px-4 py-3">
           <span class="text-xs text-on-surface-variant">Membre</span>
-          <span class="text-sm font-semibold text-on-surface">{{ modalCotisation.prenom }} {{ modalCotisation.nom }}</span>
+          <span class="text-sm font-semibold text-on-surface"
+            >{{ modalCotisation.prenom }} {{ modalCotisation.nom }}</span
+          >
         </div>
         <div class="flex justify-between items-center px-4 py-3">
           <span class="text-xs text-on-surface-variant">Montant</span>
-          <span class="text-sm font-bold text-on-surface">{{ formatMontant(modalCotisation.montant) }}</span>
+          <span class="text-sm font-bold text-on-surface">{{
+            formatMontant(modalCotisation.montant)
+          }}</span>
         </div>
         <div class="flex justify-between items-center px-4 py-3">
           <span class="text-xs text-on-surface-variant">Méthode</span>
-          <span class="text-sm text-on-surface">{{ modeLabel(modalCotisation.mode_paiement) }}</span>
+          <span class="text-sm text-on-surface">{{
+            modeLabel(modalCotisation.mode_paiement)
+          }}</span>
         </div>
         @if (modalCotisation.date_seance) {
           <div class="flex justify-between items-center px-4 py-3">
             <span class="text-xs text-on-surface-variant">Séance</span>
-            <span class="text-sm text-on-surface">{{ formatDate(modalCotisation.date_seance) }}</span>
+            <span class="text-sm text-on-surface">{{
+              formatDate(modalCotisation.date_seance)
+            }}</span>
           </div>
         }
       </div>
 
       @if (modalError) {
-        <div class="mx-6 mb-3 flex items-center gap-2 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm">
+        <div
+          class="mx-6 mb-3 flex items-center gap-2 px-4 py-3 bg-error-container text-on-error-container rounded-xl text-sm"
+        >
           <span class="material-symbols-outlined text-[16px] shrink-0">error</span>
           {{ modalError }}
         </div>
       }
 
       <div class="px-6 pb-6 flex gap-3">
-        <button (click)="closeModal()" [disabled]="isSubmitting"
-          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50">
+        <button
+          (click)="closeModal()"
+          [disabled]="isSubmitting"
+          class="flex-1 py-2.5 border border-outline-variant/40 rounded-xl text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50"
+        >
           Annuler
         </button>
-        <button (click)="confirmerValidation()" [disabled]="isSubmitting"
-          class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+        <button
+          (click)="confirmerValidation()"
+          [disabled]="isSubmitting"
+          class="flex-1 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+        >
           @if (isSubmitting) {
             <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
           }
@@ -229,20 +331,17 @@
 
 @if (!isLoading && !errorMessage) {
   <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
-
-    <!-- En-tête -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h2 class="text-2xl font-black text-on-surface">Cotisations</h2>
-        <p class="text-sm text-on-surface-variant mt-0.5">Gérez et validez les paiements des membres</p>
-      </div>
-      <div class="flex items-center gap-2 self-start sm:self-auto">
+    <!-- Actions (le titre est porté par l'onglet de la page Gestion financière) -->
+    <div class="flex justify-end">
+      <div class="flex flex-wrap items-center gap-2">
         <button
           (click)="exporterPdf()"
           [disabled]="isExporting"
           class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container-low active:scale-[0.98] transition-all disabled:opacity-50"
         >
-          <span class="material-symbols-outlined text-[18px]">{{ isExporting ? 'hourglass_empty' : 'picture_as_pdf' }}</span>
+          <span class="material-symbols-outlined text-[18px]">{{
+            isExporting ? 'hourglass_empty' : 'picture_as_pdf'
+          }}</span>
           {{ isExporting ? 'Export...' : 'Exporter PDF' }}
         </button>
         <button
@@ -264,23 +363,38 @@
 
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Total collecté</span>
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">account_balance_wallet</span>
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider"
+            >Total collecté</span
+          >
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >account_balance_wallet</span
+            >
           </div>
         </div>
         <p class="text-2xl font-black text-on-surface">{{ formatMontant(totalCollecte) }}</p>
         <p class="text-xs text-on-surface-variant/60">Cotisations validées</p>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">En attente</span>
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">pending</span>
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider"
+            >En attente</span
+          >
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >pending</span
+            >
           </div>
         </div>
         <p class="text-2xl font-black text-on-surface">
@@ -288,44 +402,60 @@
           <span class="text-sm font-medium text-on-surface-variant">à valider</span>
         </p>
         <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
-          <div class="h-full bg-outline-variant rounded-full transition-all"
-            [style.width.%]="cotisations.length ? (nombreEnAttente / cotisations.length) * 100 : 0"></div>
+          <div
+            class="h-full bg-outline-variant rounded-full transition-all"
+            [style.width.%]="cotisations.length ? (nombreEnAttente / cotisations.length) * 100 : 0"
+          ></div>
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-5 flex flex-col gap-3"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Ce mois</span>
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">calendar_month</span>
+          <span class="text-xs font-medium text-on-surface-variant uppercase tracking-wider"
+            >Ce mois</span
+          >
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >calendar_month</span
+            >
           </div>
         </div>
         <p class="text-2xl font-black text-on-surface">{{ formatMontant(totalMois) }}</p>
         <p class="text-xs text-on-surface-variant/60">Collecté ce mois</p>
       </div>
-
     </div>
 
     <!-- Filtres -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-
       <!-- Onglets -->
       <div class="flex bg-surface-container-low p-1 rounded-xl gap-0.5">
         <button
           (click)="setTab('toutes')"
-          [class]="activeTab === 'toutes'
-            ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all'
-            : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all'"
-        >Toutes</button>
+          [class]="
+            activeTab === 'toutes'
+              ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all'
+              : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all'
+          "
+        >
+          Toutes
+        </button>
         <button
           (click)="setTab('en_attente')"
-          [class]="activeTab === 'en_attente'
-            ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all flex items-center gap-2'
-            : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-2'"
+          [class]="
+            activeTab === 'en_attente'
+              ? 'px-4 py-2 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-on-surface transition-all flex items-center gap-2'
+              : 'px-4 py-2 rounded-lg text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-2'
+          "
         >
           En attente
           @if (nombreEnAttente > 0) {
-            <span class="min-w-[18px] h-[18px] px-1 rounded-full bg-surface-container-highest text-on-surface text-[10px] font-bold flex items-center justify-center">
+            <span
+              class="min-w-[18px] h-[18px] px-1 rounded-full bg-surface-container-highest text-on-surface text-[10px] font-bold flex items-center justify-center"
+            >
               {{ nombreEnAttente }}
             </span>
           }
@@ -334,10 +464,13 @@
 
       <!-- Recherche + Filtres -->
       <div class="flex items-center gap-2">
-
         <!-- Recherche -->
-        <div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-3 py-2 w-52">
-          <span class="material-symbols-outlined text-on-surface-variant/40 text-[18px] shrink-0">search</span>
+        <div
+          class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-3 py-2 w-52"
+        >
+          <span class="material-symbols-outlined text-on-surface-variant/40 text-[18px] shrink-0"
+            >search</span
+          >
           <input
             type="text"
             [(ngModel)]="searchQuery"
@@ -346,7 +479,10 @@
             class="bg-transparent outline-none text-sm w-full placeholder:text-on-surface-variant/40 text-on-surface"
           />
           @if (searchQuery) {
-            <button (click)="searchQuery = ''; onFilterChange()" class="text-on-surface-variant/40 hover:text-on-surface-variant transition-colors">
+            <button
+              (click)="searchQuery = ''; onFilterChange()"
+              class="text-on-surface-variant/40 hover:text-on-surface-variant transition-colors"
+            >
               <span class="material-symbols-outlined text-[15px]">close</span>
             </button>
           }
@@ -357,14 +493,18 @@
           <button
             (click)="toggleFilterPanel($event)"
             class="flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-colors text-xs font-medium"
-            [ngClass]="hasActiveFilters
-              ? 'bg-secondary/10 border-secondary/40 text-secondary'
-              : 'bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'"
+            [ngClass]="
+              hasActiveFilters
+                ? 'bg-secondary/10 border-secondary/40 text-secondary'
+                : 'bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+            "
           >
             <span class="material-symbols-outlined text-[17px]">tune</span>
             Filtres
             @if (activeFiltersCount > 0) {
-              <span class="min-w-[16px] h-4 px-1 bg-secondary text-white text-[10px] font-black rounded-full flex items-center justify-center">
+              <span
+                class="min-w-[16px] h-4 px-1 bg-secondary text-white text-[10px] font-black rounded-full flex items-center justify-center"
+              >
                 {{ activeFiltersCount }}
               </span>
             }
@@ -372,11 +512,15 @@
 
           <!-- Panneau déroulant -->
           @if (filterPanelOpen) {
-            <div class="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-xl z-30 p-4 flex flex-col gap-4">
-
+            <div
+              class="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-xl z-30 p-4 flex flex-col gap-4"
+            >
               <!-- Statut -->
               <div class="flex flex-col gap-1.5">
-                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</label>
+                <label
+                  class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+                  >Statut</label
+                >
                 <div class="relative">
                   <select
                     [(ngModel)]="statutFilter"
@@ -388,13 +532,19 @@
                     <option value="pending">En attente</option>
                     <option value="rejected">Refusé</option>
                   </select>
-                  <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none">expand_more</span>
+                  <span
+                    class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none"
+                    >expand_more</span
+                  >
                 </div>
               </div>
 
               <!-- Mode de paiement -->
               <div class="flex flex-col gap-1.5">
-                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Mode de paiement</label>
+                <label
+                  class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+                  >Mode de paiement</label
+                >
                 <div class="relative">
                   <select
                     [(ngModel)]="modePaiementFilter"
@@ -406,13 +556,19 @@
                     <option value="wave">Wave</option>
                     <option value="orange_money">Orange Money</option>
                   </select>
-                  <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none">expand_more</span>
+                  <span
+                    class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[15px] pointer-events-none"
+                    >expand_more</span
+                  >
                 </div>
               </div>
 
               <!-- Période -->
               <div class="flex flex-col gap-1.5">
-                <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Période</label>
+                <label
+                  class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+                  >Période</label
+                >
                 <input
                   type="month"
                   [(ngModel)]="periodeFilter"
@@ -431,34 +587,59 @@
                   Réinitialiser les filtres
                 </button>
               }
-
             </div>
           }
         </div>
-
       </div>
     </div>
 
     <!-- Tableau -->
-    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+    <div
+      class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden"
+    >
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b border-outline-variant/15">
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Membre</th>
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Montant</th>
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Méthode</th>
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Date séance</th>
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+              >
+                Membre
+              </th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+              >
+                Montant
+              </th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+              >
+                Méthode
+              </th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+              >
+                Date séance
+              </th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider"
+              >
+                Statut
+              </th>
+              <th
+                class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-right"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/10">
-
             @if (paginated.length === 0) {
               <tr>
                 <td colspan="6" class="px-6 py-16 text-center">
-                  <span class="material-symbols-outlined text-4xl text-outline block mb-2">payments</span>
+                  <span class="material-symbols-outlined text-4xl text-outline block mb-2"
+                    >payments</span
+                  >
                   <p class="text-sm font-medium text-on-surface">Aucune cotisation trouvée</p>
                   <p class="text-xs text-on-surface-variant mt-1">
                     @if (searchQuery || statutFilter) {
@@ -481,31 +662,47 @@
             }
 
             @for (cotisation of paginated; track cotisation.id) {
-              <tr class="group hover:bg-surface-container-low/40 transition-colors cursor-pointer" (click)="openDetail(cotisation)">
-
+              <tr
+                class="group hover:bg-surface-container-low/40 transition-colors cursor-pointer"
+                (click)="openDetail(cotisation)"
+              >
                 <!-- Membre -->
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold shrink-0">
+                    <div
+                      class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs font-bold shrink-0"
+                    >
                       {{ initiales(cotisation) }}
                     </div>
                     <div>
-                      <p class="text-sm font-semibold text-on-surface">{{ cotisation.prenom }} {{ cotisation.nom }}</p>
-                      <p class="text-xs text-on-surface-variant/60 mt-0.5">{{ formatDate(cotisation.created_at) }}</p>
+                      <p class="text-sm font-semibold text-on-surface">
+                        {{ cotisation.prenom }} {{ cotisation.nom }}
+                      </p>
+                      <p class="text-xs text-on-surface-variant/60 mt-0.5">
+                        {{ formatDate(cotisation.created_at) }}
+                      </p>
                     </div>
                   </div>
                 </td>
 
                 <!-- Montant -->
                 <td class="px-6 py-4">
-                  <span class="text-sm font-bold text-on-surface">{{ formatMontant(cotisation.montant) }}</span>
+                  <span class="text-sm font-bold text-on-surface">{{
+                    formatMontant(cotisation.montant)
+                  }}</span>
                 </td>
 
                 <!-- Méthode -->
                 <td class="px-6 py-4">
-                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-high rounded-lg text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[14px]">{{ modeIcon(cotisation.mode_paiement) }}</span>
-                    <span class="text-xs font-medium">{{ modeLabel(cotisation.mode_paiement) }}</span>
+                  <div
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-high rounded-lg text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined text-[14px]">{{
+                      modeIcon(cotisation.mode_paiement)
+                    }}</span>
+                    <span class="text-xs font-medium">{{
+                      modeLabel(cotisation.mode_paiement)
+                    }}</span>
                   </div>
                 </td>
 
@@ -517,10 +714,24 @@
                 <!-- Statut -->
                 <td class="px-6 py-4">
                   <span class="flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                      [class]="cotisation.statut === 'approved' ? 'bg-green-400' : cotisation.statut === 'pending' ? 'bg-yellow-400' : 'bg-red-400'"></span>
+                    <span
+                      class="w-1.5 h-1.5 rounded-full shrink-0"
+                      [class]="
+                        cotisation.statut === 'approved'
+                          ? 'bg-green-400'
+                          : cotisation.statut === 'pending'
+                            ? 'bg-yellow-400'
+                            : 'bg-red-400'
+                      "
+                    ></span>
                     <span class="text-xs text-on-surface-variant">
-                      {{ cotisation.statut === 'approved' ? 'Validé' : cotisation.statut === 'pending' ? 'En attente' : 'Refusé' }}
+                      {{
+                        cotisation.statut === 'approved'
+                          ? 'Validé'
+                          : cotisation.statut === 'pending'
+                            ? 'En attente'
+                            : 'Refusé'
+                      }}
                     </span>
                   </span>
                 </td>
@@ -553,12 +764,18 @@
                       </button>
 
                       @if (menuOpenId === cotisation.id) {
-                        <div class="absolute right-0 top-full mt-1 w-48 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/25 z-50 py-1" (click)="$event.stopPropagation()">
+                        <div
+                          class="absolute right-0 top-full mt-1 w-48 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/25 z-50 py-1"
+                          (click)="$event.stopPropagation()"
+                        >
                           <button
                             (click)="openDetail(cotisation)"
                             class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                           >
-                            <span class="material-symbols-outlined text-on-surface-variant text-[16px]">visibility</span>
+                            <span
+                              class="material-symbols-outlined text-on-surface-variant text-[16px]"
+                              >visibility</span
+                            >
                             Voir le détail
                           </button>
                         </div>
@@ -566,16 +783,16 @@
                     </div>
                   }
                 </td>
-
               </tr>
             }
-
           </tbody>
         </table>
       </div>
 
       <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div
+        class="px-6 py-4 border-t border-outline-variant/15 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
         <span class="text-xs text-on-surface-variant">{{ rangeLabel }}</span>
         @if (totalPages > 1) {
           <div class="flex items-center gap-1">
@@ -584,48 +801,65 @@
               [disabled]="page === 1"
               class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_left</span>
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant"
+                >chevron_left</span
+              >
             </button>
             @for (p of pageNumbers; track p) {
               <button
                 (click)="setPage(p)"
                 class="min-w-[2rem] h-8 px-2 rounded-lg text-xs font-medium transition-colors"
-                [class]="p === page
-                  ? 'bg-secondary/15 text-secondary font-bold'
-                  : 'border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low'"
-              >{{ p }}</button>
+                [class]="
+                  p === page
+                    ? 'bg-secondary/15 text-secondary font-bold'
+                    : 'border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low'
+                "
+              >
+                {{ p }}
+              </button>
             }
             <button
               (click)="setPage(page + 1)"
               [disabled]="page === totalPages"
               class="p-1.5 border border-outline-variant/30 rounded-lg hover:bg-surface-container-low transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant"
+                >chevron_right</span
+              >
             </button>
           </div>
         }
       </div>
     </div>
-
   </div>
 }
 
 <!-- Modal relance -->
 @if (modalRelanceVisible) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" (click)="fermerModalRelance()">
-    <div class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl border border-outline-variant/20 p-8" (click)="$event.stopPropagation()">
-      <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4">
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    (click)="fermerModalRelance()"
+  >
+    <div
+      class="bg-surface-container-lowest w-full max-w-sm rounded-2xl shadow-2xl border border-outline-variant/20 p-8"
+      (click)="$event.stopPropagation()"
+    >
+      <div
+        class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4"
+      >
         <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">send</span>
       </div>
       <h3 class="text-base font-bold text-on-surface mb-2">Envoyer des relances</h3>
       <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
         Un email de rappel sera envoyé à tous les membres ayant une cotisation
-        <strong class="text-on-surface">en attente depuis plus de 3 jours</strong>.
-        Seuls les membres avec une adresse email enregistrée seront contactés.
+        <strong class="text-on-surface">en attente depuis plus de 3 jours</strong>. Seuls les
+        membres avec une adresse email enregistrée seront contactés.
       </p>
       <div class="flex gap-3 justify-end">
-        <button (click)="fermerModalRelance()"
-          class="px-5 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+        <button
+          (click)="fermerModalRelance()"
+          class="px-5 py-2.5 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors"
+        >
           Annuler
         </button>
         <button
@@ -634,7 +868,9 @@
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-primary text-on-primary disabled:opacity-60 hover:opacity-90 transition-all"
         >
           @if (isRelancing) {
-            <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span
+              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            ></span>
           }
           {{ isRelancing ? 'Envoi…' : 'Envoyer les relances' }}
         </button>
@@ -647,9 +883,11 @@
 @if (toast) {
   <div
     class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium border"
-    [class]="toast.type === 'success'
-      ? 'bg-surface-container-highest text-on-surface border-outline-variant/30'
-      : 'bg-error-container text-on-error-container border-error/20'"
+    [class]="
+      toast.type === 'success'
+        ? 'bg-surface-container-highest text-on-surface border-outline-variant/30'
+        : 'bg-error-container text-on-error-container border-error/20'
+    "
   >
     <span class="material-symbols-outlined text-[18px]">
       {{ toast.type === 'success' ? 'check_circle' : 'error' }}

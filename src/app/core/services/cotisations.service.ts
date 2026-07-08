@@ -66,7 +66,14 @@ export interface CotisationStatsResponse {
 export class CotisationsService {
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {}
+
+  getMesCotisations(): Observable<CotisationsResponse> {
+    return this.http.get<CotisationsResponse>(`${this.apiUrl}/cotisations/mine`);
+  }
 
   getCotisations(statut?: string): Observable<CotisationsResponse> {
     const params = statut ? `?statut=${statut}` : '';
@@ -96,11 +103,13 @@ export class CotisationsService {
     return this.http.get<CotisationStatsResponse>(`${this.apiUrl}/cotisations/dashboard`);
   }
 
-  relancer(jours = 3): Observable<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }> {
-    return this.http.post<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }>(
-      `${this.apiUrl}/cotisations/relancer`,
-      { jours },
-    );
+  relancer(
+    jours = 3,
+  ): Observable<{ success: boolean; data: { envoyes: number; sansEmail: number; total: number } }> {
+    return this.http.post<{
+      success: boolean;
+      data: { envoyes: number; sansEmail: number; total: number };
+    }>(`${this.apiUrl}/cotisations/relancer`, { jours });
   }
 
   exportPdf(statut?: string): void {

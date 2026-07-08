@@ -21,7 +21,9 @@
 
 <!-- Erreur -->
 @if (!isLoading && errorMessage) {
-  <div class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-20 gap-4 text-center">
+  <div
+    class="p-10 max-w-7xl mx-auto flex flex-col items-center justify-center py-20 gap-4 text-center"
+  >
     <span class="material-symbols-outlined text-5xl text-outline">cloud_off</span>
     <p class="text-on-surface-variant font-medium">{{ errorMessage }}</p>
     <button
@@ -37,38 +39,39 @@
 <!-- Contenu principal -->
 @if (!isLoading && !errorMessage) {
   <div class="p-6 lg:p-10 max-w-7xl mx-auto space-y-6">
-
-    <!-- En-tête -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h2 class="text-2xl font-black text-on-surface">Trésorerie</h2>
-        <p class="text-sm text-on-surface-variant mt-0.5">Suivi des flux financiers de votre Dahira</p>
-      </div>
-
+    <!-- Actions (le titre est porté par l'onglet de la page Gestion financière) -->
+    <div class="flex justify-end">
       <!-- Menu export -->
-      <div class="relative self-start sm:self-auto">
+      <div class="relative">
         <button
           (click)="menuExportOuvert = !menuExportOuvert; $event.stopPropagation()"
           class="flex items-center gap-2 border border-outline-variant/40 text-on-surface-variant px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-container-low transition-all"
         >
           <span class="material-symbols-outlined text-[18px]">file_download</span>
           Exporter
-          <span class="material-symbols-outlined text-[16px]">{{ menuExportOuvert ? 'expand_less' : 'expand_more' }}</span>
+          <span class="material-symbols-outlined text-[16px]">{{
+            menuExportOuvert ? 'expand_less' : 'expand_more'
+          }}</span>
         </button>
 
         @if (menuExportOuvert) {
-          <div class="absolute right-0 top-full mt-1 z-30 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg overflow-hidden w-72"
-               (click)="$event.stopPropagation()">
-
+          <div
+            class="absolute right-0 top-full mt-1 z-30 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg overflow-hidden w-72"
+            (click)="$event.stopPropagation()"
+          >
             <!-- Option 1 : Rapport mensuel PDF -->
             <div class="p-3 border-b border-outline-variant/20">
-              <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 px-1">Rapport mensuel</p>
+              <p
+                class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 px-1"
+              >
+                Rapport mensuel
+              </p>
               <div class="flex items-center gap-2">
                 <input
                   type="month"
                   [(ngModel)]="moisRapport"
                   class="flex-1 px-3 py-2 text-sm rounded-lg border border-outline-variant/30 bg-surface-container text-on-surface outline-none"
-                  style="color-scheme: light dark;"
+                  style="color-scheme: light dark"
                 />
                 <button
                   (click)="exporterRapportMensuel(); menuExportOuvert = false"
@@ -87,16 +90,20 @@
               [disabled]="isExporting"
               class="w-full flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors disabled:opacity-50"
             >
-              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">table_view</span>
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant"
+                >table_view</span
+              >
               <div class="text-left">
                 <p class="font-medium">Relevé complet CSV</p>
                 <p class="text-xs text-on-surface-variant">Toutes les transactions</p>
               </div>
               @if (isExporting) {
-                <span class="material-symbols-outlined text-[16px] text-on-surface-variant ml-auto animate-spin">progress_activity</span>
+                <span
+                  class="material-symbols-outlined text-[16px] text-on-surface-variant ml-auto animate-spin"
+                  >progress_activity</span
+                >
               }
             </button>
-
           </div>
         }
       </div>
@@ -106,8 +113,12 @@
     @if (alertes.length > 0) {
       <div class="space-y-2">
         @for (alerte of alertes; track alerte.message) {
-          <div class="bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-3 flex items-center gap-3">
-            <span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">{{ alerteIcon(alerte) }}</span>
+          <div
+            class="bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-3 flex items-center gap-3"
+          >
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">{{
+              alerteIcon(alerte)
+            }}</span>
             <span class="text-sm text-on-surface-variant">{{ alerte.message }}</span>
           </div>
         }
@@ -116,15 +127,22 @@
 
     <!-- KPI du mois -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4"
+      >
         <div class="flex items-center justify-between">
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_down</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >arrow_circle_down</span
+            >
           </div>
           @if (tendanceCollectePct !== null) {
             <span class="text-xs text-on-surface-variant/60 flex items-center gap-0.5">
-              <span class="material-symbols-outlined text-[14px]">{{ tendanceCollectePct >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              <span class="material-symbols-outlined text-[14px]">{{
+                tendanceCollectePct >= 0 ? 'trending_up' : 'trending_down'
+              }}</span>
               {{ tendanceCollectePct >= 0 ? '+' : '' }}{{ tendanceCollectePct }}%
             </span>
           }
@@ -135,14 +153,22 @@
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4"
+      >
         <div class="flex items-center justify-between">
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_up</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >arrow_circle_up</span
+            >
           </div>
           @if (tendanceDepensePct !== null) {
             <span class="text-xs text-on-surface-variant/60 flex items-center gap-0.5">
-              <span class="material-symbols-outlined text-[14px]">{{ tendanceDepensePct <= 0 ? 'trending_down' : 'trending_up' }}</span>
+              <span class="material-symbols-outlined text-[14px]">{{
+                tendanceDepensePct <= 0 ? 'trending_down' : 'trending_up'
+              }}</span>
               {{ tendanceDepensePct >= 0 ? '+' : '' }}{{ tendanceDepensePct }}%
             </span>
           }
@@ -153,12 +179,20 @@
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-6 flex flex-col gap-4"
+      >
         <div class="flex items-center justify-between">
-          <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">balance</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >balance</span
+            >
           </div>
-          <span class="text-xs px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-medium">
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-medium"
+          >
             {{ soldeCeMois >= 0 ? 'Excédent' : 'Déficit' }}
           </span>
         </div>
@@ -169,22 +203,30 @@
           <p class="text-xs font-medium text-on-surface-variant mt-1">Bilan du mois</p>
         </div>
       </div>
-
     </div>
 
     <!-- Solde global + Répartition par mode -->
     @if (solde) {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
         <!-- Solde global (2/3) -->
-        <div class="md:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-6">
+        <div
+          class="md:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-6"
+        >
           <div class="flex items-start justify-between">
             <div>
-              <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Solde global</p>
-              <p class="text-xs text-on-surface-variant/50 mt-0.5">Cotisations approuvées − Dépenses validées</p>
+              <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">
+                Solde global
+              </p>
+              <p class="text-xs text-on-surface-variant/50 mt-0.5">
+                Cotisations approuvées − Dépenses validées
+              </p>
             </div>
-            <div class="w-10 h-10 bg-surface-container-high rounded-xl flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined text-on-surface-variant text-[20px]">account_balance_wallet</span>
+            <div
+              class="w-10 h-10 bg-surface-container-high rounded-xl flex items-center justify-center shrink-0"
+            >
+              <span class="material-symbols-outlined text-on-surface-variant text-[20px]"
+                >account_balance_wallet</span
+              >
             </div>
           </div>
 
@@ -193,7 +235,9 @@
               {{ formatMontant(solde.solde_global) }}
             </p>
             @if (solde.solde_global < 0) {
-              <span class="mb-1 text-xs font-medium text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">
+              <span
+                class="mb-1 text-xs font-medium text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full"
+              >
                 Solde négatif
               </span>
             }
@@ -202,47 +246,84 @@
           <div class="grid grid-cols-2 gap-3 pt-4 border-t border-outline-variant/15">
             <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
               <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-[14px]">arrow_circle_down</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-[14px]"
+                  >arrow_circle_down</span
+                >
                 <p class="text-xs text-on-surface-variant/70">Total entrées</p>
               </div>
-              <p class="text-xl font-bold text-on-surface">{{ formatMontant(solde.entrees.total) }}</p>
+              <p class="text-xl font-bold text-on-surface">
+                {{ formatMontant(solde.entrees.total) }}
+              </p>
               <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
-                <div class="h-full bg-outline-variant rounded-full transition-all"
-                     [style.width]="solde.entrees.total / (solde.entrees.total + solde.sorties.total + 1) * 100 + '%'"></div>
+                <div
+                  class="h-full bg-outline-variant rounded-full transition-all"
+                  [style.width]="
+                    (solde.entrees.total / (solde.entrees.total + solde.sorties.total + 1)) * 100 +
+                    '%'
+                  "
+                ></div>
               </div>
             </div>
             <div class="bg-surface-container-low rounded-xl p-4 space-y-2">
               <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-on-surface-variant text-[14px]">arrow_circle_up</span>
+                <span class="material-symbols-outlined text-on-surface-variant text-[14px]"
+                  >arrow_circle_up</span
+                >
                 <p class="text-xs text-on-surface-variant/70">Total dépenses</p>
               </div>
-              <p class="text-xl font-bold text-on-surface">{{ formatMontant(solde.sorties.total) }}</p>
+              <p class="text-xl font-bold text-on-surface">
+                {{ formatMontant(solde.sorties.total) }}
+              </p>
               <div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
-                <div class="h-full bg-outline-variant/50 rounded-full transition-all"
-                     [style.width]="solde.sorties.total / (solde.entrees.total + solde.sorties.total + 1) * 100 + '%'"></div>
+                <div
+                  class="h-full bg-outline-variant/50 rounded-full transition-all"
+                  [style.width]="
+                    (solde.sorties.total / (solde.entrees.total + solde.sorties.total + 1)) * 100 +
+                    '%'
+                  "
+                ></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Répartition par mode (1/3) -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-5">
-          <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Solde par mode</p>
+        <div
+          class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7 flex flex-col gap-5"
+        >
+          <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wider">
+            Solde par mode
+          </p>
 
           <div class="flex-1 space-y-1">
-            @for (item of [
-              { icon: 'payments', label: 'Espèces', value: solde.soldes_par_mode.especes },
-              { icon: 'contactless', label: 'Wave', value: solde.soldes_par_mode.wave },
-              { icon: 'phone_android', label: 'Orange Money', value: solde.soldes_par_mode.orange_money }
-            ]; track item.label) {
-              <div class="flex items-center justify-between px-3 py-3.5 rounded-xl hover:bg-surface-container-low transition-colors">
+            @for (
+              item of [
+                { icon: 'payments', label: 'Espèces', value: solde.soldes_par_mode.especes },
+                { icon: 'contactless', label: 'Wave', value: solde.soldes_par_mode.wave },
+                {
+                  icon: 'phone_android',
+                  label: 'Orange Money',
+                  value: solde.soldes_par_mode.orange_money,
+                },
+              ];
+              track item.label
+            ) {
+              <div
+                class="flex items-center justify-between px-3 py-3.5 rounded-xl hover:bg-surface-container-low transition-colors"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-surface-variant text-[16px]">{{ item.icon }}</span>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-on-surface-variant text-[16px]">{{
+                      item.icon
+                    }}</span>
                   </div>
                   <span class="text-sm text-on-surface-variant">{{ item.label }}</span>
                 </div>
-                <span class="text-sm font-bold text-on-surface">{{ formatMontant(item.value) }}</span>
+                <span class="text-sm font-bold text-on-surface">{{
+                  formatMontant(item.value)
+                }}</span>
               </div>
             }
           </div>
@@ -252,7 +333,6 @@
 
     <!-- Graphique évolution -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-7">
-
       <div class="flex flex-wrap justify-between items-start gap-4 mb-5">
         <div>
           <h3 class="text-base font-bold text-on-surface">Évolution de la trésorerie</h3>
@@ -261,16 +341,24 @@
         <div class="flex bg-surface-container-low p-1 rounded-lg gap-0.5">
           <button
             (click)="setPeriode(6)"
-            [class]="periodeNbMois === 6
-              ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
-              : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'"
-          >6 mois</button>
+            [class]="
+              periodeNbMois === 6
+                ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
+                : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'
+            "
+          >
+            6 mois
+          </button>
           <button
             (click)="setPeriode(12)"
-            [class]="periodeNbMois === 12
-              ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
-              : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'"
-          >12 mois</button>
+            [class]="
+              periodeNbMois === 12
+                ? 'px-4 py-1.5 text-xs font-bold bg-surface-container-lowest shadow-sm rounded-md text-on-surface'
+                : 'px-4 py-1.5 text-xs font-medium text-on-surface-variant rounded-md transition-colors hover:bg-surface-container'
+            "
+          >
+            12 mois
+          </button>
         </div>
       </div>
 
@@ -280,11 +368,16 @@
           <span class="text-xs text-on-surface-variant">Entrées</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-6 h-0.5 bg-outline-variant rounded-full" style="border-top: 2px dashed"></div>
+          <div
+            class="w-6 h-0.5 bg-outline-variant rounded-full"
+            style="border-top: 2px dashed"
+          ></div>
           <span class="text-xs text-on-surface-variant">Dépenses</span>
         </div>
         @if (hoveredPoint) {
-          <div class="ml-auto flex items-center gap-3 text-xs text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg">
+          <div
+            class="ml-auto flex items-center gap-3 text-xs text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"
+          >
             <span class="font-bold text-on-surface">{{ hoveredPoint.label }}</span>
             <span>↑ {{ formatMontant(hoveredPoint.montantE) }}</span>
             <span>↓ {{ formatMontant(hoveredPoint.montantS) }}</span>
@@ -302,63 +395,165 @@
         <svg
           [attr.viewBox]="'0 0 ' + CW + ' ' + CH"
           class="w-full overflow-visible"
-          style="height: auto;"
+          style="height: auto"
           (mouseleave)="hoveredPoint = null"
         >
           <defs>
             <linearGradient id="grad-entrees" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#45464d" stop-opacity="0.12"/>
-              <stop offset="100%" stop-color="#45464d" stop-opacity="0.01"/>
+              <stop offset="0%" stop-color="#45464d" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="#45464d" stop-opacity="0.01" />
             </linearGradient>
             <linearGradient id="grad-sorties" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#c6c6cd" stop-opacity="0.2"/>
-              <stop offset="100%" stop-color="#c6c6cd" stop-opacity="0.01"/>
+              <stop offset="0%" stop-color="#c6c6cd" stop-opacity="0.2" />
+              <stop offset="100%" stop-color="#c6c6cd" stop-opacity="0.01" />
             </linearGradient>
           </defs>
 
           @for (g of yGridLines; track g.label) {
-            <line [attr.x1]="PAD_L" [attr.y1]="g.y" [attr.x2]="CW - PAD_R" [attr.y2]="g.y"
-              stroke="#c6c6cd" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
-            <text [attr.x]="PAD_L - 8" [attr.y]="g.y + 4"
-              text-anchor="end" font-size="10" font-family="Inter, sans-serif" fill="#75767e">{{ g.label }}</text>
+            <line
+              [attr.x1]="PAD_L"
+              [attr.y1]="g.y"
+              [attr.x2]="CW - PAD_R"
+              [attr.y2]="g.y"
+              stroke="#c6c6cd"
+              stroke-width="1"
+              stroke-dasharray="4 4"
+              opacity="0.5"
+            />
+            <text
+              [attr.x]="PAD_L - 8"
+              [attr.y]="g.y + 4"
+              text-anchor="end"
+              font-size="10"
+              font-family="Inter, sans-serif"
+              fill="#75767e"
+            >
+              {{ g.label }}
+            </text>
           }
 
-          <line [attr.x1]="PAD_L" [attr.y1]="chartBaseY" [attr.x2]="CW - PAD_R" [attr.y2]="chartBaseY"
-            stroke="#c6c6cd" stroke-width="1"/>
+          <line
+            [attr.x1]="PAD_L"
+            [attr.y1]="chartBaseY"
+            [attr.x2]="CW - PAD_R"
+            [attr.y2]="chartBaseY"
+            stroke="#c6c6cd"
+            stroke-width="1"
+          />
 
-          <path [attr.d]="pathSortiesArea" fill="url(#grad-sorties)"/>
-          <path [attr.d]="pathEntreesArea" fill="url(#grad-entrees)"/>
-          <path [attr.d]="pathSortiesLine" fill="none" stroke="#c6c6cd" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="5 3"/>
-          <path [attr.d]="pathEntreesLine" fill="none" stroke="#45464d" stroke-width="2" stroke-linejoin="round"/>
+          <path [attr.d]="pathSortiesArea" fill="url(#grad-sorties)" />
+          <path [attr.d]="pathEntreesArea" fill="url(#grad-entrees)" />
+          <path
+            [attr.d]="pathSortiesLine"
+            fill="none"
+            stroke="#c6c6cd"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+            stroke-dasharray="5 3"
+          />
+          <path
+            [attr.d]="pathEntreesLine"
+            fill="none"
+            stroke="#45464d"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
 
           @for (pt of chartPoints; track pt.periode) {
             @if (hoveredPoint?.periode === pt.periode) {
-              <line [attr.x1]="pt.x" [attr.y1]="PAD_T" [attr.x2]="pt.x" [attr.y2]="chartBaseY"
-                stroke="#45464d" stroke-width="1" stroke-dasharray="3 3" opacity="0.25"/>
+              <line
+                [attr.x1]="pt.x"
+                [attr.y1]="PAD_T"
+                [attr.x2]="pt.x"
+                [attr.y2]="chartBaseY"
+                stroke="#45464d"
+                stroke-width="1"
+                stroke-dasharray="3 3"
+                opacity="0.25"
+              />
             }
-            <rect [attr.x]="pt.x - hoverZoneWidth / 2" [attr.y]="PAD_T"
-              [attr.width]="hoverZoneWidth" [attr.height]="chartPlotH"
-              fill="transparent" class="cursor-crosshair" (mouseenter)="hoveredPoint = pt"/>
-            <circle [attr.cx]="pt.x" [attr.cy]="pt.yE" r="4"
-              fill="#45464d" stroke="white" stroke-width="2"
-              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"/>
-            <circle [attr.cx]="pt.x" [attr.cy]="pt.yS" r="4"
-              fill="#c6c6cd" stroke="white" stroke-width="2"
-              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"/>
-            <text [attr.x]="pt.x" [attr.y]="chartBaseY + 20"
-              text-anchor="middle" font-size="11" font-family="Inter, sans-serif"
+            <rect
+              [attr.x]="pt.x - hoverZoneWidth / 2"
+              [attr.y]="PAD_T"
+              [attr.width]="hoverZoneWidth"
+              [attr.height]="chartPlotH"
+              fill="transparent"
+              class="cursor-crosshair"
+              (mouseenter)="hoveredPoint = pt"
+            />
+            <circle
+              [attr.cx]="pt.x"
+              [attr.cy]="pt.yE"
+              r="4"
+              fill="#45464d"
+              stroke="white"
+              stroke-width="2"
+              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"
+            />
+            <circle
+              [attr.cx]="pt.x"
+              [attr.cy]="pt.yS"
+              r="4"
+              fill="#c6c6cd"
+              stroke="white"
+              stroke-width="2"
+              [style.opacity]="hoveredPoint?.periode === pt.periode ? '1' : '0'"
+            />
+            <text
+              [attr.x]="pt.x"
+              [attr.y]="chartBaseY + 20"
+              text-anchor="middle"
+              font-size="11"
+              font-family="Inter, sans-serif"
               [attr.fill]="hoveredPoint?.periode === pt.periode ? '#0b1c30' : '#75767e'"
-              [attr.font-weight]="hoveredPoint?.periode === pt.periode ? '700' : '400'">{{ pt.label }}</text>
+              [attr.font-weight]="hoveredPoint?.periode === pt.periode ? '700' : '400'"
+            >
+              {{ pt.label }}
+            </text>
           }
 
           @if (hoveredPoint) {
-            <g [attr.transform]="'translate(' + tooltipX(hoveredPoint) + ',' + tooltipY(hoveredPoint) + ')'">
-              <rect width="152" height="82" rx="8" fill="#1b1c1e" opacity="0.9"/>
-              <text x="12" y="22" font-size="11" font-weight="700" font-family="Inter, sans-serif" fill="white">{{ hoveredPoint.label }}</text>
-              <text x="12" y="41" font-size="10" font-family="Inter, sans-serif" fill="#c6c6cd">↑ {{ formatMontant(hoveredPoint.montantE) }}</text>
-              <text x="12" y="58" font-size="10" font-family="Inter, sans-serif" fill="#9e9fa6">↓ {{ formatMontant(hoveredPoint.montantS) }}</text>
-              <line x1="12" y1="65" x2="140" y2="65" stroke="white" stroke-width="0.4" opacity="0.2"/>
-              <text x="12" y="78" font-size="10" font-weight="600" font-family="Inter, sans-serif" fill="white">= {{ formatMontant(hoveredPoint.solde) }}</text>
+            <g
+              [attr.transform]="
+                'translate(' + tooltipX(hoveredPoint) + ',' + tooltipY(hoveredPoint) + ')'
+              "
+            >
+              <rect width="152" height="82" rx="8" fill="#1b1c1e" opacity="0.9" />
+              <text
+                x="12"
+                y="22"
+                font-size="11"
+                font-weight="700"
+                font-family="Inter, sans-serif"
+                fill="white"
+              >
+                {{ hoveredPoint.label }}
+              </text>
+              <text x="12" y="41" font-size="10" font-family="Inter, sans-serif" fill="#c6c6cd">
+                ↑ {{ formatMontant(hoveredPoint.montantE) }}
+              </text>
+              <text x="12" y="58" font-size="10" font-family="Inter, sans-serif" fill="#9e9fa6">
+                ↓ {{ formatMontant(hoveredPoint.montantS) }}
+              </text>
+              <line
+                x1="12"
+                y1="65"
+                x2="140"
+                y2="65"
+                stroke="white"
+                stroke-width="0.4"
+                opacity="0.2"
+              />
+              <text
+                x="12"
+                y="78"
+                font-size="10"
+                font-weight="600"
+                font-family="Inter, sans-serif"
+                fill="white"
+              >
+                = {{ formatMontant(hoveredPoint.solde) }}
+              </text>
             </g>
           }
         </svg>
@@ -367,15 +562,21 @@
 
     <!-- Dernières transactions -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
       <!-- Entrées -->
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden"
+      >
         <div class="px-5 py-4 border-b border-outline-variant/15 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_down</span>
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >arrow_circle_down</span
+            >
             <h4 class="text-sm font-bold text-on-surface">Dernières entrées</h4>
           </div>
-          <a routerLink="/cotisations" class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors">
+          <a
+            routerLink="/cotisations"
+            class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors"
+          >
             Voir tout →
           </a>
         </div>
@@ -387,45 +588,68 @@
             </div>
           }
           @for (t of dernieresEntrees; track t.id) {
-            <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
-              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
+            <div
+              class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors"
+            >
+              <div
+                class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0"
+              >
                 {{ (t.membre_nom ?? t.description)[0].toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-on-surface truncate">{{ t.membre_nom ?? t.description }}</p>
+                <p class="text-sm font-semibold text-on-surface truncate">
+                  {{ t.membre_nom ?? t.description }}
+                </p>
                 <div class="flex items-center gap-1.5 mt-0.5">
                   <span class="text-xs text-on-surface-variant/60">{{ formatDate(t.date) }}</span>
                   <span class="w-1 h-1 rounded-full bg-outline-variant/50"></span>
-                  <span class="text-xs text-on-surface-variant/60">{{ modePaiementLabel(t.mode_paiement) }}</span>
+                  <span class="text-xs text-on-surface-variant/60">{{
+                    modePaiementLabel(t.mode_paiement)
+                  }}</span>
                 </div>
               </div>
-              <p class="text-sm font-bold text-on-surface shrink-0">{{ formatMontant(t.montant) }}</p>
+              <p class="text-sm font-bold text-on-surface shrink-0">
+                {{ formatMontant(t.montant) }}
+              </p>
             </div>
           }
         </div>
       </div>
 
       <!-- Dépenses -->
-      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+      <div
+        class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden"
+      >
         <div class="px-5 py-4 border-b border-outline-variant/15 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px]">arrow_circle_up</span>
+            <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+              >arrow_circle_up</span
+            >
             <h4 class="text-sm font-bold text-on-surface">Dernières dépenses</h4>
           </div>
-          <a routerLink="/depenses" class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors">
+          <a
+            routerLink="/depenses"
+            class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant transition-colors"
+          >
             Voir tout →
           </a>
         </div>
         <div class="divide-y divide-outline-variant/10">
           @if (dernieresSorties.length === 0) {
             <div class="p-10 text-center">
-              <span class="material-symbols-outlined text-3xl text-outline block mb-2">receipt_long</span>
+              <span class="material-symbols-outlined text-3xl text-outline block mb-2"
+                >receipt_long</span
+              >
               <p class="text-sm text-on-surface-variant">Aucune dépense enregistrée</p>
             </div>
           }
           @for (t of dernieresSorties; track t.id) {
-            <div class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors">
-              <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0">
+            <div
+              class="px-5 py-3.5 flex items-center gap-3 hover:bg-surface-container-low/40 transition-colors"
+            >
+              <div
+                class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface-variant shrink-0"
+              >
                 {{ t.description[0].toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
@@ -433,16 +657,18 @@
                 <div class="flex items-center gap-1.5 mt-0.5">
                   <span class="text-xs text-on-surface-variant/60">{{ formatDate(t.date) }}</span>
                   <span class="w-1 h-1 rounded-full bg-outline-variant/50"></span>
-                  <span class="text-xs text-on-surface-variant/60">{{ modePaiementLabel(t.mode_paiement) }}</span>
+                  <span class="text-xs text-on-surface-variant/60">{{
+                    modePaiementLabel(t.mode_paiement)
+                  }}</span>
                 </div>
               </div>
-              <p class="text-sm font-bold text-on-surface shrink-0">{{ formatMontant(t.montant) }}</p>
+              <p class="text-sm font-bold text-on-surface shrink-0">
+                {{ formatMontant(t.montant) }}
+              </p>
             </div>
           }
         </div>
       </div>
-
     </div>
-
   </div>
 }

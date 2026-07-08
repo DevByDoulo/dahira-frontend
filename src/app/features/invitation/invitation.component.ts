@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { MembresService, Membre } from '../../core/services/membres.service';
@@ -9,7 +10,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-invitation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './invitation.component.html',
 })
 export class InvitationComponent implements OnInit {
@@ -42,21 +43,24 @@ export class InvitationComponent implements OnInit {
     this.membresService.getMembres().subscribe({
       next: (res) => {
         if (res.success) {
-          this.membres = res.data.filter(m => m.actif);
+          this.membres = res.data.filter((m) => m.actif);
           this.membresFiltes = this.membres;
         }
         this.isLoadingMembres = false;
       },
-      error: () => { this.isLoadingMembres = false; },
+      error: () => {
+        this.isLoadingMembres = false;
+      },
     });
   }
 
   filtrerMembres(): void {
     const q = this.recherche.toLowerCase().trim();
     this.membresFiltes = q
-      ? this.membres.filter(m =>
-          `${m.prenom} ${m.nom}`.toLowerCase().includes(q) ||
-          `${m.nom} ${m.prenom}`.toLowerCase().includes(q)
+      ? this.membres.filter(
+          (m) =>
+            `${m.prenom} ${m.nom}`.toLowerCase().includes(q) ||
+            `${m.nom} ${m.prenom}`.toLowerCase().includes(q),
         )
       : this.membres;
     this.showDropdown = true;
@@ -71,34 +75,47 @@ export class InvitationComponent implements OnInit {
   }
 
   fermerDropdown(): void {
-    setTimeout(() => { this.showDropdown = false; }, 150);
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 150);
   }
 
   envoyerInvitation(): void {
     this.formError = '';
 
-    if (!this.selectedMembre) { this.formError = 'Veuillez sélectionner un membre.'; return; }
-    if (!this.email.trim()) { this.formError = 'L\'adresse email est requise.'; return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) { this.formError = 'Adresse email invalide.'; return; }
+    if (!this.selectedMembre) {
+      this.formError = 'Veuillez sélectionner un membre.';
+      return;
+    }
+    if (!this.email.trim()) {
+      this.formError = "L'adresse email est requise.";
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
+      this.formError = 'Adresse email invalide.';
+      return;
+    }
 
     this.isSending = true;
 
-    this.http.post<{ success: boolean; data: object }>(
-      `${this.apiUrl}/invitations`,
-      { membre_id: this.selectedMembre.id, email: this.email.trim(), role: this.role }
-    ).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.sentEmail = this.email.trim();
-          this.sent = true;
-        }
-        this.isSending = false;
-      },
-      error: (err) => {
-        this.formError = err?.error?.message ?? 'Erreur lors de l\'envoi de l\'invitation.';
-        this.isSending = false;
-      },
-    });
+    this.http
+      .post<{
+        success: boolean;
+        data: object;
+      }>(`${this.apiUrl}/invitations`, { membre_id: this.selectedMembre.id, email: this.email.trim(), role: this.role })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.sentEmail = this.email.trim();
+            this.sent = true;
+          }
+          this.isSending = false;
+        },
+        error: (err) => {
+          this.formError = err?.error?.message ?? "Erreur lors de l'envoi de l'invitation.";
+          this.isSending = false;
+        },
+      });
   }
 
   nouvelleInvitation(): void {
@@ -106,14 +123,17 @@ export class InvitationComponent implements OnInit {
     this.selectedMembre = null;
     this.recherche = '';
     this.email = '';
-    this.role = 'membre' as 'membre' | 'responsable_org' | 'tresorier' | 'adjoint' | 'secretaire_general';
+    this.role = 'membre' as
+      | 'membre'
+      | 'responsable_org'
+      | 'tresorier'
+      | 'adjoint'
+      | 'secretaire_general';
     this.formError = '';
     this.sentEmail = '';
   }
 
   get nomMembre(): string {
-    return this.selectedMembre
-      ? `${this.selectedMembre.prenom} ${this.selectedMembre.nom}`
-      : '';
+    return this.selectedMembre ? `${this.selectedMembre.prenom} ${this.selectedMembre.nom}` : '';
   }
 }

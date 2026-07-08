@@ -1,0 +1,94 @@
+<div class="px-6 lg:px-10 pt-6 lg:pt-8 max-w-7xl mx-auto space-y-5">
+  <!-- En-tête -->
+  <div>
+    <h2 class="text-2xl font-black text-on-surface">Gestion financière</h2>
+    <p class="text-sm text-on-surface-variant mt-0.5">
+      Séances, cotisations, dépenses et trésorerie de votre Dahira
+    </p>
+  </div>
+
+  <!-- Bandeau solde global (masqué sur l'onglet Trésorerie qui détaille déjà ces chiffres) -->
+  @if (soldeVisible) {
+    @if (isLoadingSolde) {
+      <div class="h-24 bg-surface-container rounded-2xl animate-pulse"></div>
+    } @else if (solde) {
+      <div
+        class="bg-primary text-on-primary rounded-2xl p-5 lg:p-6 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-10"
+        style="box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.35)"
+      >
+        <div class="flex items-center gap-4 flex-1">
+          <div
+            class="w-12 h-12 rounded-xl bg-on-primary/15 flex items-center justify-center shrink-0"
+          >
+            <span
+              class="material-symbols-outlined text-[26px]"
+              style="font-variation-settings: 'FILL' 1"
+              >account_balance_wallet</span
+            >
+          </div>
+          <div>
+            <p class="text-[11px] uppercase tracking-widest font-semibold opacity-80">
+              Solde global de la trésorerie
+            </p>
+            <p class="text-3xl font-black leading-tight mt-0.5">
+              {{ formatMontant(solde.solde_global) }}
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-8 sm:gap-10">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] opacity-80">arrow_downward</span>
+              <p class="text-[11px] uppercase tracking-wider font-semibold opacity-80">Entrées</p>
+            </div>
+            <p class="text-lg font-bold mt-0.5">{{ formatMontant(solde.entrees.total) }}</p>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] opacity-80">arrow_upward</span>
+              <p class="text-[11px] uppercase tracking-wider font-semibold opacity-80">Sorties</p>
+            </div>
+            <p class="text-lg font-bold mt-0.5">{{ formatMontant(solde.sorties.total) }}</p>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- Onglets groupés -->
+  <div class="flex flex-wrap items-end gap-x-8 gap-y-3 border-b border-outline-variant/20">
+    @for (groupe of groupesVisibles; track groupe.label) {
+      <div>
+        <p
+          class="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest mb-1.5 px-1"
+        >
+          {{ groupe.label }}
+        </p>
+        <div class="flex gap-1">
+          @for (onglet of groupe.onglets; track onglet.route) {
+            <a
+              [routerLink]="onglet.route"
+              routerLinkActive=""
+              #rla="routerLinkActive"
+              [class]="
+                rla.isActive
+                  ? 'flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-secondary border-b-2 border-secondary -mb-px'
+                  : 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-colors'
+              "
+            >
+              <span
+                class="material-symbols-outlined text-[19px]"
+                [class.icon-filled]="rla.isActive"
+                >{{ onglet.icon }}</span
+              >
+              {{ onglet.label }}
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Onglet actif -->
+<router-outlet />
