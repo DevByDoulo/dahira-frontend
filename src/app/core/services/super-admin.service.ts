@@ -7,7 +7,7 @@ export interface PlatformStats {
   total_dahiras: number;
   dahiras_actifs: number;
   dahiras_inactifs: number;
-  total_users: number;
+  total_membres: number;
 }
 
 export interface DahiraAdmin {
