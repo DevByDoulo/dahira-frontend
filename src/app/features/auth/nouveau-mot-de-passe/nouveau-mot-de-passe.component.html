@@ -1,15 +1,12 @@
 <header class="fixed top-0 left-0 w-full flex justify-center py-8 z-10">
-  <h1 class="text-2xl font-bold text-primary">Dahira App</h1>
+  <h1 class="text-2xl font-bold text-on-surface">Dahira App</h1>
 </header>
 
-<main
-  class="min-h-screen flex flex-col items-center justify-center p-6"
-  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)"
->
+<main class="min-h-screen flex flex-col items-center justify-center p-6">
   <div class="w-full max-w-md animate-fade-in">
 
     <!-- ── Token manquant ── -->
-    <div *ngIf="tokenMissing" class="bg-white rounded-xl p-10 ambient-shadow border border-outline-variant/20 text-center">
+    <div *ngIf="tokenMissing" class="bg-surface-container-lowest rounded-xl p-10 ambient-shadow border border-outline-variant/20 text-center">
       <div class="w-16 h-16 bg-error-container rounded-full flex items-center justify-center mx-auto mb-6">
         <span class="material-symbols-outlined text-error text-[32px]">link_off</span>
       </div>
@@ -27,7 +24,7 @@
     </div>
 
     <!-- ── État succès ── -->
-    <div *ngIf="showSuccess" class="bg-white rounded-xl p-10 ambient-shadow border border-outline-variant/20 text-center animate-scale-in">
+    <div *ngIf="showSuccess" class="bg-surface-container-lowest rounded-xl p-10 ambient-shadow border border-outline-variant/20 text-center animate-scale-in">
       <div class="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6">
         <span
           class="material-symbols-outlined text-[40px]"
@@ -49,13 +46,13 @@
     </div>
 
     <!-- ── Formulaire principal ── -->
-    <div *ngIf="!tokenMissing && !showSuccess" class="bg-white rounded-xl p-10 ambient-shadow border border-outline-variant/20">
+    <div *ngIf="!tokenMissing && !showSuccess" class="bg-surface-container-lowest rounded-xl p-10 ambient-shadow border border-outline-variant/20">
 
       <!-- En-tête -->
       <div class="flex flex-col items-center text-center mb-8">
         <div class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 animate-scale-in">
           <span
-            class="material-symbols-outlined text-primary text-[32px]"
+            class="material-symbols-outlined text-on-surface text-[32px]"
             style="font-variation-settings: 'FILL' 1"
           >lock_reset</span>
         </div>
@@ -82,7 +79,7 @@
             Nouveau mot de passe
           </label>
           <div
-            class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-white group"
+            class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-surface-container-lowest group"
           >
             <span class="material-symbols-outlined absolute left-3 text-outline z-10 group-focus-within:text-primary transition-colors">lock</span>
             <input
@@ -128,7 +125,7 @@
             Confirmer le mot de passe
           </label>
           <div
-            class="relative flex items-center overflow-hidden rounded-lg border transition-all bg-white group"
+            class="relative flex items-center overflow-hidden rounded-lg border transition-all bg-surface-container-lowest group"
             [class.border-outline-variant]="passwordsMatch"
             [class.border-error]="!passwordsMatch"
             [class.focus-within:ring-2]="passwordsMatch"
@@ -194,7 +191,7 @@
     <!-- Texte support -->
     <p *ngIf="!tokenMissing && !showSuccess" class="mt-6 text-center text-xs text-on-tertiary-container">
       Besoin d'aide ?
-      <a href="#" class="text-primary font-semibold hover:underline">Contacter le support</a>
+      <a href="#" class="text-secondary font-semibold hover:underline">Contacter le support</a>
     </p>
   </div>
 </main>

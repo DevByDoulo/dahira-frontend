@@ -124,7 +124,8 @@ html.dark input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 html.dark {
-  --color-primary: #000000;
+  --color-primary: #e4e4ec;
+  --color-on-primary: #16171d;
   --color-secondary: #4dd0c4;
   --color-background: #16171d;
   --color-surface: #16171d;
@@ -139,7 +140,6 @@ html.dark {
   --color-on-surface: #e4e4ec;
   --color-on-surface-variant: #9b9caa;
   --color-on-surface-muted: #9b9caa;
-  --color-on-primary: #ffffff;
   --color-primary-container: #22232c;
   --color-on-primary-container: #c4c5d2;
   --color-primary-fixed: #dae2fd;

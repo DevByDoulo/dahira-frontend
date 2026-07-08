@@ -2,15 +2,12 @@
   <h1 class="text-2xl font-bold text-on-surface">Dahira App</h1>
 </header>
 
-<main
-  class="min-h-screen flex flex-col items-center justify-center p-6"
-  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)"
->
+<main class="min-h-screen flex flex-col items-center justify-center p-6">
   <div class="w-full max-w-md">
 
     <!-- ── Token manquant ── -->
     @if (tokenMissing) {
-      <div class="bg-white rounded-2xl p-10 border border-outline-variant/20 text-center shadow-sm">
+      <div class="bg-surface-container-lowest rounded-2xl p-10 border border-outline-variant/20 text-center shadow-sm">
         <div class="w-16 h-16 bg-error-container rounded-full flex items-center justify-center mx-auto mb-6">
           <span class="material-symbols-outlined text-error text-[32px]">link_off</span>
         </div>
@@ -30,7 +27,7 @@
 
     <!-- ── Formulaire ── -->
     @if (!tokenMissing) {
-      <div class="bg-white rounded-2xl p-8 border border-outline-variant/20 shadow-sm">
+      <div class="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant/20 shadow-sm">
 
         <!-- En-tête -->
         <div class="flex flex-col items-center text-center mb-8">
@@ -56,7 +53,7 @@
           <!-- Nouveau mot de passe -->
           <div class="space-y-1.5">
             <label class="text-sm font-semibold text-on-surface-variant block">Nouveau mot de passe</label>
-            <div class="relative flex items-center overflow-hidden rounded-xl border border-outline-variant focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all bg-white group">
+            <div class="relative flex items-center overflow-hidden rounded-xl border border-outline-variant focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all bg-surface-container-lowest group">
               <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] group-focus-within:text-secondary transition-colors">lock</span>
               <input
                 [type]="showPassword ? 'text' : 'password'"
@@ -94,7 +91,7 @@
           <!-- Confirmer le mot de passe -->
           <div class="space-y-1.5">
             <label class="text-sm font-semibold text-on-surface-variant block">Confirmer le mot de passe</label>
-            <div class="relative flex items-center overflow-hidden rounded-xl border transition-all bg-white group"
+            <div class="relative flex items-center overflow-hidden rounded-xl border transition-all bg-surface-container-lowest group"
                  [class.border-outline-variant]="passwordsMatch"
                  [class.border-error]="!passwordsMatch"
                  [class.focus-within:border-secondary]="passwordsMatch"

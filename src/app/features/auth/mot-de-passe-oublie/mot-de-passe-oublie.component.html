@@ -1,21 +1,18 @@
 <header class="fixed top-0 left-0 w-full flex justify-center py-8 z-10">
-  <h1 class="text-2xl font-bold text-primary">Dahira App</h1>
+  <h1 class="text-2xl font-bold text-on-surface">Dahira App</h1>
 </header>
 
-<main
-  class="min-h-screen flex flex-col items-center justify-center p-6"
-  style="background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%)"
->
+<main class="min-h-screen flex flex-col items-center justify-center p-6">
   <div class="w-full max-w-[480px] animate-fade-in">
     <!-- Carte principale -->
-    <div class="bg-white rounded-xl p-10 ambient-card-shadow border border-outline-variant/20">
+    <div class="bg-surface-container-lowest rounded-xl p-10 ambient-card-shadow border border-outline-variant/20">
 
       <!-- Icône & En-tête -->
       <div class="flex flex-col items-center text-center mb-6">
         <div
           class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 animate-scale-in"
         >
-          <span class="material-symbols-outlined text-primary text-[32px]">lock_reset</span>
+          <span class="material-symbols-outlined text-on-surface text-[32px]">lock_reset</span>
         </div>
         <h2 class="text-2xl font-bold text-on-surface mb-2">Mot de passe oublié ?</h2>
         <p class="text-base text-on-surface-variant max-w-[320px]">
@@ -39,7 +36,7 @@
             Numéro de téléphone
           </label>
           <div
-            class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-white"
+            class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-surface-container-lowest"
           >
             <span class="material-symbols-outlined absolute left-3 text-outline z-10">phone</span>
             <input
@@ -92,7 +89,7 @@
     <!-- Texte support -->
     <p class="mt-6 text-center text-xs text-on-tertiary-container">
       Besoin d'aide ?
-      <a href="#" class="text-primary font-semibold hover:underline">Contacter le support</a>
+      <a href="#" class="text-secondary font-semibold hover:underline">Contacter le support</a>
     </p>
   </div>
 </main>
@@ -103,7 +100,7 @@
   class="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-6"
 >
   <div
-    class="bg-white rounded-xl p-10 ambient-card-shadow border border-outline-variant/20 max-w-md w-full text-center animate-scale-in"
+    class="bg-surface-container-lowest rounded-xl p-10 ambient-card-shadow border border-outline-variant/20 max-w-md w-full text-center animate-scale-in"
   >
     <div
       class="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6"
@@ -122,7 +119,7 @@
     <button
       type="button"
       (click)="dismissSuccess()"
-      class="w-full bg-surface-container-high text-primary font-bold py-4 px-6 rounded-xl hover:bg-surface-variant transition-colors duration-200"
+      class="w-full bg-surface-container-high text-on-surface font-bold py-4 px-6 rounded-xl hover:bg-surface-variant transition-colors duration-200"
     >
       Retour à la connexion
     </button>

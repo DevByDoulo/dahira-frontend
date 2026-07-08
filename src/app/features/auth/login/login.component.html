@@ -1,9 +1,9 @@
 <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-transparent backdrop-blur-sm">
-  <span class="text-xl font-bold text-primary">Dahira App</span>
+  <span class="text-xl font-bold text-on-surface">Dahira App</span>
 </header>
 
 <main class="w-full max-w-md mx-auto px-4 py-8">
-  <div class="bg-white login-card rounded-2xl border border-outline-variant/30 p-8 md:p-10 animate-fade-in">
+  <div class="bg-surface-container-lowest login-card rounded-2xl border border-outline-variant/30 p-8 md:p-10 animate-fade-in">
 
     <!-- Logo -->
     <div class="flex flex-col items-center mb-8">
@@ -31,7 +31,7 @@
 
       <div class="space-y-1">
         <label class="text-sm font-medium text-on-surface-variant block ml-1">Téléphone</label>
-        <div class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-white">
+        <div class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-surface-container-lowest">
           <span class="material-symbols-outlined absolute left-3 text-outline z-10">phone</span>
           <input
             type="tel"
@@ -47,7 +47,7 @@
       <!-- Mot de passe -->
       <div class="space-y-1">
         <label class="text-sm font-medium text-on-surface-variant block ml-1">Mot de passe</label>
-        <div class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-white">
+        <div class="relative flex items-center overflow-hidden rounded-lg border border-outline-variant focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary transition-all bg-surface-container-lowest">
           <span class="material-symbols-outlined absolute left-3 text-outline z-10">lock</span>
           <input
             [type]="showPassword ? 'text' : 'password'"
