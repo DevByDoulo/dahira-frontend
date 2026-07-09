@@ -9,6 +9,8 @@ import {
   Transaction,
   EvolutionPoint,
   Alerte,
+  Previsions,
+  FiltresTransactions,
 } from '../../core/services/tresorerie.service';
 
 interface ChartPoint {
@@ -31,16 +33,20 @@ interface ChartPoint {
 export class TresorerieComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
+  exportError = '';
   isExporting = false;
   isExportingRapport = false;
   moisRapport: string = new Date().toISOString().slice(0, 7);
   menuExportOuvert = false;
+  csvDateDebut = '';
+  csvDateFin = '';
 
   solde: SoldeTresorerie | null = null;
   dernieresEntrees: Transaction[] = [];
   dernieresSorties: Transaction[] = [];
   evolution: EvolutionPoint[] = [];
   alertes: Alerte[] = [];
+  previsions: Previsions | null = null;
   periodeNbMois: 6 | 12 = 6;
 
   hoveredPoint: ChartPoint | null = null;
@@ -75,6 +81,7 @@ export class TresorerieComponent implements OnInit {
       sorties: this.tresorerieService.getTransactions(5, 'sortie'),
       evolution: this.tresorerieService.getEvolution('mois'),
       alertes: this.tresorerieService.getAlertes(),
+      previsions: this.tresorerieService.getPrevisions(3),
     }).subscribe({
       next: (res) => {
         this.solde = res.solde.data;
@@ -82,6 +89,7 @@ export class TresorerieComponent implements OnInit {
         this.dernieresSorties = res.sorties.data ?? [];
         this.evolution = res.evolution.data ?? [];
         this.alertes = res.alertes.data ?? [];
+        this.previsions = res.previsions.data ?? null;
         this.isLoading = false;
       },
       error: () => {
@@ -92,13 +100,31 @@ export class TresorerieComponent implements OnInit {
   }
 
   // ── KPI mois en cours ────────────────────────────────────────────────────
+  // Ancrés sur le mois calendaire courant (et non le dernier point renvoyé),
+  // pour ne jamais afficher les chiffres d'un mois passé si le mois en cours
+  // n'a pas encore de transactions.
+
+  private moisKey(decalage = 0): string {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + decalage);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  private get pointMoisCourant(): EvolutionPoint | undefined {
+    return this.evolution.find((p) => p.periode === this.moisKey());
+  }
+
+  private get pointMoisPrecedent(): EvolutionPoint | undefined {
+    return this.evolution.find((p) => p.periode === this.moisKey(-1));
+  }
 
   get collecteCeMois(): number {
-    return this.evolution.at(-1)?.entrees ?? 0;
+    return this.pointMoisCourant?.entrees ?? 0;
   }
 
   get depenseCeMois(): number {
-    return this.evolution.at(-1)?.sorties ?? 0;
+    return this.pointMoisCourant?.sorties ?? 0;
   }
 
   get soldeCeMois(): number {
@@ -106,15 +132,15 @@ export class TresorerieComponent implements OnInit {
   }
 
   get tendanceCollectePct(): number | null {
-    const curr = this.evolution.at(-1);
-    const prev = this.evolution.at(-2);
+    const curr = this.pointMoisCourant;
+    const prev = this.pointMoisPrecedent;
     if (!curr || !prev || prev.entrees === 0) return null;
     return Math.round(((curr.entrees - prev.entrees) / prev.entrees) * 100);
   }
 
   get tendanceDepensePct(): number | null {
-    const curr = this.evolution.at(-1);
-    const prev = this.evolution.at(-2);
+    const curr = this.pointMoisCourant;
+    const prev = this.pointMoisPrecedent;
     if (!curr || !prev || prev.sorties === 0) return null;
     return Math.round(((curr.sorties - prev.sorties) / prev.sorties) * 100);
   }
@@ -253,18 +279,30 @@ export class TresorerieComponent implements OnInit {
   exporterRapportMensuel(): void {
     if (this.isExportingRapport) return;
     this.isExportingRapport = true;
-    try {
-      this.tresorerieService.exportRapportMensuel(this.moisRapport);
-    } finally {
-      setTimeout(() => (this.isExportingRapport = false), 2000);
-    }
+    this.exportError = '';
+    const mois = this.moisRapport;
+    this.tresorerieService.exportRapportMensuel(mois).subscribe({
+      next: (blob) => {
+        this.telechargerBlob(blob, `rapport-${mois}.pdf`);
+        this.isExportingRapport = false;
+      },
+      error: () => {
+        this.isExportingRapport = false;
+        this.exportError = "L'export du rapport PDF a échoué. Veuillez réessayer.";
+      },
+    });
   }
 
   // ── Export CSV ───────────────────────────────────────────────────────────
 
   exporterCSV(): void {
+    if (this.isExporting) return;
     this.isExporting = true;
-    this.tresorerieService.getTransactions(1000).subscribe({
+    this.exportError = '';
+    const filtres: FiltresTransactions = {};
+    if (this.csvDateDebut) filtres.date_debut = this.csvDateDebut;
+    if (this.csvDateFin) filtres.date_fin = this.csvDateFin;
+    this.tresorerieService.getTransactions('all', undefined, filtres).subscribe({
       next: (res) => {
         const rows = res.data ?? [];
         const header = 'Type,Description,Membre,Montant (FCFA),Mode de paiement,Date';
@@ -280,18 +318,27 @@ export class TresorerieComponent implements OnInit {
         );
         const csv = [header, ...lines].join('\n');
         const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `releve-tresorerie-${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        const suffixe =
+          this.csvDateDebut || this.csvDateFin
+            ? `${this.csvDateDebut || 'debut'}_${this.csvDateFin || 'aujourdhui'}`
+            : new Date().toISOString().slice(0, 10);
+        this.telechargerBlob(blob, `releve-tresorerie-${suffixe}.csv`);
         this.isExporting = false;
       },
       error: () => {
         this.isExporting = false;
+        this.exportError = "L'export CSV a échoué. Veuillez réessayer.";
       },
     });
+  }
+
+  private telechargerBlob(blob: Blob, nomFichier: string): void {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomFichier;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -316,6 +363,14 @@ export class TresorerieComponent implements OnInit {
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
     const idx = parseInt(p.split('-')[1], 10) - 1;
     return months[idx] ?? p;
+  }
+
+  formatMoisAnnee(p: string): string {
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const [annee, mois] = p.split('-');
+    const idx = parseInt(mois, 10) - 1;
+    return months[idx] ? `${months[idx]} ${annee}` : p;
   }
 
   entreeIcon(t: Transaction): string {
